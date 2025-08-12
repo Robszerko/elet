@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Élettartam-becslő</title>
+  <style>
+    /* ========== ALAP STÍLUSOK (sötét téma) ========== */
+    :root{
+      --bg:#0b0f14;
+      --card:#0f1720;
+      --muted:#94a3b8;
+      --accent:#60a5fa;
+      --accent-2:#7c3aed;
+      --glass: rgba(255,255,255,0.03);
+      --success:#34d399;
+      --danger:#f87171;
+      --kpi-height:88px;
+      --radius:14px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color-scheme: dark;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#07101a 60%);color:#e6eef6}
+
+    .wrap{max-width:1100px;margin:28px auto;padding:20px}
+
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 6px 20px rgba(124,58,237,0.18)}
+    h1{font-size:20px;margin:0}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    /* Grid layout */
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:18px}
+    @media (max-width:980px){.grid{grid-template-columns:1fr;}}
+
+    /* Card */
+    .card{background:linear-gradient(180deg,var(--card),rgba(255,255,255,0.02));padding:18px;border-radius:var(--radius);box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+
+    /* Form */
+    form .row{display:flex;gap:12px;margin-bottom:12px}
+    form .row .field{flex:1}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input[type="date"], input[type="number"], select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:var(--glass);color:inherit}
+    .inline-radio{display:flex;gap:8px;align-items:center}
+    .inline-radio input{margin-right:6px}
+
+    button.btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;padding:10px 14px;border-radius:10px;color:#081126;font-weight:700;cursor:pointer}
+    button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+
+    /* KPI csempék */
+    .kpis{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
+    .kpi{flex:1;min-width:150px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:12px;border-radius:10px;display:flex;flex-direction:column;justify-content:center;height:var(--kpi-height)}
+    .kpi .num{font-size:20px;font-weight:800}
+    .kpi .label{font-size:12px;color:var(--muted);margin-top:6px}
+
+    /* Canvas grafikon */
+    .chart-wrap{margin-top:14px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent)}
+    canvas{width:100%;height:150px;display:block}
+
+    /* Help / small footer */
+    .help{font-size:13px;color:var(--muted);margin-top:12px}
+
+    /* Footer buttons */
+    .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+
+    /* small responsive tweaks */
+    @media (max-width:480px){.kpi{min-width:45%}}
+
+    /* subtle glow */
+    .glow{box-shadow:0 6px 30px rgba(96,165,250,0.08)}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">LE</div>
+      <div>
+        <h1>Élettartam-becslő</h1>
+        <p class="lead">Gyors, átfogó becslés — hagyományos szemlélet, egyértelmű eredmények.</p>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- BAL: inputok + számítási rész -->
+      <section class="card">
+        <form id="leForm">
+          <!-- Születési dátum és nem -->
+          <div class="row">
+            <div class="field">
+              <label for="dob">Születési dátum</label>
+              <input type="date" id="dob" required />
+            </div>
+            <div class="field">
+              <label for="sex">Nem</label>
+              <select id="sex">
+                <option value="male">Férfi</option>
+                <option value="female">Nő</option>
+                <option value="other">Egyéb / Nem megadott</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Egészség és életmód -->
+          <div class="row">
+            <div class="field">
+              <label for="height">Magasság (cm)</label>
+              <input type="number" id="height" min="90" max="250" value="175" />
+            </div>
+            <div class="field">
+              <label for="weight">Testsúly (kg)</label>
+              <input type="number" id="weight" min="30" max="300" value="75" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Dohányzás</label>
+              <div class="inline-radio">
+                <label><input type="radio" name="smoke" value="0" checked />Nem</label>
+                <label><input type="radio" name="smoke" value="1" />Kissé (<=5 naponta)</label>
+                <label><input type="radio" name="smoke" value="2" />Rendszeres</label>
+                <label><input type="radio" name="smoke" value="3" />Erős</label>
+              </div>
+            </div>
+            <div class="field">
+              <label for="exercise">Mozgás (óra/hét)</label>
+              <input type="number" id="exercise" min="0" max="30" value="2" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="alcohol">Alkohol (egység / hét)</label>
+              <input type="number" id="alcohol" min="0" max="100" value="3" />
+            </div>
+            <div class="field">
+              <label for="family">Családi halálozás (szív- és érrendszer / daganat)</label>
+              <select id="family">
+                <option value="0">Nincs jelentős családi kórkép</option>
+                <option value="1">Van - 1 közeli rokon</option>
+                <option value="2">Van - több közeli rokon</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="secondary" id="resetBtn">Alaphelyzet</button>
+            <button type="submit" class="btn">Becsüld meg</button>
+          </div>
+        </form>
+
+        <!-- KPI csempék -->
+        <div class="kpis" style="margin-top:18px">
+          <div class="kpi glow" id="kpi-age">
+            <div class="num" id="ageVal">--</div>
+            <div class="label">Jelenlegi életkor</div>
+          </div>
+
+          <div class="kpi" id="kpi-life">
+            <div class="num" id="lifeVal">--</div>
+            <div class="label">Becsült élettartam</div>
+          </div>
+
+          <div class="kpi" id="kpi-remaining">
+            <div class="num" id="leftVal">--</div>
+            <div class="label">Évek hátra</div>
+          </div>
+
+          <div class="kpi" id="kpi-risk">
+            <div class="num" id="riskVal">--</div>
+            <div class="label">Életkockázat (rel.)</div>
+          </div>
+        </div>
+
+        <div class="help">A kalkulátor egyszerűsített becslést ad – nem helyettesíti az orvosi vizsgálatot. A számítások hagyományos, közérthető kiigazításokon alapulnak.</div>
+      </section>
+
+      <!-- JOBB: eredmények + grafikon -->
+      <aside class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <div>
+            <h3 style="margin:0">Eredmények</h3>
+            <p style="margin:4px 0 0;color:var(--muted);font-size:13px">Gyors áttekintés és vizuális grafikon</p>
+          </div>
+          <div style="text-align:right">
+            <small style="color:var(--muted)">Frissítve: most</small>
+          </div>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas id="lifeChart" width="600" height="150"></canvas>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button id="saveImage" class="secondary">Mentés képként</button>
+          <button id="explainBtn" class="secondary">Számítás részletei</button>
+        </div>
+
+        <div id="explain" style="margin-top:12px;display:none;background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;color:var(--muted);font-size:13px">
+          <!-- Itt kerülnek megjelenítésre a részletek -->
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <script>
+    /* ======= Segédfunkciók ======= */
+    function calcAge(dob){
+      const b = new Date(dob);
+      const now = new Date();
+      let age = now.getFullYear() - b.getFullYear();
+      const m = now.getMonth() - b.getMonth();
+      if(m < 0 || (m === 0 && now.getDate() < b.getDate())) age--;
+      return age;
+    }
+
+    // Egyszerű, transzparens scoring/becslés logika
+    // Megjegyzés: ez nem orvosi algoritmus, csak szemléltető modell.
+    function estimateLifeExpectancy(data){
+      // 1) bázis életkor várható élettartam nem szerint
+      let base = (data.sex === 'female') ? 83 : 79; // egyszerű populációs kiindulás
+
+      // 2) BMI hatás
+      const heightM = data.height/100;
+      const bmi = data.weight / (heightM * heightM);
+      let bmiAdj = 0;
+      if(bmi < 18.5) bmiAdj -= 2;          // soványság enyhe kockázat
+      else if(bmi < 25) bmiAdj += 1;      // normál testsúly kis előny
+      else if(bmi < 30) bmiAdj -= 2;      // túlsúly kis hátrány
+      else bmiAdj -= 7;                   // elhízás jelentősebb hatás
+
+      // 3) dohányzás
+      let smokeAdj = 0;
+      // smoke: 0=no,1=light,2=regular,3=heavy
+      if(data.smoke == 1) smokeAdj -= 2;
+      if(data.smoke == 2) smokeAdj -= 6;
+      if(data.smoke == 3) smokeAdj -= 10;
+
+      // 4) mozgás (óra/hét)
+      let actAdj = 0;
+      if(data.exercise >= 5) actAdj += 4;
+      else if(data.exercise >= 2) actAdj += 2;
+
+      // 5) alkohol (egység/hét)
+      let alcAdj = 0;
+      if(data.alcohol <= 7) alcAdj += 0; // mérsékelt
+      else if(data.alcohol <= 14) alcAdj -= 1;
+      else if(data.alcohol <= 28) alcAdj -= 3;
+      else alcAdj -= 6;
+
+      // 6) családi halálozás
+      let famAdj = 0;
+      if(data.family == 1) famAdj -= 2;
+      if(data.family == 2) famAdj -= 4;
+
+      // 7) korrelált összegzés
+      let est = base + bmiAdj + smokeAdj + actAdj + alcAdj + famAdj;
+
+      // Biztonsági határok
+      if(est < 50) est = 50;
+      if(est > 110) est = 110;
+
+      // Relatív kockázat számszerűsítése (0-100%)
+      // Egyszerű képlet: minél alacsonyabb az est a bázishoz képest, annál nagyobb a kockázat
+      const baseline = (data.sex === 'female') ? 83 : 79;
+      let riskScore = Math.round( Math.min(100, Math.max(5, (baseline - est) * 6 + (data.smoke*8))) );
+
+      return {est, bmi: Math.round(bmi*10)/10, riskScore};
+    }
+
+    /* ======= UI kezelés ======= */
+    const form = document.getElementById('leForm');
+    const ageVal = document.getElementById('ageVal');
+    const lifeVal = document.getElementById('lifeVal');
+    const leftVal = document.getElementById('leftVal');
+    const riskVal = document.getElementById('riskVal');
+    const explainBox = document.getElementById('explain');
+
+    function readForm(){
+      const dob = document.getElementById('dob').value;
+      const sex = document.getElementById('sex').value;
+      const height = Number(document.getElementById('height').value || 0);
+      const weight = Number(document.getElementById('weight').value || 0);
+      const exercise = Number(document.getElementById('exercise').value || 0);
+      const alcohol = Number(document.getElementById('alcohol').value || 0);
+      const family = Number(document.getElementById('family').value || 0);
+      const smokeEls = document.getElementsByName('smoke');
+      let smoke = 0; for(const s of smokeEls) if(s.checked) smoke = Number(s.value);
+      return {dob, sex, height, weight, exercise, alcohol, family, smoke};
+    }
+
+    // Eredmények frissítése a KPI-kben és a grafikonon
+    function updateUI(result, age, formData){
+      ageVal.textContent = (age>=0 && !isNaN(age)) ? age + ' év' : '--';
+      lifeVal.textContent = Math.round(result.est) + ' év';
+      const yearsLeft = Math.round(result.est - age);
+      leftVal.textContent = (yearsLeft>0? yearsLeft : 0) + ' év';
+      riskVal.textContent = result.riskScore + ' %';
+
+      // Részletek megjelenítése
+      explainBox.style.display = 'block';
+      explainBox.innerHTML = `
+        <strong>Számítás részletei</strong>
+        <div style="margin-top:8px">Bázis: <em>${formData.sex === 'female' ? 83 : 79} év</em></div>
+        <div>BMI: <em>${result.bmi}</em></div>
+        <div>Dohányzás: <em>${['Nem','Kissé','Rendszeres','Erős'][formData.smoke]}</em></div>
+        <div>Mozgás: <em>${formData.exercise} óra/hét</em></div>
+        <div>Alkohol: <em>${formData.alcohol} egység/hét</em></div>
+        <div>Családi tényezők: <em>${formData.family==0? 'nincs' : (formData.family==1? '1 közeli' : 'több közeli')}</em></div>
+        <div style="margin-top:8px;color:var(--muted);font-size:13px">Megjegyzés: ez egy egyszerűsített, transzparens modell; részletes orvosi vizsgálat más eredményt adhat.</div>
+      `;
+
+      drawChart(age, result.est);
+    }
+
+    /* ======= CANVAS GRAFIKON ======= */
+    const canvas = document.getElementById('lifeChart');
+    const ctx = canvas.getContext('2d');
+
+    function drawChart(age, est){
+      const w = canvas.width = canvas.clientWidth * devicePixelRatio;
+      const h = canvas.height = 150 * devicePixelRatio;
+      ctx.clearRect(0,0,w,h);
+      ctx.scale(devicePixelRatio, devicePixelRatio);
+
+      // Vizualizáció: vízszintes sáv, bal = életben töltött évek, jobb = hátralévő
+      const displayW = canvas.clientWidth;
+      const pad = 18;
+      const barH = 36;
+      const max = Math.max(est, age + 10);
+      const ageW = Math.max(4, (age / max) * (displayW - pad*2));
+      const leftW = Math.max(4, ((est - age)/max)*(displayW - pad*2));
+
+      // Háttér sáv
+      ctx.fillStyle = 'rgba(255,255,255,0.04)';
+      roundRect(ctx,pad,40,displayW - pad*2,barH,10,true,false);
+
+      // Életben töltött rész
+      ctx.fillStyle = 'rgba(124,58,237,0.95)';
+      roundRect(ctx,pad,40,ageW,barH,10,true,false);
+
+      // Hátralévő rész
+      ctx.fillStyle = 'rgba(96,165,250,0.95)';
+      roundRect(ctx,pad + ageW,40,leftW,barH,0,true,false);
+
+      // Jelölők és feliratok
+      ctx.fillStyle = '#cfe6ff';
+      ctx.font = '14px system-ui, Arial';
+      ctx.fillText('Életkor: ' + age + ' év', pad, 30);
+      ctx.fillText('Becsült élettartam: ' + Math.round(est) + ' év', displayW - pad - 180, 30);
+
+      // Skála évszámok
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      for(let i=0;i<=5;i++){
+        const t = Math.round((i/5)*max);
+        const x = pad + (i/5)*(displayW - pad*2);
+        ctx.fillText(t + ' év', x-8, 100 + barH);
+      }
+
+      ctx.setTransform(1,0,0,1,0,0); // reset scale/transform
+    }
+
+    function roundRect(ctx,x,y,w,h,r,fill,stroke){
+      if(typeof r === 'undefined') r=5;
+      ctx.beginPath();
+      ctx.moveTo(x+r,y);
+      ctx.arcTo(x+w,y,x+w,y+h,r);
+      ctx.arcTo(x+w,y+h,x,y+h,r);
+      ctx.arcTo(x,y+h,x,y,r);
+      ctx.arcTo(x,y,x+w,y,r);
+      ctx.closePath();
+      if(fill) ctx.fill();
+      if(stroke) ctx.stroke();
+    }
+
+    /* ======= Eseménykezelés ======= */
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const data = readForm();
+      if(!data.dob){ alert('Kérlek add meg a születési dátumot!'); return; }
+      const age = calcAge(data.dob);
+      const res = estimateLifeExpectancy(data);
+      updateUI(res, age, data);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', ()=>{
+      document.getElementById('dob').value = '';
+      document.getElementById('height').value = 175;
+      document.getElementById('weight').value = 75;
+      document.getElementById('exercise').value = 2;
+      document.getElementById('alcohol').value = 3;
+      document.getElementById('sex').value = 'male';
+      document.getElementById('family').value = '0';
+      document.querySelectorAll('[name="smoke"]')[0].checked = true;
+      ageVal.textContent = '--'; lifeVal.textContent='--'; leftVal.textContent='--'; riskVal.textContent='--';
+      explainBox.style.display='none';
+      drawChart(30,80);
+    });
+
+    // Mentés képként a vászonról
+    document.getElementById('saveImage').addEventListener('click', ()=>{
+      const link = document.createElement('a');
+      link.download = 'life_expectancy.png';
+      link.href = document.getElementById('lifeChart').toDataURL('image/png');
+      link.click();
+    });
+
+    // Részletek gomb
+    document.getElementById('explainBtn').addEventListener('click', ()=>{
+      explainBox.style.display = (explainBox.style.display === 'block') ? 'none' : 'block';
+    });
+
+    // Kezdeti grafikon
+    window.addEventListener('load', ()=>{
+      drawChart(30,80);
+    });
+
+    // canvas resize fix
+    window.addEventListener('resize', ()=>{ // újradraw a méretekhez
+      // ha vannak már eredmények, próbáljuk meg újrarajzolni reális értékekkel
+      const ageText = ageVal.textContent.replace(' év','');
+      const lifeText = lifeVal.textContent.replace(' év','');
+      const age = Number(ageText) || 30;
+      const est = Number(lifeText) || 80;
+      drawChart(age, est);
+    });
+
+  </script>
+</body>
+</html>
