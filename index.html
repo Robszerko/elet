@@ -198,11 +198,11 @@
         .info-front, .info-back { 
             backface-visibility: hidden; border-radius: 12px; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; box-sizing: border-box; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.8); text-align: center; overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8); text-align: center;
         }
         
         .info-front { 
-            width: 100%; height: 100%; padding: 15px; position: relative;
+            width: 100%; height: 100%; padding: 15px; position: relative; overflow: hidden;
             background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.9), rgba(0,0,0,0.7)); 
             border: 2px solid rgba(212, 175, 55, 0.5); transition: all 0.3s;
         }
@@ -211,8 +211,17 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 15px 10px;
             background: linear-gradient(145deg, #3a0000, #150000, #3a0000); 
             border: 3px solid var(--gold); transform: rotateX(180deg); 
-            justify-content: center; gap: 6px;
+            justify-content: flex-start; /* Középről fentre igazítva, hogy a görgetés jobb legyen */
+            gap: 6px;
+            overflow-y: auto; /* Görgetés engedélyezése ha kifolyik a tartalom */
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
+
+        /* Egyedi szép görgetősáv a hátlaphoz */
+        .info-back::-webkit-scrollbar { width: 6px; }
+        .info-back::-webkit-scrollbar-track { background: transparent; }
+        .info-back::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
 
         #uzenetek { font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 900; color: var(--gold-light); display: flex; justify-content: center; align-items: center; text-shadow: 1px 1px 3px #000; text-align: center;}
         #kiegeszito-uzenet { font-size: clamp(0.9rem, 2vw, 1.2rem); color: #cbd5e1; margin-top: 8px;}
@@ -226,15 +235,15 @@
         @keyframes pulse-red-border { 0% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000 inset, 0 5px 25px rgba(255,0,0,0.6); } 100% { border-color: #aa0000; box-shadow: 0 0 5px #aa0000 inset, 0 5px 15px rgba(0,0,0,0.8); } }
         @keyframes ringing { 0% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(25deg) scale(1.2); } 50% { transform: rotate(-25deg) scale(1.2); } 75% { transform: rotate(25deg) scale(1.2); } 100% { transform: rotate(0deg) scale(1); } }
 
-        #back-cim { margin: 0; font-size: clamp(0.9rem, 2vw, 1.2rem); color: #fca5a5; font-family: 'Orbitron'; text-transform: uppercase; letter-spacing: 2px;}
-        #back-osszeg { font-size: clamp(1.3rem, 3.5vw, 2.2rem); font-weight: 900; color: var(--gold-light); font-family: 'Orbitron'; margin: 5px 0; text-shadow: 0 0 15px var(--gold); }
-        #back-leiras { font-size: clamp(0.7rem, 1.3vw, 0.95rem); color: #e5e7eb; margin-bottom: 8px; line-height: 1.2; }
+        #back-cim { margin: 0; font-size: clamp(0.9rem, 2vw, 1.2rem); color: #fca5a5; font-family: 'Orbitron'; text-transform: uppercase; letter-spacing: 2px; flex-shrink: 0;}
+        #back-osszeg { font-size: clamp(1.3rem, 3.5vw, 2.2rem); font-weight: 900; color: var(--gold-light); font-family: 'Orbitron'; margin: 5px 0; text-shadow: 0 0 15px var(--gold); flex-shrink: 0;}
+        #back-leiras { font-size: clamp(0.7rem, 2vw, 0.95rem); color: #e5e7eb; margin-bottom: 8px; line-height: 1.3; }
 
-        .back-gombok { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; width: 100%; margin-top: 5px; align-items: center;}
+        .back-gombok { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; width: 100%; margin-top: auto; padding-bottom: 5px; align-items: center;}
         .back-gomb {
-            font-family: 'Orbitron'; font-weight: 900; font-size: clamp(0.65rem, 1.5vw, 0.9rem); text-transform: uppercase;
-            padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
-            border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); white-space: nowrap;
+            font-family: 'Orbitron'; font-weight: 900; font-size: clamp(0.65rem, 1.5vw, 0.85rem); text-transform: uppercase;
+            padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); white-space: normal; line-height: 1.1; max-width: 100%;
         }
         
         .btn-elfogad { background: linear-gradient(145deg, var(--offer-accept), #047857); color: white; border: 2px solid #34d399;}
@@ -253,7 +262,7 @@
         #timer-bar { width: 100%; height: 100%; background: #ef4444; transition: width 0.1s linear; }
 
         /* PÁRBAJ (DUEL) OSZTOTT AJÁNLAT DOBOZOK */
-        .duel-offers-container { display: flex; gap: 15px; width: 100%; justify-content: center; margin-top: 10px; flex-wrap: wrap;}
+        .duel-offers-container { display: flex; gap: 15px; width: 100%; justify-content: center; margin-top: 5px; margin-bottom: 5px; flex-wrap: wrap;}
         .duel-offer-box { background: rgba(0,0,0,0.6); padding: 10px 15px; border-radius: 8px; text-align: center; border: 2px solid #555; flex: 1; min-width: 140px;}
         .duel-offer-box h4 { margin: 0 0 5px 0; font-family: 'Orbitron'; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;}
         .duel-offer-box h2 { margin: 0; font-family: 'Orbitron'; font-size: 1.3rem; text-shadow: 0 0 10px currentColor;}
@@ -350,18 +359,18 @@
             .header-btn { font-size: 0.65rem; padding: 6px 10px; }
             
             #informacios-sav-kontener { position: sticky; top: 0px; z-index: 150; margin-bottom: 10px; }
-            #info-flipper { min-height: 140px; } 
-            .info-front, .info-back { padding: 8px 5px; justify-content: center; height: auto; min-height: 140px; }
-            .info-back { gap: 4px; }
+            #info-flipper { min-height: 200px; } /* Megnövelve, hogy több hely legyen a szövegnek és gomboknak */
+            .info-front, .info-back { padding: 10px 5px; height: auto; min-height: 200px; }
             
             #uzenetek { font-size: clamp(1rem, 4vw, 1.3rem); }
             #back-cim { font-size: clamp(0.8rem, 2vw, 1rem); }
             #back-osszeg { font-size: clamp(1.2rem, 5vw, 1.6rem); margin: 2px 0; }
-            #back-leiras { font-size: clamp(0.65rem, 1.5vw, 0.8rem); margin-bottom: 4px; }
+            #back-leiras { font-size: clamp(0.65rem, 2.5vw, 0.8rem); margin-bottom: 4px; line-height: 1.2; }
             #kiegeszito-uzenet { font-size: clamp(0.75rem, 2vw, 0.9rem); margin-top: 2px; }
             #bekiabalas { font-size: clamp(0.7rem, 2vw, 0.85rem); line-height: 1.1; margin-top: 2px; }
             
-            .back-gomb { font-size: clamp(0.55rem, 1.8vw, 0.75rem); padding: 5px 10px; }
+            .back-gombok { padding-bottom: 0px; }
+            .back-gomb { font-size: clamp(0.55rem, 2vw, 0.75rem); padding: 5px 8px; }
 
             #taska-racs { gap: 8px; padding: 5px; }
             .taska-szam { width: 40px; height: 40px; font-size: 1.2rem; }
@@ -497,7 +506,7 @@
         window.gameRole = 'solo'; // 'solo', 'host', 'p2', 'spectator'
         window.isOnlineMode = false;
         
-        let lastP2ActionTs = 0; 
+        let lastP2ActionId = null; 
 
         const DOM_LOBBY = {
             screen: document.getElementById('lobby-screen'),
@@ -656,14 +665,12 @@
                         const data = docSnap.data();
                         if (data.viewers) DOM_LOBBY.viewerCountSpan.textContent = data.viewers.length;
                         
-                        // JAVÍTVA: Csak akkor indítjuk a P2 játékot, ha P2 benne van és a játék még nem aktív
                         if (data.player2 && (!gameState || !gameState.duel || !gameState.duel.active)) {
                             startDuelHostGame(data.player2);
                         }
                         
-                        // Figyeljük a P2 akcióit Hostként
-                        if (window.gameRole === 'host' && data.p2_action && data.p2_action.ts > lastP2ActionTs) {
-                            lastP2ActionTs = data.p2_action.ts;
+                        if (window.gameRole === 'host' && data.p2_action && data.p2_action.id !== lastP2ActionId) {
+                            lastP2ActionId = data.p2_action.id;
                             const action = data.p2_action;
                             if (action.type === 'click') {
                                 handleTaskaClick(action.caseId, true);
@@ -687,7 +694,13 @@
         function startDuelHostGame(p2Name) {
             gameState = { 
                 taskaErtekek: {}, 
-                duel: {active: true, p1Name: currentPlayerName, p2Name: p2Name, p1Case: null, p2Case: null, p1Status: 'playing', p2Status: 'playing', turn: 'p1', p1Decision: null, p2Decision: null, p1Offer: 0, p2Offer: 0, p1Winnings: 0, p2Winnings: 0} 
+                duel: {
+                    active: true, p1Name: currentPlayerName, p2Name: p2Name, p1Case: null, p2Case: null, 
+                    p1Status: 'playing', p2Status: 'playing', turn: 'p1', p1Decision: null, p2Decision: null, 
+                    p1Offer: 0, p2Offer: 0, p1Winnings: 0, p2Winnings: 0,
+                    p1OpenedLarge: 0, p2OpenedLarge: 0, p1OpenedSmall: 0, p2OpenedSmall: 0, p2Buttons:[]
+                },
+                activeOfferType: 'normal'
             };
             DOM_LOBBY.nameDisplay.textContent = `${currentPlayerName} VS ${p2Name}`;
             DOM_LOBBY.roomSpan.textContent = currentRoomCode; DOM_LOBBY.roomDisplay.style.display = "inline-block"; DOM_LOBBY.viewerDisplay.style.display = "inline-block";
@@ -811,10 +824,7 @@
         const BANKER_NEUTRAL_BAD_TAUNTS =["A Bankár hátradőlt, kényelmesen kortyolgat.", "Ne is erőlködj, a Bankár már nevet."];
         const BANKER_STREAK_BAD =["Egy újabb gigantikus összeg a kukában! Brutális...", "Úgy esnek ki a milliók, mint az őszi falevelek."];
         const BANKER_STREAK_GOOD =["Zsinórban tisztul a tábla apróktól! A Bankár dühöng!", "Valaki állítsa meg ezt az embert!"];
-        const BLUFF_TAUNTS =["Én belelátok a táskákba... Csak szólok, a tiédben egy kacat lapul!"];
         const EPIC_WIN_MESSAGES =["TÖRTÉNELMI GYŐZELEM! A stúdió felrobban!", "MILLIOMOS LETTÉL! A Bankár felmondott!"];
-        const HAPPY_ENDINGS =["Irány a Maldív-szigetek!", "A NAV már dörzsöli a tenyerét!"];
-        const SAD_ENDINGS =["Legalább az élmény megmarad... meg a buszjegy haza.", "Ebből pont kijön egy sajtburger menü."];
 
         const DOM = {
             taskaRacs: document.getElementById('taska-racs'), penzfaBal: document.getElementById('penzfa-bal'), penzfaJobb: document.getElementById('penzfa-jobb'),
@@ -829,7 +839,8 @@
             turnIndicator: document.getElementById('turn-indicator')
         };
         
-        let gameState = { taskaErtekek: {}, duel: {active: false} };
+        let gameState = { taskaErtekek: {}, duel: {active: false}, activeOfferType: 'normal' };
+        let tevedesTimer = null;
         const NYITASI_SZAMLALO =[6, 5, 4, 3, 2, 1, 1, 1]; 
         const TOTAL_CASES = 24;
         let timeBombInterval = null;
@@ -844,6 +855,7 @@
         window.sendP2Action = async function(actionObj) {
             if (window.gameRole === 'p2' && db && currentRoomCode) {
                 actionObj.ts = Date.now();
+                actionObj.id = Date.now() + "_" + Math.random().toString(36).substring(7);
                 await updateDoc(doc(db, "rooms", currentRoomCode), { p2_action: actionObj });
             }
         };
@@ -855,6 +867,7 @@
                 
                 const minimalState = {
                     duel: gameState.duel,
+                    activeOfferType: gameState.activeOfferType,
                     currentOffer: gameState.currentOffer || 0,
                     sajatTaska: gameState.sajatTaska, uzenetFo: DOM.uzenetekSzoveg.innerHTML, uzenetKieg: DOM.kiegeszitoUzenet.innerHTML,
                     bekiabalas: DOM.bekiabalas.innerHTML, aktualisKor: gameState.aktualisKor, megNyitando: gameState.megNyitando,
@@ -963,20 +976,23 @@
                 DOM.infoFlipper.classList.add('flipped'); DOM.backCim.innerHTML = data.backCim; DOM.backOsszeg.innerHTML = data.backOsszeg;
                 DOM.backLeiras.innerHTML = data.backLeiras;
                 
-                // JAVÍTÁS: P2 DÖNTÉSEK MEGJELENÍTÉSE
+                // P2 UI DÖNTÉSEK DRIVEN BY HOST
                 if (window.gameRole === 'p2') {
-                    if (data.backGombokTarolo.includes("hostDuelDecision") && data.duel && data.duel.p2Decision === null && data.duel.p2Status === 'playing') {
-                        DOM.backGombokTarolo.innerHTML = `
-                            <button class="back-gomb btn-elfogad" onclick="this.innerText='Küldés...'; sendP2Action({type:'decision', value:'accept'})">ELFOGADOM a sajátom!</button>
-                            <button class="back-gomb btn-elutasit" onclick="this.innerText='Küldés...'; sendP2Action({type:'decision', value:'reject'})">NINCS ALKU!</button>
-                        `;
-                    } else if (data.backGombokTarolo.includes("alkuKezelese") && data.duel && data.duel.p2Status === 'playing' && data.duel.p1Status === 'accepted') {
-                        DOM.backGombokTarolo.innerHTML = `
+                    if (data.duel && data.duel.p2Status === 'playing' && data.duel.p2Decision === null && data.activeOfferType && data.activeOfferType.startsWith('duel_')) {
+                        if (data.duel.p2Buttons && data.duel.p2Buttons.length > 0) {
+                            DOM.backGombokTarolo.innerHTML = data.duel.p2Buttons.map(btn => 
+                                `<button class="back-gomb ${btn.colorClass}" onclick="this.innerText='Küldés...'; sendP2Action({type:'decision', value:'${btn.value}'})">${btn.text}</button>`
+                            ).join('');
+                        } else {
+                            DOM.backGombokTarolo.innerHTML = '<span style="color:var(--gold); font-weight:bold;">Várakozás a Hostra...</span>';
+                        }
+                    } else if (data.duel && data.duel.p2Status === 'playing' && data.duel.p1Status === 'accepted' && data.activeOfferType === 'single_p2_decision') {
+                         DOM.backGombokTarolo.innerHTML = `
                             <button class="back-gomb btn-elfogad" onclick="this.innerText='Küldés...'; sendP2Action({type:'solo_decision', value:'accept'})">ÁLL AZ ALKU!</button>
                             <button class="back-gomb btn-elutasit" onclick="this.innerText='Küldés...'; sendP2Action({type:'solo_decision', value:'reject'})">NINCS ALKU!</button>
                         `;
                     } else {
-                        DOM.backGombokTarolo.innerHTML = '<span style="color:var(--gold); font-weight:bold;">Várakozás a Hostra (P1)...</span>';
+                        DOM.backGombokTarolo.innerHTML = '<span style="color:gray;">Döntés rögzítve, vagy várakozás a Hostra (P1)...</span>';
                     }
                 }
             }
@@ -1002,6 +1018,7 @@
         }
 
         function rejtFlipAjanlat() {
+            if(tevedesTimer) { clearTimeout(tevedesTimer); tevedesTimer = null; }
             DOM.infoFlipper.classList.remove('flipped'); DOM.uzenetekKonteer.classList.remove('telefon-hivas-aktiv');
             if(timeBombInterval) { clearInterval(timeBombInterval); timeBombInterval = null; }
             syncGameState();
@@ -1085,6 +1102,7 @@
 
             gameState = { 
                 duel: isDuel ? gameState.duel : {active: false},
+                activeOfferType: 'normal',
                 currentOffer: 0,
                 isPanicOffer: false, bloodPactActive: false, nextOfferMultiplier: null, duelPenalty: null,
                 allapot: isDuel ? 'p1_valasztas' : 'sajat_valasztas', sajatTaska: null, taskaErtekek: {}, maradekNyeremenyek:[...nyeremenyek], 
@@ -1328,6 +1346,16 @@
             frissitStudioHangulat(boardHealth);
             
             let isLargeOut = (nyeremeny.value >= 1000000 || nyeremeny.value > newAtlag * 1.5);
+
+            // PÁRBAJ STATISZTIKA SZÁMOLÁSA A BANKÁRI INTELLIGENCIÁHOZ
+            if (gameState.duel.active) {
+                if (gameState.duel.turn === 'p1') {
+                    if (isLargeOut) gameState.duel.p1OpenedLarge++; else gameState.duel.p1OpenedSmall++;
+                } else {
+                    if (isLargeOut) gameState.duel.p2OpenedLarge++; else gameState.duel.p2OpenedSmall++;
+                }
+            }
+
             let főUzenet = ""; let bekiabalas = "";
 
             if (!gameState.marEladta) {
@@ -1395,11 +1423,6 @@
             }
         }
 
-        function proceedWithOffer(bOff, offer1, offer2, isDuelContext, extraLeiras = "") {
-            if (isDuelContext) mutassParbajAjanlatot(offer1, offer2, extraLeiras);
-            else bankarAjanlatotTesz(bOff);
-        }
-
         async function kiertekelKorVege(isPanicMode = false) {
             gameState.isPanicOffer = isPanicMode;
 
@@ -1424,6 +1447,13 @@
             
             if (gameState.duel.active && maradekZartSzam <= 2) {
                 gameState.allapot = 'vegsokattintas'; 
+                
+                // VÉGÍTÉLET CSAVAR HA MINDKETTEN JÁTSZANAK MÉG
+                if (gameState.duel.p1Status === 'playing' && gameState.duel.p2Status === 'playing') {
+                    bankarDuelVegitelet();
+                    return;
+                }
+                
                 mutassUzenetet("A VÉGSŐ PILLANAT!", "Párbaj vége! A gép kinyitja az utolsó táskákat...");
                 document.querySelector(`.taska[data-taska-id='${gameState.duel.p1Case}']`).classList.add('villogo-vegsokattintas');
                 document.querySelector(`.taska[data-taska-id='${gameState.duel.p2Case}']`).classList.add('villogo-vegsokattintas');
@@ -1448,12 +1478,22 @@
             }
             
             let baseOffer = calculateBankerOffer();
-            let o1 = 0, o2 = 0;
             let isDuel = gameState.duel.active && gameState.duel.p1Status === 'playing' && gameState.duel.p2Status === 'playing';
 
+            let o1 = 0, o2 = 0;
             if (isDuel) {
-                o1 = Math.round((baseOffer * (0.9 + Math.random()*0.2)) / 1000) * 1000;
-                o2 = Math.round((baseOffer * (0.9 + Math.random()*0.2)) / 1000) * 1000;
+                let p1Perf = gameState.duel.p1OpenedSmall - gameState.duel.p1OpenedLarge;
+                let p2Perf = gameState.duel.p2OpenedSmall - gameState.duel.p2OpenedLarge;
+                
+                let o1Mult = 1.0; let o2Mult = 1.0;
+                
+                if (p1Perf > p2Perf) { o1Mult = 1.25; o2Mult = 0.8; } 
+                else if (p2Perf > p1Perf) { o1Mult = 0.8; o2Mult = 1.25; }
+                else { o1Mult = 1.0; o2Mult = 1.0; }
+
+                o1 = Math.round((baseOffer * o1Mult) / 1000) * 1000;
+                o2 = Math.round((baseOffer * o2Mult) / 1000) * 1000;
+                
                 gameState.duel.p1Offer = o1; gameState.duel.p2Offer = o2;
                 gameState.duel.p1Decision = null; gameState.duel.p2Decision = null;
             }
@@ -1468,13 +1508,35 @@
 
             let valasztottTwist = null;
             if (!gameState.marEladta && gameState.aktualisKor >= 2 && Math.random() < 0.6) {
-                let tw = [];
-                if (isDuel) tw =['blackout', 'shuffle', 'hostage', 'zsarolas', 'sugo', 'shell_game', 'orosz_rulett', 'szerencsekerek', 'felezo_duplazo', 'verszerzodes', 'tolvaj', 'csapda', 'idozitett_bomba', 'kihivas'];
-                else tw =['idozitett_bomba', 'kihivas', 'orosz_rulett', 'rejtett_bonusz', 'shell_game', 'sugo', 'zsarolas', 'kombo', 'felezo_duplazo', 'vak_csere_penzzel', 'szerencsekerek', 'szabad_csere', 'vak_alku', 'rulett', 'harom_doboz', 'targy_csomag', 'shuffle', 'blackout', 'hostage', 'verszerzodes', 'csapda', 'tolvaj'];
-                valasztottTwist = getRandomElem(tw);
+                if (isDuel) {
+                    let duelTwists =['duel_kozoss', 'duel_csere', 'duel_szabotazs', 'duel_oroszrulett', 'duel_arulas', 'duel_verszerzodes', 'duel_kotelhuzas', 'duel_nagylelku'];
+                    valasztottTwist = getRandomElem(duelTwists);
+                } else {
+                    let soloTwists =['idozitett_bomba', 'kihivas', 'orosz_rulett', 'rejtett_bonusz', 'shell_game', 'sugo', 'zsarolas', 'kombo', 'felezo_duplazo', 'vak_csere_penzzel', 'szerencsekerek', 'szabad_csere', 'vak_alku', 'rulett', 'harom_doboz', 'targy_csomag', 'shuffle', 'blackout', 'hostage', 'verszerzodes', 'csapda', 'tolvaj', 'lefizetes', 'befagyasztas', 'kaparos', 'tevedes'];
+                    valasztottTwist = getRandomElem(soloTwists);
+                }
             }
 
             switch(valasztottTwist) {
+                // ÚJ SOLO CSAVAROK
+                case 'lefizetes': bankarLefizetes(baseOffer); break;
+                case 'befagyasztas': bankarBefagyasztas(baseOffer); break;
+                case 'kaparos': bankarKaparos(baseOffer); break;
+                case 'tevedes': bankarTevedes(baseOffer); break;
+                
+                // ÚJ PÁRBAJ CSAVAROK
+                case 'duel_kotelhuzas': bankarDuelKotelhuzas(baseOffer); break;
+                case 'duel_nagylelku': bankarDuelNagylelku(o1, o2); break;
+
+                // RÉGI PÁRBAJ CSAVAROK
+                case 'duel_kozoss': bankarDuelKozoss(baseOffer); break;
+                case 'duel_csere': bankarDuelCsere(o1, o2); break;
+                case 'duel_szabotazs': bankarDuelSzabotazs(o1, o2); break;
+                case 'duel_oroszrulett': bankarDuelOroszRulett(o1, o2); break;
+                case 'duel_arulas': bankarDuelArulas(o1, o2); break;
+                case 'duel_verszerzodes': bankarDuelVerszerzodes(o1, o2); break;
+                
+                // RÉGI SOLO CSAVAROK (Mik isDuel=false)
                 case 'sugo': bankarSugo(baseOffer, o1, o2, isDuel); break;
                 case 'zsarolas': bankarZsarolas(baseOffer, o1, o2, isDuel); break;
                 case 'rejtett_bonusz': bankarRejtettBonus(baseOffer); break;
@@ -1521,33 +1583,173 @@
             if (vegleges < 100) vegleges = 100; 
 
             if (gameState.nextOfferMultiplier) { vegleges *= gameState.nextOfferMultiplier; gameState.nextOfferMultiplier = null; }
-            if (gameState.duelPenalty) { vegleges *= gameState.duelPenalty; }
+            if (gameState.duelPenalty) { vegleges *= gameState.duelPenalty; gameState.duelPenalty = null; }
 
             return vegleges;
         }
 
-        function mutassParbajAjanlatot(ajanlatP1, ajanlatP2, extraLeiras = "") {
-            gameState.duel.p1Offer = ajanlatP1; gameState.duel.p2Offer = ajanlatP2;
-            let leirasHTML = `
-                ${extraLeiras}
-                <div class="duel-offers-container">
-                    <div class="duel-offer-box duel-o-p1">
-                        <h4>${gameState.duel.p1Name}</h4>
-                        <h2>${formatValuta(ajanlatP1)}</h2>
-                    </div>
-                    <div class="duel-offer-box duel-o-p2">
-                        <h4>${gameState.duel.p2Name}</h4>
-                        <h2>${formatValuta(ajanlatP2)}</h2>
-                    </div>
-                </div>
-                <p style="color:#fca5a5; font-size: 0.8rem; margin-top:10px;">Döntsetek a saját eszközötökön!</p>
-            `;
+        function proceedWithOffer(baseOffer, o1, o2, isDuel, extraLeiras = "") {
+            if (isDuel) {
+                gameState.activeOfferType = 'duel_split';
+                gameState.duel.p2Buttons =[
+                    { text: "ELFOGADOM a sajátom!", colorClass: "btn-elfogad", value: "accept" },
+                    { text: "NINCS ALKU!", colorClass: "btn-elutasit", value: "reject" }
+                ];
+                
+                let performanceStr = "";
+                if (o1 > o2 * 1.2) performanceStr = `<div style="color:#10b981; font-weight:bold; margin-bottom:5px;">A Bankár szerint ${gameState.duel.p1Name} játszik jobban!</div>`;
+                else if (o2 > o1 * 1.2) performanceStr = `<div style="color:#10b981; font-weight:bold; margin-bottom:5px;">A Bankár szerint ${gameState.duel.p2Name} játszik jobban!</div>`;
 
-            mutassFlipAjanlat("A BANKÁR DÖNTÉSE", "Megosztó Ajánlat!", leirasHTML,[
-                { szoveg: "ELFOGADOM a sajátom!", osztaly: "btn-elfogad", akcio: () => hostDuelDecision('accept') },
-                { szoveg: "NINCS ALKU!", osztaly: "btn-elutasit", akcio: () => hostDuelDecision('reject') }
+                let leirasHTML = `
+                    ${extraLeiras} ${performanceStr}
+                    <div class="duel-offers-container">
+                        <div class="duel-offer-box duel-o-p1">
+                            <h4>${gameState.duel.p1Name}</h4>
+                            <h2>${formatValuta(o1)}</h2>
+                        </div>
+                        <div class="duel-offer-box duel-o-p2">
+                            <h4>${gameState.duel.p2Name}</h4>
+                            <h2>${formatValuta(o2)}</h2>
+                        </div>
+                    </div>
+                `;
+                mutassFlipAjanlat("A BANKÁR DÖNTÉSE", "Osztott Ajánlat", leirasHTML,[
+                    { szoveg: "ELFOGADOM a sajátom!", osztaly: "btn-elfogad", akcio: () => hostDuelDecision('accept') },
+                    { szoveg: "NINCS ALKU!", osztaly: "btn-elutasit", akcio: () => hostDuelDecision('reject') }
+                ]);
+            } else {
+                bankarAjanlatotTesz(baseOffer);
+            }
+        }
+
+        // ==========================================
+        // 6 ÚJ BANKÁR CSAVAR FUNKCIÓI
+        // ==========================================
+
+        function bankarLefizetes(baseOffer) {
+            let duplazott = baseOffer * 2;
+            let leiras = `A Bankár meg akar venni kilóra! Felajánl egy brutálisan megnövelt összeget!<br><br><span style="color:#ef4444; font-weight:bold;">DE FIGYELJ: Ha rányomsz az "Extrém" gombra, megkapod a dupla pénzt (ha kiszállsz), VISZONT ha utána elutasítod a megemelt ajánlatot is, a következő körben <span style="color:#facc15">+2 EXTRA TÁSKÁT</span> kell kinyitnod büntetésből!</span>`;
+            
+            mutassFlipAjanlat("SÖTÉT LEFIZETÉS!", formatValuta(baseOffer), leiras,[
+                { szoveg: "Kérem az extrém ajánlatot!", osztaly: "btn-fekete", akcio: () => {
+                    gameState.megNyitando += 2; // Penalty added if they continue
+                    ujraFlipAjanlat("MEGVETT TÉGED!", formatValuta(duplazott), "A Bankár megduplázta az ajánlatot! Kiszállsz, vagy mész tovább a kockázattal?",[
+                        { szoveg: "Ezt már Elfogadom!", osztaly: "btn-elfogad", akcio: () => { rejtFlipAjanlat(); alkuKezelese(duplazott, 'elfogad'); } },
+                        { szoveg: "Még ez is kevés (Nincs Alku)!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); mutassUzenetet("KOCKÁZATOS!", "Készülj, mert most kettővel több táskát kell nyitnod!"); alkuKezelese(duplazott, 'elutasit'); } }
+                    ]);
+                }},
+                { szoveg: "Elfogadom az Alap Ajánlatot", osztaly: "btn-elfogad", akcio: () => { rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elfogad'); }},
+                { szoveg: "Nincs Alku!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elutasit'); }}
             ]);
         }
+
+        function bankarBefagyasztas(baseOffer) {
+            let leiras = `Hatalmas probléma a szervereken! A Bankár számláját a NAV **IDEIGLENESEN ZÁROLTA**!<br><br><span style="color:#10b981; font-weight:bold;">Ebben a körben NINCS AJÁNLAT! De kárpótlásul a következő kör ajánlata garantáltan <span style="color:#facc15">DUPLÁZVA LESZ (200%)</span>!</span>`;
+            gameState.nextOfferMultiplier = 2.0;
+            
+            mutassFlipAjanlat("BEFAGYASZTOTT SZÁMLA!", "0 Ft (Nincs Ajánlat)", leiras,[
+                { szoveg: "Megértettem, Folytatom a nyitást!", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); rogzitAjanlat("0 Ft (Zárolva)", "Kényszerű Folytatás"); kovetkezoKor(); } }
+            ]);
+        }
+
+        function bankarKaparos(baseOffer) {
+            let leiras = `Kaparós Sorsjegy! Válaszd ki az egyik sorsjegyet! <br>A sorsjegyek alatt a következő nyeremények lapulnak (összekeverve):<br><span style="color:#10b981">1. DUPLÁZÓ (x2)</span><br><span style="color:#ef4444">2. FELEZŐ (x0.5)</span><br><span style="color:#facc15">3. AZONNALI +1 MILLIÓ FT</span>`;
+            
+            const rewards =['dupla', 'fele', 'plusz_millio'];
+            const kevertRewards = kever([...rewards]);
+            
+            let gombok = kevertRewards.map((reward, index) => ({
+                szoveg: `Sorsjegy #${index + 1}`, osztaly: "btn-extra", akcio: async () => {
+                    rejtFlipAjanlat(); mutassUzenetet("Sorsjegy kaparása...", "Vajon mi van alatta?"); await wait(2500);
+                    
+                    if (reward === 'dupla') {
+                        ujraFlipAjanlat("DUPLÁZTÁL!", formatValuta(baseOffer * 2), "Gratulálok! Megdupláztad az ajánlatot!",[
+                            { szoveg: "Tovább az Ajánlathoz", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer * 2, 0, 0, false, "<span style='color:#10b981'>DUPLÁZVA!</span>"); } }
+                        ]);
+                    } else if (reward === 'fele') {
+                        ujraFlipAjanlat("FELEZŐ...", formatValuta(baseOffer * 0.5), "Sajnos ez egy felező volt...",[
+                            { szoveg: "Tovább az Ajánlathoz", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer * 0.5, 0, 0, false, "<span style='color:#ef4444'>FELEZVE...</span>"); } }
+                        ]);
+                    } else if (reward === 'plusz_millio') {
+                        ujraFlipAjanlat("BÓNUSZ!", formatValuta(baseOffer + 1000000), "Hatalmas szerencse! Hozzáadtunk egy milliót az ajánlathoz!",[
+                            { szoveg: "Tovább az Ajánlathoz", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer + 1000000, 0, 0, false, "<span style='color:#facc15'>+1 MILLIÓ FT!</span>"); } }
+                        ]);
+                    }
+                }
+            }));
+            
+            gombok.push({ szoveg: "Nem kaparok! Kérem az alap ajánlatot!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, 0, 0, false); } });
+            
+            mutassFlipAjanlat("KAPARÓS SORSJEGY", "???", leiras, gombok);
+        }
+
+        function bankarTevedes(baseOffer) {
+            let fakeOffer = baseOffer * 4; // Brutális hiba
+            gameState.activeOfferType = 'tevedes';
+            
+            let leiras = `<span style="color:#ef4444; font-size:1.2rem; font-weight:bold; animation: pulse-red 0.5s infinite;">A BANKÁR RÉSZEG!! ELGÉPELTE AZ ÖSSZEGET!!</span><br>Siess, mert a rendszer 3 másodperc múlva automatikusan javítja a hibát!`;
+            
+            tevedesTimer = setTimeout(() => {
+                if(DOM.infoFlipper.classList.contains('flipped') && gameState.activeOfferType === 'tevedes') {
+                    ujraFlipAjanlat("A RENDSZER HELYREÁLLT", formatValuta(baseOffer), "A Bankár észrevette a hibát, és korrigálta az összeget a valós értékre. Elment az alkalom!",[
+                        { szoveg: "Áll az Alku!", osztaly: "btn-elfogad", akcio: () => alkuKezelese(baseOffer, 'elfogad') },
+                        { szoveg: "Nincs alku!", osztaly: "btn-elutasit", akcio: () => alkuKezelese(baseOffer, 'elutasit') }
+                    ]);
+                }
+            }, 3000);
+
+            mutassFlipAjanlat("RENDSZERHIBA!!!", formatValuta(fakeOffer), leiras,[
+                { szoveg: "GYORSAN ELFOGADOM!!", osztaly: "btn-elfogad", akcio: () => { clearTimeout(tevedesTimer); rejtFlipAjanlat(); alkuKezelese(fakeOffer, 'elfogad'); } },
+                { szoveg: "Nem használom ki a hibát...", osztaly: "btn-elutasit", akcio: () => { clearTimeout(tevedesTimer); rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elutasit'); } }
+            ]);
+        }
+
+        function bankarDuelKotelhuzas(baseOffer) {
+            let pool = Math.round((baseOffer * 3) / 1000) * 1000;
+            gameState.duel.sharedPool = pool;
+            gameState.activeOfferType = 'duel_kotelhuzas';
+            
+            gameState.duel.p2Buttons =[
+                { text: "25%-ot kérek", colorClass: "btn-elfogad", value: "25" },
+                { text: "50%-ot kérek", colorClass: "btn-koteg", value: "50" },
+                { text: "75%-ot kérek", colorClass: "btn-elutasit", value: "75" }
+            ];
+
+            let leiras = `A Bankár letett egy gigantikus <span style="color:#facc15; font-weight:bold; font-size:1.2rem;">${formatValuta(pool)}</span> összegű KÖZÖS ALAPOT az asztalra!<br><br><span style="color:#fff;">Válasszátok ki VAKON a saját képernyőtökön, hogy hány százalékot követeltek belőle!</span><br><br><span style="color:#10b981; font-weight:bold;">HA A KETTŐTÖK KÉRÉSE <= 100%:</span> Mindketten megkapjátok a kért részt, és a játék véget ér!<br><span style="color:#ef4444; font-weight:bold;">HA TÚLLÉPITEK A 100%-OT:</span> Mohók voltatok! Senki sem kap semmit, és megy tovább a játék büntetéssel!`;
+
+            mutassFlipAjanlat("MOHÓSÁG TESZT (KÖTÉLHÚZÁS)", formatValuta(pool), leiras,[
+                { szoveg: "25%-ot kérek", osztaly: "btn-elfogad", akcio: () => hostDuelDecision('25') },
+                { szoveg: "50%-ot kérek", osztaly: "btn-koteg", akcio: () => hostDuelDecision('50') },
+                { szoveg: "75%-ot kérek", osztaly: "btn-elutasit", akcio: () => hostDuelDecision('75') }
+            ]);
+        }
+
+        function bankarDuelNagylelku(o1, o2) {
+            gameState.duel.p1Offer = o1; gameState.duel.p2Offer = o2;
+            gameState.activeOfferType = 'duel_nagylelku';
+            
+            gameState.duel.p2Buttons =[
+                { text: "MEGTARTOM a sajátom", colorClass: "btn-elfogad", value: "take" },
+                { text: "ODAADOM A DUPLÁJÁT neki", colorClass: "btn-extra", value: "give" }
+            ];
+
+            let leirasHTML = `
+                <div class="duel-offers-container">
+                    <div class="duel-offer-box duel-o-p1"><h4>${gameState.duel.p1Name}</h4><h2>${formatValuta(o1)}</h2></div>
+                    <div class="duel-offer-box duel-o-p2"><h4>${gameState.duel.p2Name}</h4><h2>${formatValuta(o2)}</h2></div>
+                </div>
+                <br><span style="color:#facc15; font-weight:bold;">A DÖNTÉS TITKOS:</span><br>Választhatod, hogy simán megtartod a saját ajánlatodat (És vége a játékodnak).<br>VAGY lemondasz a sajátodról (0 Ft), és cserébe a <span style="color:#10b981; font-weight:bold;">DUPLÁJÁT</span> kapja meg a társad ajándékba!<br><br>Figyelem: Ha mindketten rányomtok valamelyikre, a Párbaj azonnal véget ér! Nincs elutasítás.
+            `;
+            
+            mutassFlipAjanlat("NAGYLELKŰSÉG VAGY ÖNZÉS?", "Titkos Dilemma", leirasHTML,[
+                { szoveg: "MEGTARTOM a sajátom", osztaly: "btn-elfogad", akcio: () => hostDuelDecision('take') },
+                { szoveg: "ODAADOM A DUPLÁJÁT neki", osztaly: "btn-extra", akcio: () => hostDuelDecision('give') }
+            ]);
+        }
+
+        // ==========================================
+        // DÖNTÉSEK KIÉRTÉKELÉSE (KIEGÉSZÍTVE AZ ÚJ PÁRBAJJAL)
+        // ==========================================
 
         function hostDuelDecision(decision) {
             gameState.duel.p1Decision = decision;
@@ -1558,539 +1760,410 @@
         async function checkDuelDecisions() {
             if (gameState.duel.p1Decision !== null && gameState.duel.p2Decision !== null) {
                 rejtFlipAjanlat();
-                let uzenet = "";
-                let bothAccepted = false;
-                let someoneRejected = (gameState.duel.p1Decision === 'reject' || gameState.duel.p2Decision === 'reject');
+                let d1 = gameState.duel.p1Decision;
+                let d2 = gameState.duel.p2Decision;
+                let type = gameState.activeOfferType;
                 
-                if (gameState.duel.p1Decision === 'accept' && gameState.duel.p2Decision === 'accept') {
-                    uzenet = "MINDKETTEN ELFOGADTÁTOK! A JÁTÉK VÉGET ÉRT!";
+                let p1Name = gameState.duel.p1Name; let p2Name = gameState.duel.p2Name;
+                let msgFo = "DÖNTÉS SZÜLETETT!"; let msgKieg = "";
+
+                gameState.duel.p1Decision = null; gameState.duel.p2Decision = null; gameState.activeOfferType = 'normal';
+                
+                if (type === 'duel_split') {
+                    if (d1 === 'accept' && d2 === 'accept') {
+                        msgKieg = "MINDKETTEN ELFOGADTÁTOK! A JÁTÉK VÉGET ÉRT!";
+                        gameState.duel.p1Status = 'accepted'; gameState.duel.p2Status = 'accepted';
+                        gameState.duel.p1Winnings = gameState.duel.p1Offer; gameState.duel.p2Winnings = gameState.duel.p2Offer;
+                        awardWinMoney(gameState.duel.p1Offer, p1Name); awardWinMoney(gameState.duel.p2Offer, p2Name);
+                        mutassUzenetet(msgFo, msgKieg); await wait(3000); lezardParbaj(); return;
+                    } else if (d1 === 'accept') {
+                        msgKieg = `${p1Name} ELFOGADTA, de ${p2Name} ELUTASÍTOTTA!`;
+                        gameState.duel.p1Status = 'accepted'; gameState.duel.p1Winnings = gameState.duel.p1Offer;
+                        awardWinMoney(gameState.duel.p1Offer, p1Name); gameState.duel.turn = 'p2'; 
+                    } else if (d2 === 'accept') {
+                        msgKieg = `${p2Name} ELFOGADTA, de ${p1Name} ELUTASÍTOTTA!`;
+                        gameState.duel.p2Status = 'accepted'; gameState.duel.p2Winnings = gameState.duel.p2Offer;
+                        awardWinMoney(gameState.duel.p2Offer, p2Name); gameState.duel.turn = 'p1';
+                    } else {
+                        msgKieg = "MINDKETTEN ELUTASÍTOTTÁTOK! A Bankár dühöng!";
+                    }
+                } 
+                // --- ÚJ PÁRBAJ KIÉRTÉKELÉSEK ---
+                else if (type === 'duel_kotelhuzas') {
+                    let req1 = parseInt(d1); let req2 = parseInt(d2);
+                    let totalReq = req1 + req2;
+                    if (totalReq <= 100) {
+                        msgKieg = `TÖKÉLETES EGYENSÚLY! Kértetek: ${req1}% és ${req2}% (Összesen: ${totalReq}%). Mindketten viszitek a kért pénzt!`;
+                        gameState.duel.p1Winnings = (gameState.duel.sharedPool * req1) / 100;
+                        gameState.duel.p2Winnings = (gameState.duel.sharedPool * req2) / 100;
+                        gameState.duel.p1Status = 'accepted'; gameState.duel.p2Status = 'accepted';
+                        awardWinMoney(gameState.duel.p1Winnings, p1Name); awardWinMoney(gameState.duel.p2Winnings, p2Name);
+                        mutassUzenetet("SIKERES KÖTÉLHÚZÁS!", msgKieg); await wait(4000); lezardParbaj(); return;
+                    } else {
+                        msgKieg = `MOHÓSÁG! Kértetek: ${req1}% és ${req2}% (Összesen: ${totalReq}% > 100%). AZ ÜZLET BESÜLT, senki nem kap semmit, megyünk tovább!`;
+                        mutassUzenetet("ELBUKTÁTOK!", msgKieg); await wait(4000);
+                        gameState.duelPenalty = 0.8; // Büntetés a mohóságért
+                    }
+                }
+                else if (type === 'duel_nagylelku') {
+                    let w1 = 0; let w2 = 0;
+                    if (d1 === 'take' && d2 === 'take') {
+                        msgKieg = "Mindketten megtartottátok a sajátotokat. Nincs meglepetés.";
+                        w1 = gameState.duel.p1Offer; w2 = gameState.duel.p2Offer;
+                    } else if (d1 === 'give' && d2 === 'take') {
+                        msgKieg = `HŐS CSERKÉSZ! ${p1Name} feláldozta a nyereményét, így ${p2Name} hatalmas pénzzel távozik!`;
+                        w1 = 0; w2 = gameState.duel.p2Offer + (gameState.duel.p1Offer * 2);
+                    } else if (d1 === 'take' && d2 === 'give') {
+                        msgKieg = `HŐS CSERKÉSZ! ${p2Name} feláldozta a nyereményét, így ${p1Name} hatalmas pénzzel távozik!`;
+                        w1 = gameState.duel.p1Offer + (gameState.duel.p2Offer * 2); w2 = 0;
+                    } else if (d1 === 'give' && d2 === 'give') {
+                        msgKieg = "KÖLCSÖNÖS NAGYLELKŰSÉG! Mindketten odaadtátok a dupláját a másiknak! Őrületes nyeremények!";
+                        w1 = gameState.duel.p2Offer * 2; w2 = gameState.duel.p1Offer * 2;
+                    }
+                    gameState.duel.p1Winnings = w1; gameState.duel.p2Winnings = w2;
                     gameState.duel.p1Status = 'accepted'; gameState.duel.p2Status = 'accepted';
-                    gameState.duel.p1Winnings = gameState.duel.p1Offer; gameState.duel.p2Winnings = gameState.duel.p2Offer;
-                    awardWinMoney(gameState.duel.p1Offer, gameState.duel.p1Name); awardWinMoney(gameState.duel.p2Offer, gameState.duel.p2Name);
-                    bothAccepted = true;
-                } else if (gameState.duel.p1Decision === 'accept') {
-                    uzenet = `${gameState.duel.p1Name} ELFOGADTA, de ${gameState.duel.p2Name} ELUTASÍTOTTA!`;
-                    gameState.duel.p1Status = 'accepted'; gameState.duel.p1Winnings = gameState.duel.p1Offer;
-                    awardWinMoney(gameState.duel.p1Offer, gameState.duel.p1Name); gameState.duel.turn = 'p2'; 
-                } else if (gameState.duel.p2Decision === 'accept') {
-                    uzenet = `${gameState.duel.p2Name} ELFOGADTA, de ${gameState.duel.p1Name} ELUTASÍTOTTA!`;
-                    gameState.duel.p2Status = 'accepted'; gameState.duel.p2Winnings = gameState.duel.p2Offer;
-                    awardWinMoney(gameState.duel.p2Offer, gameState.duel.p2Name); gameState.duel.turn = 'p1';
-                } else {
-                    uzenet = "MINDKETTEN ELUTASÍTOTTÁTOK! A Bankár dühöng!";
+                    awardWinMoney(w1, p1Name); awardWinMoney(w2, p2Name);
+                    mutassUzenetet("A VÉGSŐ DÖNTÉS!", msgKieg); await wait(5000); lezardParbaj(); return;
                 }
-
-                mutassUzenetet("DÖNTÉS SZÜLETETT!", uzenet); await wait(3500);
-
-                if (bothAccepted) {
-                    lezardParbaj();
-                } else {
-                    gameState.allapot = 'nyitogatas';
-                    if (someoneRejected && gameState.bloodPactActive) {
-                        gameState.bloodPactActive = false; triggerMaxCaseKill();
-                    } else if (gameState.isPanicOffer) {
-                        gameState.isPanicOffer = false; frissitNyitasiSzoveg(); gameState.isProcessingClick = false;
+                // ---------------------------------
+                else if (type === 'duel_joint') {
+                    if (d1 === 'accept' && d2 === 'accept') {
+                        msgKieg = `CSAPATMUNKA! Elfeleztétek a gigantikus összeget (${formatValuta(gameState.duel.p1Offer * 2)})!`;
+                        gameState.duel.p1Status = 'accepted'; gameState.duel.p2Status = 'accepted';
+                        gameState.duel.p1Winnings = gameState.duel.p1Offer; gameState.duel.p2Winnings = gameState.duel.p2Offer;
+                        awardWinMoney(gameState.duel.p1Offer, p1Name); awardWinMoney(gameState.duel.p2Offer, p2Name);
+                        mutassUzenetet(msgFo, msgKieg); await wait(3000); lezardParbaj(); return;
                     } else {
-                        kovetkezoKor();
+                        msgKieg = "NEM VOLT EGYETÉRTÉS! Az üzlet kútba esett, és a Bankár 30%-kal bünteti a jövőt!";
+                        gameState.duelPenalty = 0.7;
                     }
                 }
-            } else { syncGameState(); }
-        }
-
-        // --- ÚJ ÉS MÓDOSÍTOTT CSAVAROK ---
-
-        function bankarVerszerzodes(baseOffer, o1, o2, isDuel) {
-            let maxVal = Math.max(...gameState.maradekNyeremenyek.map(n => n.value));
-            let dispMax = formatValuta(maxVal);
-            let leiras = `A Bankár vért akar! <br>Felajánl egy brutális <span style="color:#10b981">+50% BÓNUSZT</span> az ajánlatra!<br><span style="color:#ef4444; font-weight:bold;">DE VIGYÁZZ! Ha ${isDuel?'valamelyikőtök ':''}elutasítja, a Bankár AZONNAL törli a tábláról a legmagasabb összeget (${dispMax})!</span>`;
-            
-            let bOff = Math.round(baseOffer * 1.5 / 1000) * 1000;
-            let do1 = Math.round(o1 * 1.5 / 1000) * 1000; let do2 = Math.round(o2 * 1.5 / 1000) * 1000;
-
-            gameState.bloodPactActive = true; 
-
-            if (isDuel) {
-                mutassParbajAjanlatot(do1, do2, leiras);
-            } else {
-                mutassFlipAjanlat("VÉRSZERZŐDÉS!", formatValuta(bOff), leiras,[
-                    { szoveg: "Megveszem!", osztaly: "btn-elfogad", akcio: () => { gameState.bloodPactActive = false; rejtFlipAjanlat(); alkuKezelese(bOff, 'elfogad'); } },
-                    { szoveg: "Nem félek!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); triggerMaxCaseKill(); } }
-                ]);
-            }
-        }
-
-        function bankarCsapda(baseOffer, o1, o2, isDuel) {
-            let leiras = `A Host (P1) húzzon egyet a 3 kártya közül! Lehet alatta <span style="color:#10b981">VÉDŐPAJZS</span>, <span style="color:#facc15">DUPLA AJÁNLAT</span>, vagy <span style="color:#ef4444">BOMBA (Legnagyobb táska felrobban)</span>!`;
-            let cards = kever(['pajzs', 'dupla', 'bomba']);
-            let gombok = cards.map((card, idx) => ({
-                szoveg: `${idx+1}. Kártya`, osztaly: "btn-extra", akcio: async () => {
-                    rejtFlipAjanlat(); mutassUzenetet("Kártya felfordítása...", "Vajon mi lesz rajta?"); await wait(2500);
-                    if (card === 'pajzs') {
-                        gameState.shieldCount++; frissitPajzsGomb();
-                        ujraFlipAjanlat("PAJZS!", "+1 Védőpajzs", "Szerencséd volt!",[{szoveg:"Tovább az Ajánlathoz", osztaly:"btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}]);
-                    } else if (card === 'dupla') {
-                        ujraFlipAjanlat("ARANYESŐ!", "Ajánlat x2!", "A következő ajánlat duplázódik!",[{szoveg:"Tovább az Ajánlathoz", osztaly:"btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*2, o1*2, o2*2, isDuel, "<span style='color:#facc15'>DUPLÁZVA!</span>"); }}]);
-                    } else {
-                        ujraFlipAjanlat("BOMBA!", "Robbanás!", "A legnagyobb táskád megsemmisül!",[{szoveg:"Tovább", osztaly:"btn-vegso", akcio: async () => { rejtFlipAjanlat(); await triggerMaxCaseKill(); }}]);
-                    }
-                }
-            }));
-            gombok.push({ szoveg: "Nem húzok!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); } });
-            mutassFlipAjanlat("A BANKÁR CSAPDÁJA", "Húzz egy lapot!", leiras, gombok);
-        }
-
-        function bankarTolvaj(baseOffer, o1, o2, isDuel) {
-            if (isDuel) {
-                let leiras = `A Bankár szembeállít titeket! <br><span style="color:#fca5a5; font-weight:bold;">Azonnal CSERÉLJÉTEK KI a saját táskáitokat egymással! Ha a Host (P1) ezt megtagadja, MINDKETTŐTÖK jövőbeli ajánlatai 30%-kal csökkennek!</span>`;
-                mutassFlipAjanlat("TOLVAJTEMPÓ - CSERE!", "Nincs ajánlat", leiras,[
-                    { szoveg: "Legyen Csere!", osztaly: "btn-elfogad", akcio: () => {
+                else if (type === 'duel_swap') {
+                    if (d1 === 'swap' || d2 === 'swap') {
+                        msgKieg = "CSILLAGOK HÁBORÚJA! A táskák kicserélődtek!";
                         let temp = gameState.duel.p1Case; gameState.duel.p1Case = gameState.duel.p2Case; gameState.duel.p2Case = temp;
                         document.querySelector(`.taska.sajat-p1`).classList.replace('sajat-p1', 'temp-p1');
                         document.querySelector(`.taska.sajat-p2`).classList.replace('sajat-p2', 'sajat-p1');
                         document.querySelector(`.taska.temp-p1`).classList.replace('temp-p1', 'sajat-p2');
-                        mutassUzenetet("TÁSKÁK KICSERÉLVE!", "A játék folytatódik!"); rejtFlipAjanlat(); setTimeout(kovetkezoKor, 2500);
-                    }},
-                    { szoveg: "Nem cserélünk!", osztaly: "btn-elutasit", akcio: () => {
-                        gameState.duelPenalty = 0.7; mutassUzenetet("A BANKÁR BÜNTET!", "Minden jövőbeli ajánlat -30%!");
-                        rejtFlipAjanlat(); setTimeout(kovetkezoKor, 2500);
-                    }}
-                ]);
-            } else {
-                let leiras = `Cseréld el a saját táskád egy random zárt táskára, és <span style="color:#10b981">AZONNAL kapsz +1.000.000 Ft bónuszt</span>!`;
-                mutassFlipAjanlat("TOLVAJTEMPÓ", "+1.000.000 Ft", leiras,[
-                    { szoveg: "Cserélek és kérem a bónuszt!", osztaly: "btn-elfogad", akcio: () => {
-                        const zartElemek = Array.from(document.querySelectorAll('.taska:not(.nyitott)')).filter(t => t.dataset.taskaId != gameState.sajatTaska);
-                        const ujTaskaId = getRandomElem(zartElemek).dataset.taskaId;
-                        document.querySelector(`.taska[data-taska-id='${gameState.sajatTaska}']`).classList.remove('sajat-taskam');
-                        gameState.sajatTaska = ujTaskaId; document.querySelector(`.taska[data-taska-id='${ujTaskaId}']`).classList.add('sajat-taskam');
-                        gameState.bonuszPenz += 1000000;
-                        mutassUzenetet("TÁSKA KICSERÉLVE!", "Bónusz hozzáadva!"); rejtFlipAjanlat(); setTimeout(kovetkezoKor, 2500);
-                    }},
-                    { szoveg: "Megtartom a sajátomat!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); bankarAjanlatotTesz(baseOffer); } }
-                ]);
-            }
-        }
-
-        // --- Régi csavarok adoptálva Duelre ---
-        function bankarIdozitettBomba(baseOffer, o1, o2, isDuel) {
-            let bB = baseOffer * 1.35; let bR = baseOffer * 0.65;
-            let o1B = o1 * 1.35; let o2B = o2 * 1.35;
-            let timeLeft = 10;
-            let leirasHTML = `<div style="color:#ef4444; font-weight:bold; font-size:1.2rem; margin-bottom:5px;">CSAK 10 MÁSODPERCED VAN!</div><div id="timer-bar-container"><div id="timer-bar"></div></div>Azonnal dönts(etek), vagy az ajánlat megsemmisül!`;
-
-            if (isDuel) {
-                mutassParbajAjanlatot(o1B, o2B, leirasHTML);
-            } else {
-                mutassFlipAjanlat("IDŐZÍTETT BOMBA!", formatValuta(bB), leirasHTML,[
-                    { szoveg: "Gyorsan, Áll az Alku!", osztaly: "btn-elfogad", akcio: () => { clearInterval(timeBombInterval); rejtFlipAjanlat(); alkuKezelese(bB, 'elfogad'); }},
-                    { szoveg: "Nem kérem!", osztaly: "btn-elutasit", akcio: () => { clearInterval(timeBombInterval); rejtFlipAjanlat(); alkuKezelese(bB, 'elutasit'); }}
-                ]);
-            }
-
-            const timerBar = document.getElementById('timer-bar');
-            timeBombInterval = setInterval(() => {
-                timeLeft -= 0.1; if(timerBar) timerBar.style.width = (timeLeft / 10) * 100 + '%';
-                if (timeLeft <= 0) {
-                    clearInterval(timeBombInterval);
-                    if (isDuel) {
-                        gameState.duel.p1Decision = null; gameState.duel.p2Decision = null;
-                        ujraFlipAjanlat("AZ IDŐ LEJÁRT!", "BÜNTETÉS!", "Túl lassúak voltatok! A Bankár csökkentette az ajánlatot!",[
-                            { szoveg: "Tovább a büntetett ajánlathoz", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(bR, o1*0.65, o2*0.65, isDuel); }}
-                        ]);
                     } else {
-                        ujraFlipAjanlat("AZ IDŐ LEJÁRT!", formatValuta(bR), "Túl lassú voltál! A Bankár csökkentette az ajánlatot!",[
-                            { szoveg: "Kénytelen vagyok elfogadni", osztaly: "btn-elfogad", akcio: () => { rejtFlipAjanlat(); alkuKezelese(bR, 'elfogad'); }},
-                            { szoveg: "Nincs alku", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); alkuKezelese(bR, 'elutasit'); }}
-                        ]);
+                        msgKieg = "BÉKE VAN! Senki sem akart cserélni, minden marad a régiben!";
                     }
                 }
-            }, 100);
-        }
-
-        function bankarKihivasa(baseOffer, o1, o2, isDuel) {
-            let leirasHTML = `A Bankár párbajra hív! Állítsd meg a játékot és a Host nyisson ki <b>azonnal 1 táskát!</b><br>Ha kisebb mint 1 Millió: <span style="color:#10b981">+500.000 Ft Bónusz!</span><br>Ha 1 Millió vagy nagyobb: <span style="color:#ef4444">A következő ajánlat -25% kap!</span>`;
-            mutassFlipAjanlat("A BANKÁR KIHÍVÁSA!", "Elfogadod?", leirasHTML,[
-                { szoveg: "Kihívás elfogadva!", osztaly: "btn-extra", akcio: () => {
-                    rejtFlipAjanlat(); gameState.kihivasEredetiAjanlat = baseOffer; 
-                    if(isDuel) { gameState.duel.p1Offer=o1; gameState.duel.p2Offer=o2; }
-                    gameState.allapot = 'kihivas_nyitas'; gameState.isProcessingClick = false;
-                    mutassUzenetet("KIHÍVÁS INDUL!", "A Host nyisson ki egy táskát MOST AZONNAL!", "Vigyázz, nehogy a milliókat találd el!");
-                    document.querySelectorAll('.taska:not(.nyitott):not(.sajat-taskam):not(.sajat-p1):not(.sajat-p2)').forEach(t => t.classList.add('kihivas-celpont')); syncGameState();
-                }},
-                { szoveg: "Nem kockáztatok!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}
-            ]);
-        }
-
-        function bankarOroszRulett(baseOffer, o1, o2, isDuel) {
-            let leirasHTML = `A Host válasszon a 6 kamra közül! 5 gomb alatt <span style="color:#10b981">150%-OS SZORZÓ</span> lapul.<br>De 1 gomb alatt a <span style="color:#ef4444">CSŐD (Minden ajánlat 100 Ft)</span>!`;
-            const gombok =[{ szoveg: "Kérem a normál ajánlatot", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}];
-            gombok.push({ szoveg: "BEVÁLLALOM! HOZD A GOMBOKAT!", osztaly: "btn-fekete", akcio: () => {
-                const chambers =[1.5, 1.5, 1.5, 1.5, 1.5, 0]; const shuffledChambers = kever([...chambers]);
-                const kamraGombok = shuffledChambers.map((ertek, idx) => ({
-                    szoveg: `${idx + 1}`, osztaly: "btn-rulett-kamra", akcio: async () => {
-                        rejtFlipAjanlat(); mutassUzenetet("RAVASZ MEGHÚZVA...", "Vajon mi volt a kamrában?", "", true); await wait(3000);
-                        if(ertek === 0) {
-                            ujraFlipAjanlat("BUMM! CSŐD!", "100 Ft", "Eltaláltad az üres kamrát! Az ajánlatok lenullázódtak!",[
-                                { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(100, 100, 100, isDuel, "<span style='color:red'>CSŐD!</span>"); }}
-                            ]);
-                        } else {
-                            ujraFlipAjanlat("KLIKK! TÚLÉLTED!", "150% Ajánlat!", "Gratulálok! Megnyerted a megnövelt ajánlatot!",[
-                                { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*1.5, o1*1.5, o2*1.5, isDuel, "<span style='color:#10b981'>150% RULETT!</span>"); }}
-                            ]);
-                        }
+                else if (type === 'duel_sabotage') {
+                    let p1Acc = d1 === 'accept'; let p2Acc = d2 === 'accept';
+                    if (p1Acc && p2Acc) {
+                        msgKieg = "MINDKETTEN ELFOGADTÁTOK! A JÁTÉK VÉGET ÉRT!";
+                        gameState.duel.p1Status = 'accepted'; gameState.duel.p2Status = 'accepted';
+                        gameState.duel.p1Winnings = gameState.duel.p1Offer; gameState.duel.p2Winnings = gameState.duel.p2Offer;
+                        mutassUzenetet(msgFo, msgKieg); await wait(3000); lezardParbaj(); return;
+                    } else if (p1Acc && !p2Acc) {
+                        msgKieg = `${p1Name} KISZÁLLT, DE ${p2Name} SZABOTÁLT! ${p1Name}-nek extra táskát kellett volna nyitnia, de már eladta!`;
+                        gameState.duel.p1Status = 'accepted'; gameState.duel.p1Winnings = gameState.duel.p1Offer;
+                        awardWinMoney(gameState.duel.p1Offer, p1Name); gameState.duel.turn = 'p2'; 
+                    } else if (!p1Acc && p2Acc) {
+                        msgKieg = `${p2Name} KISZÁLLT, DE ${p1Name} SZABOTÁLT! ${p2Name}-nek extra táskát kellett volna nyitnia, de már eladta!`;
+                        gameState.duel.p2Status = 'accepted'; gameState.duel.p2Winnings = gameState.duel.p2Offer;
+                        awardWinMoney(gameState.duel.p2Offer, p2Name); gameState.duel.turn = 'p1';
+                    } else {
+                        msgKieg = "KÖLCSÖNÖS SZABOTÁZS! Mindketten rányomtatok! A következő körben a gép random kinyit 2 táskát a tábláról büntetésből!";
+                        mutassUzenetet(msgFo, msgKieg); await wait(3500);
+                        await executeRandomOpens(2);
+                        kovetkezoKor(); return;
                     }
-                }));
-                ujraFlipAjanlat("OROSZ RULETT!", "Válassz Kamrát!", "Csak egyet kattinthatsz!", kamraGombok);
-            }});
-            mutassFlipAjanlat("OROSZ RULETT AJÁNLAT", "150% VAGY CSŐD!", leirasHTML, gombok);
-        }
-
-        function bankarSzerencsekerek(baseOffer, o1, o2, isDuel) {
-            let leiras = `Pörgetünk a Host gépén! Szorzók: 0.5x, 1x, 1.5x, 2x, 3x!<br><span style='color:#fca5a5; font-weight:bold;'>(A kipörgetett szorzó érvényesül az ajánlatokra!)</span>`;
-            mutassFlipAjanlat("SZERENCSEKERÉK", "???", leiras,[
-                { szoveg: "Pörgessük meg!", osztaly: "btn-elfogad", akcio: async () => {
-                    mutassUzenetet("Szerencsekerék pörgetése...", "Mi lesz a szorzó?"); rejtFlipAjanlat();
-                    const szorzok =[0.5, 1, 1.5, 2, 3]; let porgetesek = 15;
-                    while(porgetesek > 0) { let tempSzorzo = getRandomElem(szorzok); mutassUzenetet("Szerencsekerék pörög...", `${tempSzorzo}x ?`, ""); await wait(100 + (15 - porgetesek) * 20); porgetesek--; }
-                    const nyertSzorzo = getRandomElem(szorzok); 
-                    ujraFlipAjanlat(`A KERÉK MEGÁLLT: ${nyertSzorzo}x`, "Szorzó alkalmazva!", "Nézzük az új ajánlatot!",[
-                        { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*nyertSzorzo, o1*nyertSzorzo, o2*nyertSzorzo, isDuel, `<span style='color:#facc15'>KERÉK: ${nyertSzorzo}X</span>`); }}
-                    ]);
-                }},
-                { szoveg: "Nem kockáztatok!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}
-            ]);
-        }
-
-        function bankarRulettAjanlat(baseOffer, o1, o2, isDuel) {
-            let leiras = `Pörgetünk! FELE, NORMÁL, vagy DUPLÁJA!<br><span style='color:#fca5a5; font-weight:bold;'>(AMIN MEGÁLL, AZ LESZ A SZORZÓ!)</span>`;
-            mutassFlipAjanlat("BANKÁR RULETT", "Pörög a kerék", leiras,[
-                { szoveg: "Megpörgetem az alkut!", osztaly: "btn-elfogad", akcio: async () => {
-                    rejtFlipAjanlat();
-                    const opciok =[ { szorzo: 0.5, szoveg: "A FELE (50%)" }, { szorzo: 1, szoveg: "Normál (100%)" }, { szorzo: 2, szoveg: "A DUPLÁJA (200%)" } ];
-                    let spinning = true; let stopping = false; let duration = 0; let stopTime = 0; let delay = 30; let currentIndex = 0; let startTime = Date.now();
-                    mutassUzenetet("Készülj a megállításra!", `<button id="stop-rulett-btn" class="stop-btn" style="background:#f59e0b; padding:8px 15px; border-radius:5px; border:none; font-weight:bold; cursor:pointer;">STOP</button>`, "");
-                    const stopBtn = document.getElementById('stop-rulett-btn');
-
-                    stopBtn.addEventListener('click', () => {
-                        if (!stopping) { stopping = true; duration = Math.random() * 5000 + 5000; stopTime = Date.now() + duration; stopBtn.style.display = 'none'; DOM.kiegeszitoUzenet.innerHTML = "<span style='color: #facc15; font-weight:bold; font-size: 1.2rem;'>Lassulás...</span>"; DOM.kiegeszitoUzenet.style.display = 'block'; }
-                    });
-
-                    while (spinning) {
-                        currentIndex = (currentIndex + 1) % opciok.length;
-                        DOM.uzenetekSzoveg.innerHTML = `<span style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); color: #fff; text-shadow: 0 0 15px var(--gold);">${opciok[currentIndex].szoveg}</span>`;
-                        if (!stopping && Date.now() - startTime > 15000) stopBtn.click();
-                        if (stopping) {
-                            let remaining = stopTime - Date.now(); if (remaining <= 0) { spinning = false; break; }
-                            let progress = 1 - (remaining / duration); delay = 30 + Math.pow(progress, 2.5) * 800; 
-                        }
-                        await wait(delay);
+                }
+                else if (type === 'duel_roulette') {
+                    if (d1 === 'pass' && d2 === 'pass') {
+                        msgKieg = "GYÁVÁK! A Bankár dühében azonnal levon 20%-ot a jövőbeli ajánlatokból!";
+                        gameState.duelPenalty = 0.8;
+                    } else {
+                        msgKieg = "MEGHÚZTÁTOK A RAVASZT! Pörög a rulett...";
+                        mutassUzenetet(msgFo, msgKieg); await wait(2500);
+                        let winner = Math.random() > 0.5 ? 'p1' : 'p2';
+                        let winMsg = winner === 'p1' ? `${p1Name} ajánlata DUPLÁZÓDIK, ${p2Name} AJÁNLATA FELEZŐDIK!` : `${p2Name} ajánlata DUPLÁZÓDIK, ${p1Name} AJÁNLATA FELEZŐDIK!`;
+                        let newO1 = winner === 'p1' ? gameState.duel.p1Offer * 2 : gameState.duel.p1Offer * 0.5;
+                        let newO2 = winner === 'p2' ? gameState.duel.p2Offer * 2 : gameState.duel.p2Offer * 0.5;
+                        
+                        proceedWithOffer(0, newO1, newO2, true, `<span style='color:#facc15'>A RULETT EREDMÉNYE: ${winMsg}</span>`);
+                        return; // Exit early to wait for next normal decision
                     }
-
-                    const finalOpt = opciok[currentIndex];
-                    DOM.uzenetekSzoveg.innerHTML = `<span style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); color: #10b981; text-shadow: 0 0 15px #10b981;">${finalOpt.szoveg}</span>`;
-                    DOM.kiegeszitoUzenet.innerHTML = "A Rulett megállt!"; await wait(2000);
+                }
+                else if (type === 'duel_betrayal') {
+                    let p1Acc = d1 === 'accept'; let p2Acc = d2 === 'accept';
+                    if (p1Acc && p2Acc) {
+                        msgKieg = "MINDKETTEN ELFOGADTÁTOK! Békés befejezés, senki sem lopott!";
+                        gameState.duel.p1Status = 'accepted'; gameState.duel.p2Status = 'accepted';
+                        gameState.duel.p1Winnings = gameState.duel.p1Offer; gameState.duel.p2Winnings = gameState.duel.p2Offer;
+                        awardWinMoney(gameState.duel.p1Offer, p1Name); awardWinMoney(gameState.duel.p2Offer, p2Name);
+                        mutassUzenetet(msgFo, msgKieg); await wait(3000); lezardParbaj(); return;
+                    } else if (p1Acc && !p2Acc) {
+                        msgKieg = `ÁRULÁS! ${p1Name} elfogadta, KISZÁLLT, és el fogja lopni ${p2Name} végső nyereményének 20%-át!`;
+                        gameState.duel.p1Status = 'accepted'; gameState.duel.p1Winnings = gameState.duel.p1Offer;
+                        gameState.duel.thief = 'p1'; 
+                        gameState.duel.turn = 'p2'; 
+                    } else if (!p1Acc && p2Acc) {
+                        msgKieg = `ÁRULÁS! ${p2Name} elfogadta, KISZÁLLT, és el fogja lopni ${p1Name} végső nyereményének 20%-át!`;
+                        gameState.duel.p2Status = 'accepted'; gameState.duel.p2Winnings = gameState.duel.p2Offer;
+                        gameState.duel.thief = 'p2';
+                        gameState.duel.turn = 'p1';
+                    } else {
+                        msgKieg = "BÜSZKESÉG! Mindketten elutasítottátok, a játék megy tovább tisztán!";
+                    }
+                }
+                else if (type === 'duel_bloodpact') {
+                    let p1Acc = d1 === 'accept'; let p2Acc = d2 === 'accept';
+                    if (p1Acc && p2Acc) {
+                        msgKieg = "MINDKETTEN MEGVETTÉTEK! A JÁTÉK VÉGET ÉRT!";
+                        gameState.duel.p1Status = 'accepted'; gameState.duel.p2Status = 'accepted';
+                        gameState.duel.p1Winnings = gameState.duel.p1Offer; gameState.duel.p2Winnings = gameState.duel.p2Offer;
+                        mutassUzenetet(msgFo, msgKieg); await wait(3000); lezardParbaj(); return;
+                    } else if (p1Acc) {
+                        msgKieg = `${p1Name} ELFOGADTA és megmenekült, de ${p2Name} ELUTASÍTOTTA! Mivel egyikőtök elfogadta, a tábla megúszta a robbanást!`;
+                        gameState.duel.p1Status = 'accepted'; gameState.duel.p1Winnings = gameState.duel.p1Offer;
+                        awardWinMoney(gameState.duel.p1Offer, p1Name); gameState.duel.turn = 'p2'; 
+                    } else if (p2Acc) {
+                        msgKieg = `${p2Name} ELFOGADTA és megmenekült, de ${p1Name} ELUTASÍTOTTA! Mivel egyikőtök elfogadta, a tábla megúszta a robbanást!`;
+                        gameState.duel.p2Status = 'accepted'; gameState.duel.p2Winnings = gameState.duel.p2Offer;
+                        awardWinMoney(gameState.duel.p2Offer, p2Name); gameState.duel.turn = 'p1';
+                    } else {
+                        msgKieg = "A BANKÁR DÜHÖNG! Mindketten elutasítottátok! A LEGNAGYOBB ÖSSZEG FELROBBAN!";
+                        mutassUzenetet(msgFo, msgKieg); await wait(3500);
+                        await triggerMaxCaseKill(); return;
+                    }
+                }
+                else if (type === 'duel_judgment') {
+                    let p1Val = gameState.taskaErtekek[gameState.duel.p1Case].value;
+                    let p2Val = gameState.taskaErtekek[gameState.duel.p2Case].value;
+                    let sum = p1Val + p2Val;
                     
-                    ujraFlipAjanlat("KIPÖRGETVE: " + finalOpt.szoveg, "Szorzó kész", "Jöhet az ajánlat!",[
-                        { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*finalOpt.szorzo, o1*finalOpt.szorzo, o2*finalOpt.szorzo, isDuel, `<span style='color:#10b981'>RULETT: ${finalOpt.szorzo}X</span>`); }}
-                    ]);
-                }},
-                { szoveg: "Elutasít!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}
-            ]);
+                    if (d1 === 'share' && d2 === 'share') {
+                        msgKieg = "BÉKE ÉS SZERETET! Mindketten osztoztatok, így testvériesen elfelezitek az összegeket!";
+                        gameState.duel.p1Winnings = sum / 2; gameState.duel.p2Winnings = sum / 2;
+                    } else if (d1 === 'steal' && d2 === 'share') {
+                        msgKieg = `ALJAS HÚZÁS! ${p1Name} LOPOTT, ${p2Name} OSZTOZOTT! ${p1Name} viszi mindkét táska tartalmát!`;
+                        gameState.duel.p1Winnings = sum; gameState.duel.p2Winnings = 0;
+                    } else if (d2 === 'steal' && d1 === 'share') {
+                        msgKieg = `ALJAS HÚZÁS! ${p2Name} LOPOTT, ${p1Name} OSZTOZOTT! ${p2Name} viszi mindkét táska tartalmát!`;
+                        gameState.duel.p2Winnings = sum; gameState.duel.p1Winnings = 0;
+                    } else {
+                        msgKieg = "MOHÓSÁG! Mindketten lopni akartatok! A BANKÁR NYERT, MINDKETTEN ÜRES KÉZZEL TÁVOZTOK!";
+                        gameState.duel.p1Winnings = 0; gameState.duel.p2Winnings = 0;
+                    }
+                    
+                    gameState.duel.p1Status = 'accepted'; gameState.duel.p2Status = 'accepted';
+                    mutassUzenetet("VÉGÍTÉLET!", msgKieg); await wait(5000); lezardParbaj(); return;
+                }
+
+                mutassUzenetet(msgFo, msgKieg); await wait(4000);
+
+                gameState.allapot = 'nyitogatas';
+                if (gameState.isPanicOffer) {
+                    gameState.isPanicOffer = false; frissitNyitasiSzoveg(); gameState.isProcessingClick = false;
+                } else {
+                    kovetkezoKor();
+                }
+            } else { syncGameState(); }
         }
 
-        function bankarShellGame(baseOffer, o1, o2, isDuel) {
-            let leiras = `Itt a piros, hol a piros! Válaszd ki a nyertes poharat, és <span style="color:#10b981">AZONNAL DUPLÁZOM</span> az ajánlatot! De ha rosszat választasz, az ajánlat <span style="color:#ef4444">A NEGYEDÉRE ESIK VISSZA</span>!`;
-            mutassFlipAjanlat("DUPLA VAGY BUKÓ", "Választhatsz!", leiras,[
-                { szoveg: "Játszom! Kérem a poharakat!", osztaly: "btn-elfogad", akcio: () => {
-                    mutassUzenetet("Poharak keverése...", "Vajon hol a piros golyó?"); rejtFlipAjanlat();
-                    const szorzok =[2, 0.25, 0.25]; const kevert = kever([...szorzok]);
-                    const gombok = kevert.map((szorzo, idx) => ({
-                        szoveg: `${idx+1}. Pohár`, osztaly: "btn-extra", akcio: async () => {
-                            mutassUzenetet("Pohár felemelése...", "Nézzük mi volt alatta...", ""); rejtFlipAjanlat(); await wait(2000);
-                            let msg = szorzo === 2 ? "ZSENIÁLIS! ELTALÁLTAD! Az ajánlat duplázva!" : "BALSZERENCSE! Nincs golyó! Az ajánlat negyedelve!";
-                            ujraFlipAjanlat(szorzo === 2 ? "DUPLÁZTÁL!" : "BUKTÁL!", "Lássuk...", msg,[
-                                { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*szorzo, o1*szorzo, o2*szorzo, isDuel); }}
-                            ]);
-                        }
-                    }));
-                    ujraFlipAjanlat("VÁLASSZ EGY POHARAT!", "Hol a piros golyó?", "", gombok);
-                }},
-                { szoveg: "Túl kockázatos, nem kérem!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}
-            ]);
-        }
-
-        function bankarFelezoDuplazo(baseOffer, o1, o2, isDuel) {
-            let leiras = `Feldobunk egy érmét? Fej: duplája, Írás: a fele!<br><span style='color:#fca5a5; font-weight:bold;'>(A dobás eredménye lesz a szorzó!)</span>`;
-            mutassFlipAjanlat("FELEZŐ VAGY DUPLÁZÓ", "Érme", leiras,[
-                { szoveg: "Feldobom az érmét!", osztaly: "btn-elfogad", akcio: async () => {
-                    mutassUzenetet("Érme feldobása...", "Feszültség!"); rejtFlipAjanlat();
-                    let dobasok = 10; while(dobasok > 0) { mutassUzenetet("Érme a levegőben...", dobasok % 2 === 0 ? "Fej..." : "Írás...", ""); await wait(150 + (10 - dobasok) * 30); dobasok--; }
-                    const nyertE = Math.random() > 0.5; const szorzo = nyertE ? 2 : 0.5;
-                    ujraFlipAjanlat(nyertE ? "FEJ! DUPLÁZÁS!" : "ÍRÁS! FELEZÉS!", "Eredmény", nyertE ? "Zseniális döntés!" : "Sajnos csak ennyi maradt.",[
-                        { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*szorzo, o1*szorzo, o2*szorzo, isDuel); }}
-                    ]);
-                }},
-                { szoveg: "Nem kockáztatok!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}
-            ]);
-        }
-
-        function bankarHaromDoboz(baseOffer, o1, o2, isDuel) {
-            let leiras = `3 doboz: 150%, 100%, vagy 10%-a a szorzó!<br><span style='color:#fca5a5; font-weight:bold;'>(A doboz tartalma módosítja az ajánlatot!)</span>`;
-            mutassFlipAjanlat("BŰVÖS DOBOZOK", "???", leiras,[
-                { szoveg: "Kérem a dobozokat!", osztaly: "btn-elfogad", akcio: () => {
-                    mutassUzenetet("Dobozok előkészítése...", "Melyiket választja a Host?"); rejtFlipAjanlat();
-                    const opciok = kever([1.5, 1.0, 0.1]);
-                    const gombok = opciok.map((szorzo, idx) => ({
-                        szoveg: `Doboz ${idx+1}`, osztaly: "btn-extra", akcio: async () => {
-                            mutassUzenetet(`Doboz ${idx+1} kinyitása...`, "Feszültség a tetőfokon...", ""); rejtFlipAjanlat(); await wait(2000);
-                            ujraFlipAjanlat("DOBOZ KINYITVA!", `${(szorzo*100).toFixed(0)}%`, `A dobozban ekkora szorzó volt!`,[
-                                { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*szorzo, o1*szorzo, o2*szorzo, isDuel); }}
-                            ]);
-                        }
-                    }));
-                    ujraFlipAjanlat("VÁLASSZ EGY DOBOZT!", "Melyik legyen?", "", gombok);
-                }},
-                { szoveg: "Nem kérem!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}
-            ]);
-        }
-
-        function bankarTusz(baseOffer, o1, o2, isDuel) {
-            const closedCases = Array.from(document.querySelectorAll('.taska:not(.nyitott):not(.sajat-taskam):not(.sajat-p1):not(.sajat-p2)'));
-            if(closedCases.length < 2) { proceedWithOffer(baseOffer, o1, o2, isDuel); return; }
-            
-            closedCases.sort((a,b) => gameState.taskaErtekek[b.dataset.taskaId].value - gameState.taskaErtekek[a.dataset.taskaId].value);
-            const target1 = closedCases[0]; const target2 = kever(closedCases.slice(1))[0];
-            target1.classList.add('tusz-celpont'); target2.classList.add('tusz-celpont'); syncGameState();
-            
-            let leirasHTML = `A Bankár TÚSZUL EJTETT két táskát (pirosan villognak)! <br><span style='color:#fca5a5; font-weight:bold;'>Ha elutasítod ezt az ajánlatot, A BANKÁR AZONNAL KINYITJA EZT A KETTŐT! Lehet, hogy köztük van a fődíj!</span>`;
-            
-            if (isDuel) {
-                mutassParbajAjanlatot(o1, o2, leirasHTML);
-            } else {
-                mutassFlipAjanlat("TÚSZDRÁMA!", formatValuta(baseOffer), leirasHTML,[
-                    { szoveg: "Engedek... Áll az Alku!", osztaly: "btn-elfogad", akcio: () => {
-                        document.querySelectorAll('.tusz-celpont').forEach(t => t.classList.remove('tusz-celpont')); syncGameState();
-                        rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elfogad');
-                    }},
-                    { szoveg: "Blöffölsz! Nem fogadom el!", osztaly: "btn-elutasit", akcio: async () => {
-                        rejtFlipAjanlat(); rogzitAjanlat(formatValuta(baseOffer), 'Elutasítva (Túszdráma)');
-                        gameState.isProcessingClick = true;
-                        mutassUzenetet("A BANKÁR LÉP!", "Kinyitja a túszul ejtett táskákat!", "", true); await wait(2500);
-                        document.querySelectorAll('.tusz-celpont').forEach(t => t.classList.remove('tusz-celpont'));
-                        gameState.allapot = 'nyitogatas';
-                        await kinyitTaska(target1.dataset.taskaId); await wait(2000);
-                        await kinyitTaska(target2.dataset.taskaId); await wait(2000);
-                        mutassUzenetet("A túszdráma véget ért.", "A játék normálisan folytatódik."); await wait(2000);
-                        kovetkezoKor();
-                    }}
-                ]);
+        async function executeRandomOpens(count) {
+            for(let i=0; i<count; i++) {
+                const closedCases = Array.from(document.querySelectorAll('.taska:not(.nyitott)')).filter(t => t.dataset.taskaId != gameState.duel.p1Case && t.dataset.taskaId != gameState.duel.p2Case);
+                if (closedCases.length > 0) {
+                    let target = getRandomElem(closedCases);
+                    await kinyitTaska(target.dataset.taskaId, true);
+                    await wait(1500);
+                }
             }
         }
 
-        function bankarKeveres(baseOffer, o1, o2, isDuel) {
-            let leirasHTML = `A Bankár felajánl egy korrekt összeget... DE fenyegetőzik!<br><span style='color:#fca5a5; font-weight:bold;'>Ha nem fogadjátok el, a Bankár AZONNAL ÖSSZEKEVERI az összes asztalon lévő zárt táska (és a sajátod) tartalmát!</span>`;
-            if (isDuel) {
-                // For duel, we need a special host decision or we just let it trigger if both reject.
-                // It's cleaner if it triggers on any rejection. We use a flag.
-                gameState.shuffleThreatActive = true;
-                mutassParbajAjanlatot(o1, o2, leirasHTML);
-            } else {
-                mutassFlipAjanlat("AJÁNLAT VAGY KEVERÉS!", formatValuta(baseOffer), leirasHTML,[
-                    { szoveg: "Áll az Alku! Kérem a pénzt!", osztaly: "btn-elfogad", akcio: () => { rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elfogad'); }},
-                    { szoveg: "Nem félek! Keverd csak meg!", osztaly: "btn-elutasit", akcio: async () => {
-                        rejtFlipAjanlat(); rogzitAjanlat(formatValuta(baseOffer), 'Elutasítva (Keverés jön)');
-                        await executeShuffle();
-                    }}
+        // --- SOLO ALAP AJÁNLAT & ADMINISZTRÁCIÓ ---
+
+        function bankarAjanlatotTesz(ertek, targyAjanlat = null) {
+            gameState.currentOffer = targyAjanlat || ertek;
+            gameState.activeOfferType = 'single';
+            let gombok =[
+                { szoveg: "Áll az Alku!", osztaly: "btn-elfogad", akcio: () => alkuKezelese(targyAjanlat || ertek, 'elfogad') },
+                { szoveg: "Nincs alku!", osztaly: "btn-elutasit", akcio: () => alkuKezelese(targyAjanlat || ertek, 'elutasit') }
+            ];
+
+            if (gameState.aktualisKor === 0 && !gameState.hasznaltVisszaajanlas && !targyAjanlat) {
+                gombok.push({
+                    szoveg: "Ellenajánlat", osztaly: "btn-koteg", akcio: () => {
+                        DOM.backGombokTarolo.innerHTML = `<input type='number' id='alku-input' placeholder='Összeg Ft' min='100' step='1000'> <button class='back-gomb btn-elfogad' onclick='window.ellenAjanlatKezelese(${ertek})'>Ajánlat</button> <button class='back-gomb btn-elutasit' onclick='rejtFlipAjanlat(); bankarAjanlatotTesz(${ertek})'>Mégse</button>`;
+                    }
+                });
+            }
+            
+            mutassFlipAjanlat("A Bankár Ajánlata", targyAjanlat ? targyAjanlat : formatValuta(ertek), "Garantált nyeremény, ha kiszállsz.", gombok);
+        }
+
+        window.ellenAjanlatKezelese = async function(eredetiAjanlat) {
+            const beirt = parseInt(document.getElementById('alku-input').value);
+            if(isNaN(beirt) || beirt <= 0) return;
+            gameState.hasznaltVisszaajanlas = true; rejtFlipAjanlat(); mutassUzenetet("A Bankár gondolkodik...", "Vajon elfogadja az ellenajánlatod?", "", true); await wait(3000);
+            
+            const maxVal = Math.max(...gameState.maradekNyeremenyek.map(n => n.value));
+            let acceptChance = 0.2; if (beirt <= eredetiAjanlat * 1.1) acceptChance = 0.9; else if (beirt <= eredetiAjanlat * 1.5) acceptChance = 0.6; else if (beirt > maxVal) acceptChance = 0;
+            
+            if (Math.random() < acceptChance) {
+                ujraFlipAjanlat("A BANKÁR ELFOGADTA!", formatValuta(beirt), "Hihetetlen! A Bankár belement az alkudba!",[
+                    { szoveg: "Tovább a kijátszáshoz", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); alkuKezelese(beirt, 'elfogad'); } }
                 ]);
+            } else {
+                ujraFlipAjanlat("A BANKÁR ELUTASÍTOTTA!", "NEM", "Túl sokat kértél! A Bankár csapott a telefonra!",[
+                    { szoveg: "Vissza az eredetihez", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); bankarAjanlatotTesz(eredetiAjanlat); } }
+                ]);
+            }
+        };
+
+        function alkuKezelese(ajanlatErtek, dontes) {
+            rejtFlipAjanlat();
+            let kiiras = typeof ajanlatErtek === 'number' ? formatValuta(ajanlatErtek) : ajanlatErtek;
+
+            if (dontes === 'elfogad') {
+                if (gameState.duel.active && window.gameRole === 'p2') {
+                     gameState.duel.p2Status = 'accepted'; gameState.duel.p2Winnings = ajanlatErtek;
+                     awardWinMoney(ajanlatErtek, gameState.duel.p2Name);
+                     gameState.allapot = 'nyitogatas'; lezardParbaj();
+                     return;
+                }
+                gameState.nyertOsszeg = ajanlatErtek; gameState.marEladta = true; 
+                DOM.panikGomb.disabled = true; DOM.pajzsGomb.disabled = true; DOM.radarGomb.disabled = true;
+                rogzitAjanlat(kiiras, 'Elfogadva'); gameState.allapot = 'alku_elfogadva_kijatszas';
+                mutassUzenetet(`ÁLL AZ ALKU! Megnyerted ezt: ${kiiras}!`, `De a játék megy tovább. Lássuk a kijátszást!`);
+                if (!gameState.duel.active) {
+                    awardWinMoney(ajanlatErtek);
+                } else if (gameState.duel.active && window.gameRole === 'host') {
+                    if (gameState.duel.turn === 'p1') {
+                        gameState.duel.p1Status = 'accepted'; gameState.duel.p1Winnings = ajanlatErtek;
+                        awardWinMoney(ajanlatErtek, gameState.duel.p1Name);
+                        gameState.duel.turn = 'p2';
+                    } else {
+                        gameState.duel.p2Status = 'accepted'; gameState.duel.p2Winnings = ajanlatErtek;
+                        awardWinMoney(ajanlatErtek, gameState.duel.p2Name);
+                        gameState.duel.turn = 'p1';
+                    }
+                }
+                
+                if (gameState.duel.active && gameState.duel.p1Status === 'accepted' && gameState.duel.p2Status === 'accepted') {
+                     lezardParbaj();
+                } else {
+                    setTimeout(folytatNyitasUtan, 3500);
+                }
+
+            } else {
+                rogzitAjanlat(kiiras, 'Elutasítva');
+                if (gameState.isPanicOffer) { gameState.isPanicOffer = false; frissitNyitasiSzoveg(); gameState.isProcessingClick = false; }
+                else { kovetkezoKor(); }
             }
         }
 
-        async function executeShuffle() {
-            gameState.isProcessingClick = true;
-            mutassUzenetet("A BANKÁR DÜHÖNG!", "Teljes káosz a stúdióban! A táskák tartalma összekeveredik!", "", true); await wait(2500);
-            document.querySelectorAll('.taska').forEach(t => t.classList.remove('radar-celpont', 'pajzs-celpont', 'rontgen-celpont', 'tusz-celpont'));
-            const closedCases = Array.from(document.querySelectorAll('.taska:not(.nyitott)'));
-            closedCases.forEach(c => c.classList.add('animacio-keveres')); syncGameState();
-            
-            const closedIds = closedCases.map(t => t.dataset.taskaId);
-            const values = closedIds.map(id => gameState.taskaErtekek[id]);
-            const shuffledValues = kever(values);
-            
-            await wait(750); 
-            closedIds.forEach((id, index) => {
-                gameState.taskaErtekek[id] = shuffledValues[index];
-                document.querySelector(`.taska[data-taska-id='${id}'] .taska-osszeg`).innerHTML = shuffledValues[index].display;
-            });
-            await wait(1000);
-            closedCases.forEach(c => c.classList.remove('animacio-keveres')); syncGameState();
-            mutassUzenetet("MINDEN MEGVÁLTOZOTT!", "A memóriád cserben hagy, újra tiszta lappal (és vakon) indulsz!"); await wait(3000);
-            kovetkezoKor();
-        }
-
-        async function bankarSugo(baseOffer, o1, o2, isDuel) {
-            const zartElemek = Array.from(document.querySelectorAll('.taska:not(.nyitott):not(.sajat-taskam):not(.sajat-p1):not(.sajat-p2)'));
-            const kisTaskak = zartElemek.filter(t => gameState.taskaErtekek[t.dataset.taskaId].value <= 100000 || gameState.taskaErtekek[t.dataset.taskaId].type === 'vicc');
-            if (kisTaskak.length > 0) {
-                const id = getRandomElem(kisTaskak).dataset.taskaId;
-                mutassUzenetet("Bankári Súgó:", `A Bankár megsúgta: a(z) ${id}. táskában biztosan aprópénz vagy kacat van!`, "Kiváló célpont a következő nyitáshoz!", true);
-                await wait(5000); DOM.uzenetekKonteer.classList.remove('telefon-hivas-aktiv');
-                proceedWithOffer(baseOffer, o1, o2, isDuel);
-            } else { proceedWithOffer(baseOffer, o1, o2, isDuel); }
-        }
-
-        function bankarZsarolas(baseOffer, o1, o2, isDuel) {
-            let leirasHTML = `A Bankár megzsarolt! Ha elutasítod ezt az ajánlatot, <b>AZONNAL KINYITJA A LEGNAGYOBB MEGMARADT TÁSKÁT!</b>`;
-            if (isDuel) {
-                gameState.bloodPactActive = true; // Use the same killer logic
-                mutassParbajAjanlatot(o1, o2, leirasHTML);
-            } else {
-                mutassFlipAjanlat("BANKÁRI ZSAROLÁS!", formatValuta(baseOffer), leirasHTML,[
-                    { szoveg: "Engedek... Áll az Alku!", osztaly: "btn-elfogad", akcio: () => { rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elfogad'); }},
-                    { szoveg: "Nem félek! Nincs alku!", osztaly: "btn-elutasit", akcio: async () => {
-                        rejtFlipAjanlat(); gameState.isProcessingClick = true;
-                        if (Math.random() < 0.4) {
-                            mutassUzenetet("A BANKÁR BLÖFFÖLT!", "Megremegett a keze, nem meri kinyitni a táskát!", "A játék normálisan folytatódik.");
-                            await wait(3000); gameState.isProcessingClick = false; kovetkezoKor();
-                        } else {
-                            await triggerMaxCaseKill();
-                        }
-                    }}
-                ]);
-            }
-        }
-
-        function bankarRejtettBonus(baseOffer) {
-            let osszegHTML = formatValuta(baseOffer);
-            let leiras = `Ha elfogadod, garantáltan a tiéd ez az összeg.<br><span style='color:#fca5a5; font-weight:bold;'>(Ha elfogadod, ez lesz a végleges nyereményed!)</span>`;
-            mutassFlipAjanlat("A Bankár Ajánlata:", osszegHTML, leiras,[
-                { szoveg: "Áll az Alku!", osztaly: "btn-elfogad", akcio: () => { rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elfogad'); }},
-                { szoveg: "Nincs alku!", osztaly: "btn-elutasit", akcio: async () => {
-                    rejtFlipAjanlat(); gameState.isProcessingClick = true;
-                    mutassUzenetet("BÁTOR DÖNTÉS!", "A Bankárt lenyűgözte a bátorságod!", "+500.000 Ft jóváírva a bónusz számládon!");
-                    gameState.bonuszPenz += 500000; rogzitAjanlat(formatValuta(baseOffer), 'Elutasítva (Rejtett Bónusz +500k)');
-                    await wait(3500); gameState.isProcessingClick = false; kovetkezoKor();
-                }}
-            ]);
-        }
-
-        function bankarTargyCsomag(baseOffer) {
-            const targyak = gameState.maradekNyeremenyek.filter(n => n.type === 'targy' || n.type === 'vicc');
-            if (targyak.length < 3) { bankarAjanlatotTesz(baseOffer); return; }
-            const csomag = kever(targyak).slice(0, 3).map(t => t.display).join(" ÉS ");
-            let leiras = `A Bankár felajánl egy csomagot: <br><b>${csomag}</b>!<br><span style='color:#fca5a5; font-weight:bold;'>(Ha elfogadod, ez lesz a végleges nyereményed!)</span>`;
-            mutassFlipAjanlat("TÁRGYHALMOZÓ!", "Nincs pénz!", leiras,[
-                { szoveg: "Áll az Alku!", osztaly: "btn-elfogad", akcio: () => { mutassUzenetet("Döntés rögzítve!", "Adminisztráció..."); rejtFlipAjanlat(); alkuKezelese(csomag, 'elfogad'); }},
-                { szoveg: "Inkább a pénz kéne...", osztaly: "btn-elutasit", akcio: () => { mutassUzenetet("Döntés rögzítve!", "Megyünk tovább..."); rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elutasit'); }}
-            ]);
-        }
-
-        function bankarVakCserePenzzel(baseOffer) {
-            const zartElemek = Array.from(document.querySelectorAll('.taska:not(.nyitott)')).filter(t => t.dataset.taskaId != gameState.sajatTaska);
-            const ujTaskaId = getRandomElem(zartElemek).dataset.taskaId; const reszPenz = Math.round((baseOffer * 0.4)/1000)*1000;
-            let leiras = `Ad ennyi pénzt zsebbe, DE elcseréli a táskád a(z) ${ujTaskaId}. táskára!<br><span style='color:#fca5a5; font-weight:bold;'>(A játék utána folytatódik!)</span>`;
-            mutassFlipAjanlat("VAK CSERE PÉNZZE!", formatValuta(reszPenz), leiras,[
-                { szoveg: "Pénz zsebbe és Csere!", osztaly: "btn-elfogad", akcio: () => {
-                    mutassUzenetet(`BÓNUSZ MEGSZEREZVE: ${formatValuta(reszPenz)}`, `Táskák kicserélve! A játék folytatódik.`); rejtFlipAjanlat();
-                    document.querySelector(`.taska[data-taska-id='${gameState.sajatTaska}']`).classList.remove('sajat-taskam');
-                    gameState.sajatTaska = ujTaskaId; document.querySelector(`.taska[data-taska-id='${ujTaskaId}']`).classList.add('sajat-taskam');
-                    gameState.bonuszPenz += reszPenz; rogzitAjanlat(`Vak Csere + ${formatValuta(reszPenz)}`, 'Elfogadva'); setTimeout(kovetkezoKor, 3000);
-                }},
-                { szoveg: "Ezt nem vállalom!", osztaly: "btn-elutasit", akcio: () => { mutassUzenetet("Döntés rögzítve!", "Megyünk tovább..."); rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elutasit'); }}
-            ]);
-        }
-
-        function bankarSzabadCsere(baseOffer) {
-            let leiras = `A Bankár ajánlata VAGY elcserélheted a táskád BÁRMELYIK zártra!<br><span style='color:#fca5a5; font-weight:bold;'>(A csere után a játék folytatódik!)</span>`;
-            mutassFlipAjanlat("PÉNZ VAGY CSERE!", formatValuta(baseOffer), leiras,[
-                { szoveg: "Kérem a pénzt!", osztaly: "btn-elfogad", akcio: () => { mutassUzenetet("Döntés rögzítve!", "Adminisztráció..."); rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elfogad'); }},
-                { szoveg: "Cserélni akarok!", osztaly: "btn-extra", akcio: () => { mutassUzenetet("SZABAD CSERE!", "Kattints arra a zárt táskára, amelyikre el akarod cserélni a sajátodat!"); rejtFlipAjanlat(); gameState.allapot = 'szabad_csere'; gameState.isProcessingClick = false; }},
-                { szoveg: "Nincs alku!", osztaly: "btn-elutasit", akcio: () => { mutassUzenetet("Döntés rögzítve!", "Megyünk tovább..."); rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elutasit'); }}
-            ]);
-        }
-
-        function bankarBlackout(baseOffer, o1, o2, isDuel) {
-            let leiras = `A Bankár zseniális alkut ajánl, de fenyegetőzik: <br><span style='color:#fca5a5; font-weight:bold;'>Ha elutasítod, lekapcsolja a villanyt, összekeveri a táskákat, és a következő nyitásokat a SÖTÉTBEN kell megtenned!</span>`;
-            
-            if (isDuel) {
-                gameState.blackoutThreatActive = true;
-                mutassParbajAjanlatot(o1, o2, leiras);
-            } else {
-                mutassFlipAjanlat("FENYEGETÉS: ÁRAMSZÜNET!", formatValuta(baseOffer), leiras,[
-                    { szoveg: "Megveszem, nincs sötét!", osztaly: "btn-elfogad", akcio: () => { rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elfogad'); }},
-                    { szoveg: "Nem érdekel, lekapcsolhatod!", osztaly: "btn-elutasit", akcio: async () => {
-                        rejtFlipAjanlat(); rogzitAjanlat(formatValuta(baseOffer), 'Elutasítva (Áramszünet jön)');
-                        await executeBlackout();
-                    }}
-                ]);
-            }
-        }
-
-        async function executeBlackout() {
-            gameState.isProcessingClick = true;
-            mutassUzenetet("A BANKÁR BEVÁLTOTTA ÍGÉRETÉT!", "Áramszünet a stúdióban...", "", true); await wait(2000);
-            document.querySelectorAll('.taska').forEach(t => t.classList.remove('radar-celpont', 'pajzs-celpont', 'rontgen-celpont', 'tusz-celpont'));
-            document.body.classList.add('bg-blackout'); gameState.isBlackout = true; 
-            const closedCases = Array.from(document.querySelectorAll('.taska:not(.nyitott)'));
-            const closedIds = closedCases.map(t => t.dataset.taskaId);
-            const values = closedIds.map(id => gameState.taskaErtekek[id]);
-            const shuffledValues = kever(values);
-            closedIds.forEach((id, index) => {
-                gameState.taskaErtekek[id] = shuffledValues[index];
-                document.querySelector(`.taska[data-taska-id='${id}'] .taska-osszeg`).innerHTML = shuffledValues[index].display;
-            });
+        function kovetkezoKor() {
+            gameState.aktualisKor++;
+            gameState.megNyitando = NYITASI_SZAMLALO[Math.min(gameState.aktualisKor, NYITASI_SZAMLALO.length - 1)];
+            gameState.allapot = 'nyitogatas';
+            switchTurn();
+            frissitNyitasiSzoveg();
+            gameState.isProcessingClick = false;
             syncGameState();
-            mutassUzenetet("VAKREPÜLÉS!", "A gép csendben összekeverte a táskákat! Csak a kör végén fogod megtudni, miket nyitottál ki!"); await wait(2500);
-            kovetkezoKor();
         }
 
-        async function bankarSoronKivuli(kiesoNyeremeny, tipus) {
-            mutassUzenetet("A BANKÁR KÖZBESZÓL!", "Megcsörrent a telefon soron kívül!", "", true); await wait(3500);
+        function rogzitAjanlat(ertekSzoveg, dontes) {
+            gameState.offerHistory.push({ ertek: ertekSzoveg, dontes: dontes });
+            DOM.ajanlatTortenet.classList.remove('rejtett');
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${gameState.aktualisKor + 1}. Ajánlat: ${ertekSzoveg}</span> <span class="${dontes.includes('Elfogadva') ? 'ajanlat-dontes-elfogadva' : 'ajanlat-dontes-elutasitva'}">${dontes}</span>`;
+            if(dontes.includes('Elfogadva')) li.classList.add('ajanlat-lista-elfogadva-sor');
+            DOM.ajanlatLista.appendChild(li);
+            syncGameState();
+        }
 
-            let alapAjanlat = calculateBankerOffer();
+        async function finalShowdown() {
+            gameState.isProcessingClick = true; DOM.infoFlipper.classList.remove('flipped');
             
-            if (tipus === "cinikus") {
-                let cinikusAjanlat = Math.round((alapAjanlat * (Math.random() * 0.05 + 0.01)) / 100) * 100; if (cinikusAjanlat < 100) cinikusAjanlat = 100;
-                let leiras = `Látom, kiment a(z) <b>${kiesoNyeremeny.display}</b>! A Bankár jót nevet rajtad, és felajánl egy kis aprót vigaszdíjnak buszjegyre...<br><span style='color:#fca5a5; font-weight:bold;'>(Ha elfogadod, ez lesz a végleges nyereményed!)</span>`;
-                mutassFlipAjanlat("CINIKUS AJÁNLAT", formatValuta(cinikusAjanlat), leiras,[
-                    { szoveg: "Ezt komolyan gondolja?! Elfogadom...", osztaly: "btn-elfogad", akcio: () => elfogadSoronKivuli(cinikusAjanlat, "Cinikus Bankár") },
-                    { szoveg: "Kinevetem és megyek tovább!", osztaly: "btn-elutasit", akcio: () => elutasitSoronKivuli(cinikusAjanlat, "Cinikus Bankár") }
+            const vegsok = Array.from(document.querySelectorAll('.taska:not(.nyitott)')).map(t => parseInt(t.dataset.taskaId));
+            const masikId = vegsok.find(id => id != gameState.sajatTaska);
+            
+            let valasztottTwist = null;
+            if (Math.random() < 0.25 && !gameState.marEladta) {
+                let endTwists =['hirtelen_halal', 'utolso_kiserletes', 'vak_licit']; valasztottTwist = getRandomElem(endTwists);
+            }
+
+            if (valasztottTwist === 'hirtelen_halal') {
+                mutassFlipAjanlat("HIRTELEN HALÁL CSERE", "Nincs alku!", "A Bankár felajánlja a cserét, de ha elfogadod, <span style='color:red'>-500.000 Ft-ot levon a nyereményedből!</span>",[
+                    { szoveg: "Cserélek és fizetek!", osztaly: "btn-elfogad", akcio: () => vegrehajtFinalCsere(masikId, true) },
+                    { szoveg: "Maradok a sajátomnál!", osztaly: "btn-elutasit", akcio: () => inditVegsoNyitas(masikId) }
                 ]);
-            } else if (tipus === "vicces") {
-                let viccesTargy = getRandomElem(BANKER_SURPRISE_JOKES);
-                let leiras = `Kiment a(z) <b>${kiesoNyeremeny.display}</b>! A Bankár kárörvendve felajánlja neked ezt a "nagyszerű" vigaszdíjat!<br><span style='color:#fca5a5; font-weight:bold;'>(Ha elfogadod, a játék véget ér!)</span>`;
-                mutassFlipAjanlat("VIGASZDÍJ?", viccesTargy, leiras,[
-                    { szoveg: "Jobb, mint a semmi...", osztaly: "btn-elfogad", akcio: () => elfogadSoronKivuli(viccesTargy, "Vigaszdíj") },
-                    { szoveg: "Nem kérem a szemetét!", osztaly: "btn-elutasit", akcio: () => elutasitSoronKivuli(viccesTargy, "Vigaszdíj") }
+            } else if (valasztottTwist === 'utolso_kiserletes') {
+                let offer = calculateBankerOffer();
+                mutassFlipAjanlat("UTOLSÓ UTÁNI AJÁNLAT!", formatValuta(offer), "A Bankár megrettent, és tesz egy legutolsó ajánlatot a dobozok kinyitása előtt!",[
+                    { szoveg: "Megveszem! Áll az Alku!", osztaly: "btn-elfogad", akcio: () => alkuKezelese(offer, 'elfogad') },
+                    { szoveg: "Nincs alku!", osztaly: "btn-elutasit", akcio: () => inditVegsoNyitas(masikId) }
                 ]);
-            } else if (tipus === "rendkivuli") {
-                let premiumAjanlat = Math.round((alapAjanlat * (Math.random() * 0.4 + 1.2)) / 1000) * 1000;
-                let maxVal = Math.max(...gameState.maradekNyeremenyek.map(n => n.value));
-                if (premiumAjanlat >= maxVal) premiumAjanlat = Math.round(maxVal * 0.85 / 1000) * 1000;
-                if (premiumAjanlat < 1000) premiumAjanlat = 1000;
-                let leiras = `A Bankár bepánikolt, mert túl jól állsz! AZONNAL le akarja zárni a játékot egy rendkívüli ajánlattal!<br><span style='color:#fca5a5; font-weight:bold;'>(Ha elfogadod, ez lesz a végleges nyereményed!)</span>`;
-                mutassFlipAjanlat("PÁNIK AJÁNLAT!", formatValuta(premiumAjanlat), leiras,[
-                    { szoveg: "Megveszem!", osztaly: "btn-elfogad", akcio: () => elfogadSoronKivuli(premiumAjanlat, "Pánikoló Bankár") },
-                    { szoveg: "Nem adom fel!", osztaly: "btn-elutasit", akcio: () => elutasitSoronKivuli(premiumAjanlat, "Pánikoló Bankár") }
+            } else {
+                mutassFlipAjanlat("AZ UTOLSÓ DÖNTÉS", "Csere?", "A Bankár felajánlja a cserét! Elcseréled a saját táskád?",[
+                    { szoveg: "Igen, Cserélek!", osztaly: "btn-elfogad", akcio: () => vegrehajtFinalCsere(masikId, false) },
+                    { szoveg: "Nem, Megtartom!", osztaly: "btn-elutasit", akcio: () => inditVegsoNyitas(masikId) }
                 ]);
             }
         }
 
-        function elfogadSoronKivuli(ajanlatErtek, tipus) {
-            mutassUzenetet("Döntés rögzítve!", "Adminisztráció..."); rejtFlipAjanlat(); 
-            gameState.nyertOsszeg = ajanlatErtek; gameState.marEladta = true; DOM.panikGomb.disabled = true; DOM.pajzsGomb.disabled = true; DOM.radarGomb.disabled = true;
-            let kiiras = typeof ajanlatErtek === 'number' ? formatValuta(ajanlatErtek) : ajanlatErtek;
-            rogzitAjanlat(`${tipus}: ${kiiras}`, 'Elfogadva'); gameState.allapot = 'alku_elfogadva_kijatszas';
-            mutassUzenetet(`ÁLL AZ ALKU SORON KÍVÜL! Megnyerted ezt: ${kiiras}!`, `De a játék megy tovább. Lássuk a kijátszást!`);
-            setTimeout(folytatNyitasUtan, 4500); 
+        async function vegrehajtFinalCsere(masikId, fizetosCsere) {
+            rejtFlipAjanlat();
+            if (fizetosCsere) { gameState.bonuszPenz -= 500000; mutassUzenetet("FIZETŐS CSERE!", "A Bankár levont 500.000 Ft-ot!", "", true); await wait(2500); }
+            document.querySelector(`.taska[data-taska-id='${gameState.sajatTaska}']`).classList.remove('sajat-taskam');
+            gameState.sajatTaska = masikId;
+            document.querySelector(`.taska[data-taska-id='${masikId}']`).classList.add('sajat-taskam');
+            mutassUzenetet("CSERE MEGTÖRTÉNT!", `Az új táskád a(z) ${masikId}.`); await wait(2500);
+            inditVegsoNyitas(vegsok.find(id => id != gameState.sajatTaska));
         }
 
-        function elutasitSoronKivuli(ajanlatErtek, tipus) {
-            mutassUzenetet("Döntés rögzítve!", "Megyünk tovább..."); rejtFlipAjanlat();
-            let kiiras = typeof ajanlatErtek === 'number' ? formatValuta(ajanlatErtek) : ajanlatErtek;
-            rogzitAjanlat(`Soron kívüli (${tipus}): ${kiiras}`, 'Elutasítva'); setTimeout(folytatNyitasUtan, 1500);
+        async function inditVegsoNyitas(masikId) {
+            rejtFlipAjanlat();
+            gameState.allapot = 'vegsokattintas';
+            mutassUzenetet("AZ IGAZSÁG PILLANATA...", "Lássuk, mi volt a másik táskában!");
+            await kinyitTaska(masikId);
         }
 
-        // Duel decisions that trigger global board effects
+        async function kinyitVegsoTaska(id) {
+            const taskaElem = document.querySelector(`.taska[data-taska-id='${id}']`);
+            taskaElem.classList.remove('villogo-vegsokattintas');
+            taskaElem.classList.add('animacio-nyitas'); syncGameState();
+            mutassUzenetet("NYÍLIK A TÁSKÁD!", "A pulzus az egekben...", "", true);
+            await wait(1500);
+            taskaElem.classList.remove('animacio-nyitas'); taskaElem.classList.add('nyitott'); syncGameState();
+
+            let vegsNyeremeny = gameState.taskaErtekek[id];
+            
+            if (gameState.duel.active) {
+                if (id == gameState.duel.p1Case && gameState.duel.p1Status !== 'accepted') {
+                    gameState.duel.p1Winnings = vegsNyeremeny.value; awardWinMoney(vegsNyeremeny.value, gameState.duel.p1Name);
+                }
+                if (id == gameState.duel.p2Case && gameState.duel.p2Status !== 'accepted') {
+                    gameState.duel.p2Winnings = vegsNyeremeny.value; awardWinMoney(vegsNyeremeny.value, gameState.duel.p2Name);
+                }
+            } else {
+                let totalOsszeg = vegsNyeremeny.value + gameState.bonuszPenz;
+                let nyertE = vegsNyeremeny.value > gameState.initialAverage;
+                if(gameState.marEladta) {
+                    if(gameState.nyertOsszeg > vegsNyeremeny.value) {
+                        nyertE = true; mutassUzenetet("ZSENIÁLIS KIJÁTSZÁS!", `A táskádban csak ${vegsNyeremeny.display} volt! Te viszont eladtad ennyiért: ${formatNyeremeny(gameState.nyertOsszeg)}! Bónusz: ${formatValuta(gameState.bonuszPenz)}`);
+                        awardWinMoney((typeof gameState.nyertOsszeg === 'number' ? gameState.nyertOsszeg : 0) + gameState.bonuszPenz);
+                    } else {
+                        nyertE = false; mutassUzenetet("ROSSZ DÖNTÉS!", `A táskádban ${vegsNyeremeny.display} volt! Te meg eladtad ennyiért: ${formatNyeremeny(gameState.nyertOsszeg)}... Bónusz: ${formatValuta(gameState.bonuszPenz)}`);
+                    }
+                } else {
+                    mutassUzenetet(nyertE ? getRandomElem(EPIC_WIN_MESSAGES) : "Vége a játéknak!", `A nyereményed: ${vegsNyeremeny.display}! Bónusz: ${formatValuta(gameState.bonuszPenz)}<br>Összesen: ${formatValuta(totalOsszeg)}!`, nyertE ? getRandomElem(HAPPY_ENDINGS) : getRandomElem(SAD_ENDINGS));
+                    if(typeof vegsNyeremeny.value === 'number') { awardWinMoney(totalOsszeg); }
+                }
+                
+                if(nyertE) { startCelebration(); document.body.classList.add('bg-winning'); } 
+                else { document.body.classList.add('bg-losing'); }
+                
+                DOM.ujJatekGomb.style.transform = "scale(1.2)"; DOM.ujJatekGomb.style.animation = "pulse-gold 2s infinite";
+                syncGameState();
+            }
+        }
+
         async function lezardParbaj() {
             gameState.isProcessingClick = true;
             syncGameState();
@@ -2128,6 +2201,20 @@
                     awardWinMoney(v2.value, gameState.duel.p2Name);
                 }
                 mutassUzenetet(`${gameState.duel.p2Name} (P2) TÁSKÁJA:`, msg2);
+                await wait(4000);
+            }
+
+            if (gameState.duel.thief === 'p1') {
+                let stolen = gameState.duel.p2Winnings * 0.2;
+                gameState.duel.p2Winnings -= stolen;
+                gameState.duel.p1Winnings += stolen;
+                mutassUzenetet("ÁRULÁS BEHAJTÁSA!", `${gameState.duel.p1Name} ELLOPOTT ${formatValuta(stolen)}-t ${gameState.duel.p2Name} nyereményéből!`);
+                await wait(4000);
+            } else if (gameState.duel.thief === 'p2') {
+                let stolen = gameState.duel.p1Winnings * 0.2;
+                gameState.duel.p1Winnings -= stolen;
+                gameState.duel.p2Winnings += stolen;
+                mutassUzenetet("ÁRULÁS BEHAJTÁSA!", `${gameState.duel.p2Name} ELLOPOTT ${formatValuta(stolen)}-t ${gameState.duel.p1Name} nyereményéből!`);
                 await wait(4000);
             }
 
