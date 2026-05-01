@@ -1,433 +1,2162 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Élettartam-becslő</title>
-  <style>
-    /* ========== ALAP STÍLUSOK (sötét téma) ========== */
-    :root{
-      --bg:#0b0f14;
-      --card:#0f1720;
-      --muted:#94a3b8;
-      --accent:#60a5fa;
-      --accent-2:#7c3aed;
-      --glass: rgba(255,255,255,0.03);
-      --success:#34d399;
-      --danger:#f87171;
-      --kpi-height:88px;
-      --radius:14px;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-      color-scheme: dark;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#07101a 60%);color:#e6eef6}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Áll az Alku - Ultimate TV Kiadás (PÁRBAJ MÓDDAL)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Roboto:wght@400;700;900&display=swap');
 
-    .wrap{max-width:1100px;margin:28px auto;padding:20px}
+        :root {
+            --gold: #f8b500; --gold-light: #fceabb;
+            --case-red: #a01010; --case-dark: #4a0505;
+            --text-light: #f3f4f6; --offer-accept: #10b981;
+            --offer-decline: #ef4444; --mystery-purple: #8b5cf6;
+            --p1-color: #3b82f6; --p2-color: #ec4899;
+        }
 
-    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
-    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 6px 20px rgba(124,58,237,0.18)}
-    h1{font-size:20px;margin:0}
-    p.lead{margin:0;color:var(--muted);font-size:13px}
+        body {
+            font-family: 'Roboto', sans-serif; 
+            background-color: #5c0002;
+            background-image: 
+                radial-gradient(circle at 50% 50%, #2b0000 2%, transparent 3%),
+                linear-gradient(45deg, rgba(0,0,0,0.4) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.4) 75%),
+                linear-gradient(-45deg, rgba(0,0,0,0.4) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.4) 75%);
+            background-size: 60px 60px; color: var(--text-light); margin: 0; padding: 10px; min-height: 100vh;
+            display: flex; flex-direction: column; overflow-x: hidden; user-select: none;
+            box-shadow: inset 0 0 200px rgba(0,0,0,0.95);
+            transition: background-color 1s ease, box-shadow 1s ease, filter 1s ease;
+        }
 
-    /* Grid layout */
-    .grid{display:grid;grid-template-columns:1fr 380px;gap:18px}
-    @media (max-width:980px){.grid{grid-template-columns:1fr;}}
+        /* LOBBY UI CSS */
+        #lobby-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 10000;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            overflow-y: auto; padding: 40px 10px; box-sizing: border-box;
+        }
+        
+        .lobby-box {
+            background: linear-gradient(145deg, #3a0000, #1a0000); border: 2px solid var(--gold);
+            padding: 30px; border-radius: 15px; box-shadow: 0 10px 40px #000, 0 0 20px var(--gold);
+            text-align: center; max-width: 500px; width: 90%; margin-top: 20px;
+        }
 
-    /* Card */
-    .card{background:linear-gradient(180deg,var(--card),rgba(255,255,255,0.02));padding:18px;border-radius:var(--radius);box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+        .lobby-input {
+            width: 100%; padding: 15px; font-size: 1.2rem; font-family: 'Orbitron';
+            text-align: center; border: 2px solid var(--gold-light); border-radius: 8px;
+            background: #111; color: var(--gold); margin-bottom: 20px; box-sizing: border-box;
+        }
 
-    /* Form */
-    form .row{display:flex;gap:12px;margin-bottom:12px}
-    form .row .field{flex:1}
-    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input[type="date"], input[type="number"], select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:var(--glass);color:inherit}
-    .inline-radio{display:flex;gap:8px;align-items:center}
-    .inline-radio input{margin-right:6px}
+        .lobby-btn {
+            color: white; font-family: 'Orbitron'; font-weight: 900; font-size: 1rem;
+            padding: 12px 20px; border: 2px solid #fff; border-radius: 8px;
+            cursor: pointer; width: 100%; margin-bottom: 10px; transition: transform 0.2s; text-transform: uppercase;
+        }
+        .lobby-btn:hover { transform: scale(1.05); }
 
-    button.btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;padding:10px 14px;border-radius:10px;color:#081126;font-weight:700;cursor:pointer}
-    button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+        .btn-solo { background: linear-gradient(to bottom, #10b981, #047857); }
+        .btn-multi { background: linear-gradient(to bottom, var(--gold), #966e00); color: black !important;}
+        .btn-duel { background: linear-gradient(to bottom, #8b5cf6, #5b21b6); color: white !important; }
 
-    /* KPI csempék */
-    .kpis{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
-    .kpi{flex:1;min-width:150px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:12px;border-radius:10px;display:flex;flex-direction:column;justify-content:center;height:var(--kpi-height)}
-    .kpi .num{font-size:20px;font-weight:800}
-    .kpi .label{font-size:12px;color:var(--muted);margin-top:6px}
+        .spectator-box { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; justify-content: center;}
+        .spectator-input { flex-grow: 1; padding: 10px; font-size: 1.2rem; text-align: center; letter-spacing: 5px; font-family: monospace; background:#111; color:#fff; border: 1px solid #555; border-radius: 5px; min-width: 100px;}
+        .spectator-btn { background: #3b82f6; color: white; font-family: 'Orbitron'; border:1px solid #fff; padding:10px 15px; border-radius:5px; cursor: pointer; font-weight: bold; flex-grow: 1;}
 
-    /* Canvas grafikon */
-    .chart-wrap{margin-top:14px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent)}
-    canvas{width:100%;height:150px;display:block}
+        /* LEADERBOARD UI */
+        .leaderboard-box {
+            margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px;
+            border: 1px solid #555;
+        }
+        .leaderboard-box h3 { margin: 0 0 10px 0; color: var(--gold); font-family: 'Orbitron'; }
+        #leaderboard-list { list-style: none; padding: 0; margin: 0; font-family: 'Roboto'; text-align: left; max-height: 250px; overflow-y: auto;}
+        #leaderboard-list li { display: flex; justify-content: space-between; padding: 8px 5px; border-bottom: 1px solid #333; font-size: 0.95rem; }
+        .lb-rank-1 { color: #facc15; font-weight: bold; text-shadow: 0 0 5px #facc15; }
 
-    /* Help / small footer */
-    .help{font-size:13px;color:var(--muted);margin-top:12px}
+        body.bg-winning { background-color: #4a3500; box-shadow: inset 0 0 250px rgba(212, 175, 55, 0.6); }
+        body.bg-losing { background-color: #2b0000; box-shadow: inset 0 0 300px rgba(255, 0, 0, 0.8); }
+        body.bg-blackout { background-color: #000 !important; background-image: none; box-shadow: none !important; }
+        body.bg-blackout .penzfa-wrapper { opacity: 0.05; filter: blur(10px); pointer-events: none; transition: all 1s; }
+        body.bg-blackout #taska-racs .taska { filter: brightness(0.3); }
+        body.bg-blackout #taska-racs .taska:hover { filter: brightness(1); }
+        body.bg-blackout .taska.nyitott .taska-hatlap .taska-osszeg { display: none; }
+        body.bg-blackout .taska.nyitott .taska-hatlap::after { content: "???"; color: #ef4444; font-size: 2.5rem; font-weight: 900; position: absolute; text-shadow: 0 0 10px red; animation: pulse-red 1s infinite alternate; }
+        body.bg-blackout #taska-racs .taska:not(.nyitott) .taska-szam { color: transparent; text-shadow: none; }
+        body.bg-blackout #taska-racs .taska:not(.nyitott) .taska-szam::after { content: "?"; color: #ef4444; position: absolute; font-size: 1.5rem; text-shadow: 0 0 10px red; animation: pulse-red 1s infinite alternate; }
 
-    /* Footer buttons */
-    .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+        .container { max-width: 1600px; margin: 0 auto; width: 100%; flex-grow: 1; display: flex; flex-direction: column; position: relative;}
+        
+        header { 
+            display: flex; flex-direction: column; align-items: center; width: 100%; 
+            padding-bottom: 10px; margin-bottom: 15px; position: relative; z-index: 10; 
+        }
 
-    /* small responsive tweaks */
-    @media (max-width:480px){.kpi{min-width:45%}}
+        .room-info-wrapper {
+            position: absolute; left: 10px; top: 10px; display: flex; flex-direction: column; gap: 5px;
+        }
 
-    /* subtle glow */
-    .glow{box-shadow:0 6px 30px rgba(96,165,250,0.08)}
+        .room-info, .viewer-info { 
+            font-family: monospace; background: rgba(0,0,0,0.8); padding: 5px 15px; 
+            border-radius: 5px; border: 1px solid var(--gold); color: var(--gold); 
+            font-weight: bold; font-size: 1.1rem; width: fit-content;
+        }
+        .viewer-info { font-size: 0.95rem; color: #10b981; border-color: #10b981;}
 
-  </style>
+        .turn-indicator {
+            font-family: 'Orbitron'; font-size: 1.5rem; font-weight: 900; color: #fff;
+            background: rgba(0,0,0,0.8); padding: 5px 20px; border-radius: 10px; margin-top: 5px;
+            border: 2px solid #fff; box-shadow: 0 0 15px rgba(255,255,255,0.5); text-transform: uppercase;
+        }
+
+        .logo-container {
+            display: inline-flex; align-items: stretch; background: #000; padding: 4px;
+            border: 2px solid #000; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px var(--gold);
+            margin-bottom: 10px; margin-top: 5px; transition: all 0.5s; max-width: 95vw; box-sizing: border-box;
+        }
+
+        body.bg-winning .logo-container { box-shadow: 0 10px 40px rgba(255, 215, 0, 0.8), 0 0 40px var(--gold); }
+        body.bg-losing .logo-container { box-shadow: 0 10px 40px rgba(255, 0, 0, 0.8), 0 0 30px #ff0000; }
+
+        .logo-box {
+            background: linear-gradient(to bottom, var(--gold-light), var(--gold), #c99300); color: #000;
+            font-family: 'Orbitron', sans-serif; font-weight: 900; 
+            font-size: clamp(1.3rem, 5vw, 2.2rem);
+            padding: clamp(3px, 1.5vw, 5px) clamp(8px, 3vw, 20px);
+            display: flex; align-items: center; justify-content: center;
+            letter-spacing: 2px; text-transform: uppercase; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+        }
+        
+        .logo-box.stacked {
+            flex-direction: column; font-size: clamp(0.7rem, 2.5vw, 1.1rem); padding: 2px clamp(4px, 2vw, 10px); line-height: 1.1; letter-spacing: 0; border-left: clamp(2px, 1vw, 5px) solid #000; border-right: clamp(2px, 1vw, 5px) solid #000;
+        }
+
+        .lobby-logo { margin-bottom: 30px; }
+        .lobby-logo .logo-box { font-size: clamp(1.8rem, 8vw, 3rem); padding: clamp(4px, 2vw, 8px) clamp(12px, 4vw, 25px); }
+        .lobby-logo .logo-box.stacked { font-size: clamp(0.9rem, 4vw, 1.4rem); }
+
+        .header-buttons { 
+            position: relative; display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+            gap: 10px; z-index: 100; width: 100%; padding: 0 10px; box-sizing: border-box;
+        }
+        
+        .header-btn-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;}
+
+        .header-btn {
+            color: white; border: 2px solid #fff; border-radius: 8px; padding: 8px 12px; 
+            font-weight: 900; cursor: pointer; font-family: 'Orbitron'; text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8); transition: all 0.2s; font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+        }
+        .header-btn:hover:not(:disabled) { transform: translateY(-2px); }
+        .header-btn:disabled { background: linear-gradient(to bottom, #444, #222) !important; color: #888 !important; border-color: #555 !important; cursor: not-allowed; box-shadow: none; transform: none; animation: none !important;}
+
+        #uj-jatek-gomb { background: linear-gradient(to bottom, var(--gold), #966e00); color: black; }
+        #radar-gomb { background: linear-gradient(to bottom, #f59e0b, #b45309); animation: pulse-orange 2s infinite; }
+        #powerup-gomb { background: linear-gradient(to bottom, #10b981, #047857); animation: pulse-green 2s infinite; }
+        #panik-gomb { background: linear-gradient(to bottom, #ef4444, #991b1b); animation: pulse-red 2s infinite; }
+        #pajzs-gomb { background: linear-gradient(to bottom, #3b82f6, #1d4ed8); animation: pulse-blue 2s infinite; }
+
+        @keyframes pulse-orange { 0% { box-shadow: 0 0 5px #f59e0b; } 50% { box-shadow: 0 0 20px #fbbf24; } 100% { box-shadow: 0 0 5px #f59e0b; } }
+        @keyframes pulse-green { 0% { box-shadow: 0 0 5px #10b981; } 50% { box-shadow: 0 0 20px #34d399; } 100% { box-shadow: 0 0 5px #10b981; } }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 5px #ef4444; } 50% { box-shadow: 0 0 20px #f87171; } 100% { box-shadow: 0 0 5px #ef4444; } }
+        @keyframes pulse-blue { 0% { box-shadow: 0 0 5px #3b82f6; } 50% { box-shadow: 0 0 20px #60a5fa; } 100% { box-shadow: 0 0 5px #3b82f6; } }
+
+        .copyright-info { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; color: rgba(255, 255, 255, 0.6); text-shadow: 2px 2px 4px #000; text-align: center; margin-top: 5px;}
+
+        .jatekterulet { display: flex; flex-direction: column; width: 100%; flex-grow: 1; z-index: 2; position: relative;}
+        
+        .penzfa-wrapper { display: flex; justify-content: space-between; width: 100%; gap: 4px; margin-bottom: 15px; }
+        .penzfa-kontener { list-style: none; padding: 0; margin: 0; width: 49%; display: flex; flex-direction: column; gap: 4px; }
+        .penzfa-elem { 
+            padding: 4px 6px; border-radius: 4px; text-align: right; font-weight: 900; 
+            transition: all 0.5s ease; font-family: 'Roboto', sans-serif; font-size: clamp(0.6rem, 2.3vw, 0.85rem); 
+            display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(0,0,0,0.8);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .penzfa-elem .tipus-icon { opacity: 0.8; font-size: 1.1em; flex-shrink: 0; }
+        
+        .prize-tier-joke.aktiv { background: linear-gradient(90deg, #1e293b 0%, #334155 100%); color: #cbd5e1; }
+        .prize-tier-joke.aktiv.jobb-oldal { background: linear-gradient(90deg, #334155 0%, #1e293b 100%); }
+        .prize-tier-small.aktiv { background: linear-gradient(90deg, #78350f 0%, #b45309 100%); color: #fef3c7; }
+        .prize-tier-small.aktiv.jobb-oldal { background: linear-gradient(90deg, #b45309 0%, #78350f 100%); }
+        .prize-tier-medium.aktiv { background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%); color: #eff6ff; }
+        .prize-tier-medium.aktiv.jobb-oldal { background: linear-gradient(90deg, #3b82f6 0%, #1e3a8a 100%); }
+        .prize-tier-large.aktiv { background: linear-gradient(90deg, #b48600 0%, #ffd700 100%); color: #000; }
+        .prize-tier-large.aktiv.jobb-oldal { background: linear-gradient(90deg, #ffd700 0%, #b48600 100%); }
+        .prize-tier-huge.aktiv { background: linear-gradient(90deg, #064e3b 0%, #10b981 100%); color: #fff; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); text-shadow: 1px 1px 2px #000;}
+        .prize-tier-huge.aktiv.jobb-oldal { background: linear-gradient(90deg, #10b981 0%, #064e3b 100%); }
+        .penzfa-elem.kiesett { background: #1a1a1a !important; color: #444 !important; text-decoration: line-through; opacity: 0.6; border-color: #000; box-shadow: inset 0 2px 5px rgba(0,0,0,0.8); text-shadow: none;}
+
+        #fő-kontener { display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; position: relative; max-width: 100%; overflow: visible;}
+        
+        #informacios-sav-kontener { perspective: 1200px; margin-bottom: 25px; width: 100%; }
+        #info-flipper { 
+            width: 100%; position: relative; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transform-style: preserve-3d; min-height: 250px;
+        }
+        #info-flipper.flipped { transform: rotateX(180deg); }
+        
+        .info-front, .info-back { 
+            backface-visibility: hidden; border-radius: 12px; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; box-sizing: border-box; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8); text-align: center; overflow: hidden;
+        }
+        
+        .info-front { 
+            width: 100%; height: 100%; padding: 15px; position: relative;
+            background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.9), rgba(0,0,0,0.7)); 
+            border: 2px solid rgba(212, 175, 55, 0.5); transition: all 0.3s;
+        }
+        
+        .info-back { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 15px 10px;
+            background: linear-gradient(145deg, #3a0000, #150000, #3a0000); 
+            border: 3px solid var(--gold); transform: rotateX(180deg); 
+            justify-content: center; gap: 6px;
+        }
+
+        #uzenetek { font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 900; color: var(--gold-light); display: flex; justify-content: center; align-items: center; text-shadow: 1px 1px 3px #000; text-align: center;}
+        #kiegeszito-uzenet { font-size: clamp(0.9rem, 2vw, 1.2rem); color: #cbd5e1; margin-top: 8px;}
+        #bekiabalas { font-size: clamp(0.85rem, 2.5vw, 1.2rem); color: #fca5a5; font-weight: 900; margin-top: 8px; font-style: italic; text-shadow: 1px 1px 2px #000;}
+
+        .telefon-ikon { display: none; font-size: 3.5rem; margin-right: 15px; filter: drop-shadow(0 0 15px #ff0000); }
+        .telefon-hivas-aktiv .telefon-ikon { display: inline-block; animation: ringing 0.2s infinite; }
+        .telefon-hivas-aktiv #uzenetek-szoveg { color: #ff4444 !important; text-shadow: 0 0 15px #ff0000; font-size: 1.8rem;}
+        .telefon-hivas-aktiv.info-front { animation: pulse-red-border 0.6s infinite alternate; }
+
+        @keyframes pulse-red-border { 0% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000 inset, 0 5px 25px rgba(255,0,0,0.6); } 100% { border-color: #aa0000; box-shadow: 0 0 5px #aa0000 inset, 0 5px 15px rgba(0,0,0,0.8); } }
+        @keyframes ringing { 0% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(25deg) scale(1.2); } 50% { transform: rotate(-25deg) scale(1.2); } 75% { transform: rotate(25deg) scale(1.2); } 100% { transform: rotate(0deg) scale(1); } }
+
+        #back-cim { margin: 0; font-size: clamp(0.9rem, 2vw, 1.2rem); color: #fca5a5; font-family: 'Orbitron'; text-transform: uppercase; letter-spacing: 2px;}
+        #back-osszeg { font-size: clamp(1.3rem, 3.5vw, 2.2rem); font-weight: 900; color: var(--gold-light); font-family: 'Orbitron'; margin: 5px 0; text-shadow: 0 0 15px var(--gold); }
+        #back-leiras { font-size: clamp(0.7rem, 1.3vw, 0.95rem); color: #e5e7eb; margin-bottom: 8px; line-height: 1.2; }
+
+        .back-gombok { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; width: 100%; margin-top: 5px; align-items: center;}
+        .back-gomb {
+            font-family: 'Orbitron'; font-weight: 900; font-size: clamp(0.65rem, 1.5vw, 0.9rem); text-transform: uppercase;
+            padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); white-space: nowrap;
+        }
+        
+        .btn-elfogad { background: linear-gradient(145deg, var(--offer-accept), #047857); color: white; border: 2px solid #34d399;}
+        .btn-elutasit { background: linear-gradient(145deg, var(--offer-decline), #991b1b); color: white; border: 2px solid #f87171;}
+        .btn-vegso { background: linear-gradient(145deg, var(--gold), #b48600); color: black; border: 2px solid #fef08a;}
+        .btn-koteg { background: linear-gradient(145deg, #1e3a8a, #172554); color: white; border: 2px solid #60a5fa;}
+        .btn-extra { background: linear-gradient(145deg, #7c3aed, #4c1d95); color: white; border: 2px solid #c4b5fd;}
+        .btn-fekete { background: linear-gradient(145deg, #222, #000); color: #ccc; border: 2px solid #666; box-shadow: 0 0 15px rgba(255,255,255,0.2);}
+        .btn-rulett-kamra { background: linear-gradient(145deg, #dc2626, #7f1d1d); color: white; border: 2px solid #fca5a5; width: 60px; height: 60px; border-radius: 50%; font-size: 1.5rem; display:flex; justify-content:center; align-items:center;}
+        
+        .back-gomb:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.7); }
+        .back-gomb:active { transform: translateY(2px); }
+
+        #alku-input { padding: 8px; font-family: 'Orbitron'; font-size: 1.1rem; font-weight: bold; width: 160px; border: 2px solid var(--gold); border-radius: 5px; background: #111; color: #fff; text-align: center; margin-right: 5px;}
+        #timer-bar-container { width: 80%; height: 10px; background: #333; border-radius: 5px; margin: 10px auto; overflow: hidden; border: 1px solid #555;}
+        #timer-bar { width: 100%; height: 100%; background: #ef4444; transition: width 0.1s linear; }
+
+        /* PÁRBAJ (DUEL) OSZTOTT AJÁNLAT DOBOZOK */
+        .duel-offers-container { display: flex; gap: 15px; width: 100%; justify-content: center; margin-top: 10px; flex-wrap: wrap;}
+        .duel-offer-box { background: rgba(0,0,0,0.6); padding: 10px 15px; border-radius: 8px; text-align: center; border: 2px solid #555; flex: 1; min-width: 140px;}
+        .duel-offer-box h4 { margin: 0 0 5px 0; font-family: 'Orbitron'; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;}
+        .duel-offer-box h2 { margin: 0; font-family: 'Orbitron'; font-size: 1.3rem; text-shadow: 0 0 10px currentColor;}
+        .duel-o-p1 { color: var(--p1-color); border-color: var(--p1-color); box-shadow: inset 0 0 15px rgba(59,130,246,0.3); }
+        .duel-o-p2 { color: var(--p2-color); border-color: var(--p2-color); box-shadow: inset 0 0 15px rgba(236,72,153,0.3); }
+
+        #taska-racs { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 12px; width: 100%; perspective: 1200px; padding: 10px; max-width: 950px; justify-content: center; }
+        .taska { position: relative; aspect-ratio: 1.15 / 1; transform-style: preserve-3d; cursor: pointer; transition: transform 0.2s; }
+        .taska:hover:not(.nyitott) { transform: translateY(-5px) scale(1.05); }
+        .taska.animacio-nyitas { animation: shake-and-flip 1.2s ease-in-out forwards; pointer-events: none; }
+        .taska.nyitott { transform: rotateY(180deg); pointer-events: none; }
+        .taska.animacio-rontgen { animation: peek-flip 2.5s ease-in-out forwards; pointer-events: none; }
+        .taska.animacio-keveres { animation: taska-shuffle 1.5s ease-in-out forwards; pointer-events: none; }
+        
+        .taska-front::after {
+            position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+            font-family: 'Orbitron', sans-serif; font-size: 0.65rem; font-weight: 900;
+            padding: 2px 6px; border-radius: 4px; letter-spacing: 1px; opacity: 0;
+            transition: opacity 0.3s; pointer-events: none; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.8);
+        }
+
+        .taska.pajzs-celpont:hover { box-shadow: 0 0 25px #3b82f6; transform: scale(1.1); }
+        .taska.pajzs-celpont .taska-front::after { content: "VÉDVE"; opacity: 1; background: #1e3a8a; color: #fff; border: 1px solid #60a5fa; }
+        .taska.kihivas-celpont { animation: challenge-pulse 1s infinite alternate; }
+        .taska.kihivas-celpont .taska-front::after { content: "KATTINTS"; opacity: 1; background: #78350f; color: #f59e0b; border: 1px solid #f59e0b; animation: pulse-badge 1s infinite alternate; }
+        .taska.rontgen-celpont:hover { box-shadow: 0 0 20px #10b981; transform: scale(1.1); }
+        .taska.rontgen-celpont .taska-front::after { content: "RÖNTGEN"; opacity: 1; background: #064e3b; color: #10b981; border: 1px solid #34d399; }
+        
+        .taska.radar-celpont { animation: radar-pulse 1s infinite alternate; }
+        .taska.radar-celpont .taska-front::after { content: "CÉLPONT"; opacity: 1; background: #b45309; color: #fff; border: 1px solid #fcd34d; }
+        .taska.tusz-celpont { animation: pulse-red-border 0.8s infinite alternate; }
+        .taska.tusz-celpont .taska-front::after { content: "TÚSZ"; opacity: 1; background: #7f1d1d; color: #fca5a5; border: 1px solid #ef4444; }
+
+        @keyframes challenge-pulse { from { box-shadow: 0 0 10px #f59e0b; } to { box-shadow: 0 0 30px #f59e0b; transform: scale(1.05); } }
+        @keyframes radar-pulse { from { box-shadow: 0 0 10px #fbbf24; border-color: #fbbf24;} to { box-shadow: 0 0 40px #fbbf24; transform: scale(1.08); border-color: #fff;} }
+        @keyframes pulse-badge { from { transform: translateX(-50%) scale(1); } to { transform: translateX(-50%) scale(1.1); } }
+        @keyframes shake-and-flip { 0% { transform: rotateY(0) translateX(0); } 15% { transform: translateX(-5px) rotateZ(-3deg); } 30% { transform: translateX(5px) rotateZ(3deg); } 45% { transform: translateX(-5px) rotateZ(-3deg); } 60% { transform: translateX(0) scale(1.1); } 100% { transform: rotateY(180deg) scale(1); } }
+        @keyframes peek-flip { 0% { transform: rotateY(0); } 20% { transform: rotateY(180deg) scale(1.1); box-shadow: 0 0 30px #10b981; } 80% { transform: rotateY(180deg) scale(1.1); box-shadow: 0 0 30px #10b981; } 100% { transform: rotateY(0) scale(1); } }
+        @keyframes taska-shuffle { 0% { transform: scale(1) translateY(0); } 25% { transform: scale(0.8) translateY(-20px); filter: blur(2px); } 75% { transform: scale(0.8) translateY(20px); filter: blur(2px); } 100% { transform: scale(1) translateY(0); filter: blur(0); } }
+
+        .taska-front, .taska-hatlap { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5); }
+        .taska-front { background: linear-gradient(145deg, var(--case-red), var(--case-dark)); border: 2px solid #2a0303; flex-direction: column; overflow: hidden; }
+        .taska.rejtelyes .taska-front { background: linear-gradient(145deg, var(--mystery-purple), #2e1065); }
+        .taska-front::before { content: ''; position: absolute; top: 0; left: 25%; width: 50%; height: 14px; background: linear-gradient(to bottom, #f3f4f6, #9ca3af); border-radius: 0 0 6px 6px; border: 2px solid #374151; border-top: none; }
+        .taska-szam { font-family: 'Orbitron', sans-serif; background: radial-gradient(circle, #fff, #d1d5db); color: #000; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; border: 4px solid #6b7280; box-shadow: 0 5px 10px rgba(0,0,0,0.7), inset 0 3px 5px #fff; }
+        .taska-hatlap { background: linear-gradient(145deg, #1f1f1f, #0a0a0a); transform: rotateY(180deg); padding: 8px; box-sizing: border-box; border: 2px solid #333; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .taska.nyitott .taska-hatlap, .taska.animacio-rontgen .taska-hatlap { opacity: 0.95; }
+        .taska-osszeg { font-size: clamp(0.8rem, 1.5vw, 1.35rem); font-weight: 900; text-align: center; line-height: 1.1; color: #fca5a5; text-shadow: 2px 2px 5px #000; word-wrap: break-word;}
+        
+        /* SAJÁT TÁSKÁK STÍLUSAI */
+        .taska.sajat-taskam .taska-front { box-shadow: 0 0 35px var(--gold); border: 2px solid var(--gold); animation: pulse-gold 2s infinite; }
+        .taska.sajat-p1 .taska-front { box-shadow: 0 0 35px var(--p1-color); border: 2px solid var(--p1-color); animation: pulse-p1 2s infinite; }
+        .taska.sajat-p2 .taska-front { box-shadow: 0 0 35px var(--p2-color); border: 2px solid var(--p2-color); animation: pulse-p2 2s infinite; }
+        
+        @keyframes pulse-gold { 0% { box-shadow: 0 0 15px var(--gold); } 50% { box-shadow: 0 0 45px #ffe066; } 100% { box-shadow: 0 0 15px var(--gold); } }
+        @keyframes pulse-p1 { 0% { box-shadow: 0 0 15px var(--p1-color); } 50% { box-shadow: 0 0 45px #93c5fd; } 100% { box-shadow: 0 0 15px var(--p1-color); } }
+        @keyframes pulse-p2 { 0% { box-shadow: 0 0 15px var(--p2-color); } 50% { box-shadow: 0 0 45px #fbcfe8; } 100% { box-shadow: 0 0 15px var(--p2-color); } }
+        
+        .villogo-vegsokattintas { animation: vegsokattintas-pulse 0.8s infinite alternate !important; cursor: pointer !important; z-index: 10; pointer-events: auto !important; }
+        .villogo-vegsokattintas .taska-front { border-color: #fff !important; }
+        @keyframes vegsokattintas-pulse { 0% { transform: scale(1); box-shadow: 0 0 20px #fff; } 100% { transform: scale(1.15); box-shadow: 0 0 80px #fff, 0 0 30px var(--gold); } }
+
+        .rejtett { display: none !important; }
+        #ajanlat-tortenet { margin-top: 25px; width: 100%; max-width: 800px; background: rgba(0,0,0,0.85); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 10px 25px rgba(0,0,0,0.7); }
+        #ajanlat-tortenet h3 { text-align: center; margin: 0 0 15px 0; color: var(--gold); font-family: 'Orbitron'; font-size: 1.3rem; text-transform: uppercase; }
+        #ajanlat-lista { list-style: none; padding: 0; margin: 0; font-size: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        #ajanlat-lista li { display: flex; justify-content: space-between; padding: 10px 15px; background: rgba(255,255,255,0.08); border-radius: 6px; border-left: 4px solid #555; }
+        .ajanlat-dontes-elutasitva { color: var(--offer-decline); font-weight: bold;} 
+        .ajanlat-dontes-elfogadva { color: var(--offer-accept); font-weight: bold; }
+        .ajanlat-lista-elfogadva-sor { border-left-color: var(--offer-accept) !important; background: rgba(16, 185, 129, 0.15) !important;}
+        #fireworks-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
+        .confetti { position: absolute; width: 10px; height: 10px; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+
+        @media (min-width: 1024px) {
+            .jatekterulet { display: grid; grid-template-columns: 280px 1fr 280px; gap: 30px; align-items: flex-start; }
+            .penzfa-wrapper { display: contents; }
+            #penzfa-bal { grid-column: 1; grid-row: 1; width: 100%; }
+            #fő-kontener { grid-column: 2; grid-row: 1; width: 100%; max-width: 100%; overflow: visible;}
+            #penzfa-jobb { grid-column: 3; grid-row: 1; width: 100%; }
+            .penzfa-elem { padding: 10px 15px; font-size: clamp(0.75rem, 1.5vw, 0.9rem); }
+            #taska-racs { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 15px; }
+            .taska-szam { width: 55px; height: 55px; font-size: 2rem; }
+        }
+
+        /* TÖKÉLETESÍTETT MOBIL NÉZET */
+        @media (max-width: 768px) {
+            header { padding-top: 10px; }
+            .room-info-wrapper { position: relative; left: 0; top: 0; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-bottom: 5px; }
+            .room-info { font-size: 1rem; padding: 3px 10px;}
+            .viewer-info { font-size: 0.9rem; padding: 3px 10px;}
+            
+            .header-buttons { gap: 5px; margin-bottom: 10px;}
+            .header-btn { font-size: 0.65rem; padding: 6px 10px; }
+            
+            #informacios-sav-kontener { position: sticky; top: 0px; z-index: 150; margin-bottom: 10px; }
+            #info-flipper { min-height: 140px; } 
+            .info-front, .info-back { padding: 8px 5px; justify-content: center; height: auto; min-height: 140px; }
+            .info-back { gap: 4px; }
+            
+            #uzenetek { font-size: clamp(1rem, 4vw, 1.3rem); }
+            #back-cim { font-size: clamp(0.8rem, 2vw, 1rem); }
+            #back-osszeg { font-size: clamp(1.2rem, 5vw, 1.6rem); margin: 2px 0; }
+            #back-leiras { font-size: clamp(0.65rem, 1.5vw, 0.8rem); margin-bottom: 4px; }
+            #kiegeszito-uzenet { font-size: clamp(0.75rem, 2vw, 0.9rem); margin-top: 2px; }
+            #bekiabalas { font-size: clamp(0.7rem, 2vw, 0.85rem); line-height: 1.1; margin-top: 2px; }
+            
+            .back-gomb { font-size: clamp(0.55rem, 1.8vw, 0.75rem); padding: 5px 10px; }
+
+            #taska-racs { gap: 8px; padding: 5px; }
+            .taska-szam { width: 40px; height: 40px; font-size: 1.2rem; }
+            #alku-input { width: 100px; font-size: 0.9rem; padding: 5px;}
+            #ajanlat-lista { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="logo">LE</div>
-      <div>
-        <h1>Élettartam-becslő</h1>
-        <p class="lead">Gyors, átfogó becslés — hagyományos szemlélet, egyértelmű eredmények.</p>
-      </div>
-    </header>
 
-    <div class="grid">
-      <!-- BAL: inputok + számítási rész -->
-      <section class="card">
-        <form id="leForm">
-          <!-- Születési dátum és nem -->
-          <div class="row">
-            <div class="field">
-              <label for="dob">Születési dátum</label>
-              <input type="date" id="dob" required />
-            </div>
-            <div class="field">
-              <label for="sex">Nem</label>
-              <select id="sex">
-                <option value="male">Férfi</option>
-                <option value="female">Nő</option>
-                <option value="other">Egyéb / Nem megadott</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Egészség és életmód -->
-          <div class="row">
-            <div class="field">
-              <label for="height">Magasság (cm)</label>
-              <input type="number" id="height" min="90" max="250" value="175" />
-            </div>
-            <div class="field">
-              <label for="weight">Testsúly (kg)</label>
-              <input type="number" id="weight" min="30" max="300" value="75" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label>Dohányzás</label>
-              <div class="inline-radio">
-                <label><input type="radio" name="smoke" value="0" checked />Nem</label>
-                <label><input type="radio" name="smoke" value="1" />Kissé (<=5 naponta)</label>
-                <label><input type="radio" name="smoke" value="2" />Rendszeres</label>
-                <label><input type="radio" name="smoke" value="3" />Erős</label>
-              </div>
-            </div>
-            <div class="field">
-              <label for="exercise">Mozgás (óra/hét)</label>
-              <input type="number" id="exercise" min="0" max="30" value="2" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label for="alcohol">Alkohol (egység / hét)</label>
-              <input type="number" id="alcohol" min="0" max="100" value="3" />
-            </div>
-            <div class="field">
-              <label for="family">Családi halálozás (szív- és érrendszer / daganat)</label>
-              <select id="family">
-                <option value="0">Nincs jelentős családi kórkép</option>
-                <option value="1">Van - 1 közeli rokon</option>
-                <option value="2">Van - több közeli rokon</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="actions">
-            <button type="button" class="secondary" id="resetBtn">Alaphelyzet</button>
-            <button type="submit" class="btn">Becsüld meg</button>
-          </div>
-        </form>
-
-        <!-- KPI csempék -->
-        <div class="kpis" style="margin-top:18px">
-          <div class="kpi glow" id="kpi-age">
-            <div class="num" id="ageVal">--</div>
-            <div class="label">Jelenlegi életkor</div>
-          </div>
-
-          <div class="kpi" id="kpi-life">
-            <div class="num" id="lifeVal">--</div>
-            <div class="label">Becsült élettartam</div>
-          </div>
-
-          <div class="kpi" id="kpi-remaining">
-            <div class="num" id="leftVal">--</div>
-            <div class="label">Évek hátra</div>
-          </div>
-
-          <div class="kpi" id="kpi-risk">
-            <div class="num" id="riskVal">--</div>
-            <div class="label">Életkockázat (rel.)</div>
-          </div>
+    <!-- LOBBY SCREEN -->
+    <div id="lobby-screen">
+        <div class="logo-container lobby-logo">
+            <div class="logo-box">ÁLL</div>
+            <div class="logo-box stacked"><span>A</span><span>Z</span></div>
+            <div class="logo-box">ALKU</div>
         </div>
+        
+        <div class="lobby-box">
+            <h2 style="color: white; font-family: 'Orbitron';">Játékos Neve:</h2>
+            <input type="text" id="player-name-input" class="lobby-input" placeholder="Ide írd a neved..." maxlength="15">
+            
+            <button id="start-solo-btn" class="lobby-btn btn-solo">👤 Egyszemélyes Játék (Offline)</button>
+            <button id="start-host-btn" class="lobby-btn btn-multi">🌐 Multi Játék (Host/Nézőknek)</button>
+            <button id="start-duel-host-btn" class="lobby-btn btn-duel">⚔️ PÁRBAJ SZOBA LÉTREHOZÁSA</button>
+            
+            <div style="margin: 20px 0; border-top: 1px solid #555;"></div>
+            
+            <h3 style="color: #bbb; font-family: 'Orbitron'; margin-bottom: 5px;">Csatlakozás Szobához:</h3>
+            <div class="spectator-box">
+                <input type="text" id="join-code-input" class="spectator-input" placeholder="KÓD" maxlength="4">
+                <button id="join-p2-btn" class="spectator-btn" style="background: var(--p2-color);">⚔️ Párbaj (P2)</button>
+                <button id="join-spectator-btn" class="spectator-btn">👁️ Nézem!</button>
+            </div>
 
-        <div class="help">A kalkulátor egyszerűsített becslést ad – nem helyettesíti az orvosi vizsgálatot. A számítások hagyományos, közérthető kiigazításokon alapulnak.</div>
-      </section>
-
-      <!-- JOBB: eredmények + grafikon -->
-      <aside class="card">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-          <div>
-            <h3 style="margin:0">Eredmények</h3>
-            <p style="margin:4px 0 0;color:var(--muted);font-size:13px">Gyors áttekintés és vizuális grafikon</p>
-          </div>
-          <div style="text-align:right">
-            <small style="color:var(--muted)">Frissítve: most</small>
-          </div>
+            <div class="leaderboard-box">
+                <h3>🏆 Heti Top 5 Bajnok</h3>
+                <ul id="leaderboard-list">
+                    <li style="color: #888; text-align:center; display:block;">Adatok betöltése...</li>
+                </ul>
+            </div>
         </div>
-
-        <div class="chart-wrap">
-          <canvas id="lifeChart" width="600" height="150"></canvas>
-        </div>
-
-        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-          <button id="saveImage" class="secondary">Mentés képként</button>
-          <button id="explainBtn" class="secondary">Számítás részletei</button>
-        </div>
-
-        <div id="explain" style="margin-top:12px;display:none;background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;color:var(--muted);font-size:13px">
-          <!-- Itt kerülnek megjelenítésre a részletek -->
-        </div>
-      </aside>
-
     </div>
-  </div>
 
-  <script>
-    /* ======= Segédfunkciók ======= */
-    function calcAge(dob){
-      const b = new Date(dob);
-      const now = new Date();
-      let age = now.getFullYear() - b.getFullYear();
-      const m = now.getMonth() - b.getMonth();
-      if(m < 0 || (m === 0 && now.getDate() < b.getDate())) age--;
-      return age;
-    }
+    <!-- MAIN GAME CONTAINER -->
+    <div class="container" id="main-game-container" style="display: none;">
+        
+        <header>
+            <div class="room-info-wrapper">
+                <div class="room-info" id="room-info-display" style="display: none;">Kód: <span id="room-code-span"></span></div>
+                <div class="viewer-info" id="viewer-info-display" style="display: none;">👁️ Nézők: <span id="viewer-count-span" style="color:white;">0</span></div>
+            </div>
+            
+            <div class="logo-container">
+                <div class="logo-box">ÁLL</div>
+                <div class="logo-box stacked"><span>A</span><span>Z</span></div>
+                <div class="logo-box">ALKU</div>
+            </div>
+            
+            <div class="turn-indicator" id="turn-indicator" style="display: none;">VÁRAKOZÁS...</div>
 
-    // Egyszerű, transzparens scoring/becslés logika
-    // Megjegyzés: ez nem orvosi algoritmus, csak szemléltető modell.
-    function estimateLifeExpectancy(data){
-      // 1) bázis életkor várható élettartam nem szerint
-      let base = (data.sex === 'female') ? 83 : 79; // egyszerű populációs kiindulás
+            <div class="header-buttons">
+                <div class="header-btn-group">
+                    <button id="radar-gomb" class="header-btn" title="Kijelöl 3 táskát. A legnagyobb összeg biztosan az egyikben van!" disabled>📡 Radar</button>
+                    <button id="pajzs-gomb" class="header-btn" title="Megvéd egy véletlen nagy táska kinyitásától!" disabled>🛡️ Pajzs</button>
+                    <button id="powerup-gomb" class="header-btn" title="Megnézheted 1 zárt táska tartalmát!" disabled>👁️ Röntgen</button>
+                    <button id="panik-gomb" class="header-btn" title="Kikényszerít egy azonnali ajánlatot a Bankártól!" disabled>🚨 Pánik</button>
+                </div>
+                <button id="uj-jatek-gomb" class="header-btn">Új Játék</button>
+            </div>
+            <div class="copyright-info">Player: <span id="display-player-name"></span> | Copyright &copy; by: Robi <span id="current-year"></span></div>
+        </header>
 
-      // 2) BMI hatás
-      const heightM = data.height/100;
-      const bmi = data.weight / (heightM * heightM);
-      let bmiAdj = 0;
-      if(bmi < 18.5) bmiAdj -= 2;          // soványság enyhe kockázat
-      else if(bmi < 25) bmiAdj += 1;      // normál testsúly kis előny
-      else if(bmi < 30) bmiAdj -= 2;      // túlsúly kis hátrány
-      else bmiAdj -= 7;                   // elhízás jelentősebb hatás
+        <div class="jatekterulet">
+            <div class="penzfa-wrapper">
+                <ul id="penzfa-bal" class="penzfa-kontener"></ul>
+                <ul id="penzfa-jobb" class="penzfa-kontener"></ul>
+            </div>
+            
+            <div id="fő-kontener">
+                <div id="informacios-sav-kontener">
+                    <div id="info-flipper">
+                        <div class="info-front" id="info-front-lap">
+                            <span id="uzenetek"><span class="telefon-ikon">☎️</span><span id="uzenetek-szoveg">Betöltés...</span></span>
+                            <span id="kiegeszito-uzenet" style="display:none;"></span>
+                            <span id="bekiabalas" style="display:none;"></span>
+                        </div>
+                        <div class="info-back" id="info-back-lap">
+                            <h3 id="back-cim">A Bankár Ajánlata</h3>
+                            <div id="back-osszeg">0 Ft</div>
+                            <div id="back-leiras">Garantált összeg.</div>
+                            <div class="back-gombok" id="back-gombok-tarolo"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="taska-racs"></div>
+                
+                <div id="ajanlat-tortenet" class="rejtett">
+                    <h3>Bankári Előzmények</h3>
+                    <ul id="ajanlat-lista"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
-      // 3) dohányzás
-      let smokeAdj = 0;
-      // smoke: 0=no,1=light,2=regular,3=heavy
-      if(data.smoke == 1) smokeAdj -= 2;
-      if(data.smoke == 2) smokeAdj -= 6;
-      if(data.smoke == 3) smokeAdj -= 10;
+    <!-- FIREBASE INITIALIZATION & SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, deleteDoc, onSnapshot, collection, query, where, getDocs, updateDoc, increment, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-      // 4) mozgás (óra/hét)
-      let actAdj = 0;
-      if(data.exercise >= 5) actAdj += 4;
-      else if(data.exercise >= 2) actAdj += 2;
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt1Rd07JupA-dgKN7D6z9zXPc6E13hnMQ",
+            authDomain: "all-az-alku-game.firebaseapp.com",
+            projectId: "all-az-alku-game",
+            storageBucket: "all-az-alku-game.firebasestorage.app",
+            messagingSenderId: "781644931679",
+            appId: "1:781644931679:web:85f4f555939e9e4dbff1ea"
+        };
 
-      // 5) alkohol (egység/hét)
-      let alcAdj = 0;
-      if(data.alcohol <= 7) alcAdj += 0; // mérsékelt
-      else if(data.alcohol <= 14) alcAdj -= 1;
-      else if(data.alcohol <= 28) alcAdj -= 3;
-      else alcAdj -= 6;
+        let db;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            loadLeaderboard();
+        } catch (e) {
+            console.error("Firebase hiba!", e);
+            document.getElementById("leaderboard-list").innerHTML = "<li style='color:red;'>Firebase kapcsolat sikertelen. Az Offline mód működik.</li>";
+        }
 
-      // 6) családi halálozás
-      let famAdj = 0;
-      if(data.family == 1) famAdj -= 2;
-      if(data.family == 2) famAdj -= 4;
+        window.currentPlayerName = "";
+        window.currentRoomCode = "";
+        window.gameRole = 'solo'; // 'solo', 'host', 'p2', 'spectator'
+        window.isOnlineMode = false;
+        
+        let lastP2ActionTs = 0; 
 
-      // 7) korrelált összegzés
-      let est = base + bmiAdj + smokeAdj + actAdj + alcAdj + famAdj;
+        const DOM_LOBBY = {
+            screen: document.getElementById('lobby-screen'),
+            game: document.getElementById('main-game-container'),
+            nameInput: document.getElementById('player-name-input'),
+            soloBtn: document.getElementById('start-solo-btn'),
+            hostBtn: document.getElementById('start-host-btn'),
+            duelHostBtn: document.getElementById('start-duel-host-btn'),
+            joinInput: document.getElementById('join-code-input'),
+            joinP2Btn: document.getElementById('join-p2-btn'),
+            joinBtn: document.getElementById('join-spectator-btn'),
+            roomDisplay: document.getElementById('room-info-display'),
+            roomSpan: document.getElementById('room-code-span'),
+            viewerDisplay: document.getElementById('viewer-info-display'),
+            viewerCountSpan: document.getElementById('viewer-count-span'),
+            nameDisplay: document.getElementById('display-player-name'),
+            leaderboardList: document.getElementById('leaderboard-list'),
+            turnIndicator: document.getElementById('turn-indicator')
+        };
 
-      // Biztonsági határok
-      if(est < 50) est = 50;
-      if(est > 110) est = 110;
+        function getISOWeekInfo(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+            return { year: d.getUTCFullYear(), week: weekNo };
+        }
 
-      // Relatív kockázat számszerűsítése (0-100%)
-      // Egyszerű képlet: minél alacsonyabb az est a bázishoz képest, annál nagyobb a kockázat
-      const baseline = (data.sex === 'female') ? 83 : 79;
-      let riskScore = Math.round( Math.min(100, Math.max(5, (baseline - est) * 6 + (data.smoke*8))) );
+        function getWeekString(offset = 0) {
+            let d = new Date();
+            d.setDate(d.getDate() - (offset * 7));
+            const info = getISOWeekInfo(d);
+            return `${info.year}-W${info.week.toString().padStart(2, '0')}`;
+        }
 
-      return {est, bmi: Math.round(bmi*10)/10, riskScore};
-    }
+        async function loadLeaderboard() {
+            if(!db) return;
+            const currentWeekId = getWeekString(0);
+            const prevWeekId = getWeekString(1);
+            
+            try {
+                const qPrev = query(collection(db, "leaderboard"), where("week", "==", prevWeekId));
+                const prevSnap = await getDocs(qPrev);
+                let prevPlayers =[];
+                prevSnap.forEach(doc => prevPlayers.push(doc.data()));
+                prevPlayers.sort((a, b) => (b.money || 0) - (a.money || 0));
+                const reigningChamp = prevPlayers.length > 0 ? prevPlayers[0].name : null;
 
-    /* ======= UI kezelés ======= */
-    const form = document.getElementById('leForm');
-    const ageVal = document.getElementById('ageVal');
-    const lifeVal = document.getElementById('lifeVal');
-    const leftVal = document.getElementById('leftVal');
-    const riskVal = document.getElementById('riskVal');
-    const explainBox = document.getElementById('explain');
+                const qCurr = query(collection(db, "leaderboard"), where("week", "==", currentWeekId));
+                const currSnap = await getDocs(qCurr);
+                
+                let players =[];
+                currSnap.forEach((doc) => players.push(doc.data()));
+                players.sort((a, b) => (b.money || 0) - (a.money || 0));
+                players = players.slice(0, 5); 
 
-    function readForm(){
-      const dob = document.getElementById('dob').value;
-      const sex = document.getElementById('sex').value;
-      const height = Number(document.getElementById('height').value || 0);
-      const weight = Number(document.getElementById('weight').value || 0);
-      const exercise = Number(document.getElementById('exercise').value || 0);
-      const alcohol = Number(document.getElementById('alcohol').value || 0);
-      const family = Number(document.getElementById('family').value || 0);
-      const smokeEls = document.getElementsByName('smoke');
-      let smoke = 0; for(const s of smokeEls) if(s.checked) smoke = Number(s.value);
-      return {dob, sex, height, weight, exercise, alcohol, family, smoke};
-    }
+                let html = "";
+                players.forEach((data, index) => {
+                    let rank = index + 1;
+                    let rankClass = rank === 1 ? 'lb-rank-1' : '';
+                    let displayRank = rank + ".";
+                    let formatMoney = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0 }).format(data.money || 0);
+                    
+                    let nameDisplay = data.name;
+                    if(data.name === reigningChamp) nameDisplay = `🥇 ${nameDisplay}`;
 
-    // Eredmények frissítése a KPI-kben és a grafikonon
-    function updateUI(result, age, formData){
-      ageVal.textContent = (age>=0 && !isNaN(age)) ? age + ' év' : '--';
-      lifeVal.textContent = Math.round(result.est) + ' év';
-      const yearsLeft = Math.round(result.est - age);
-      leftVal.textContent = (yearsLeft>0? yearsLeft : 0) + ' év';
-      riskVal.textContent = result.riskScore + ' %';
+                    html += `<li class="${rankClass}"><span><b>${displayRank}</b> ${nameDisplay}</span> <span>${formatMoney}</span></li>`;
+                });
+                
+                if(html === "") html = "<li style='color: #888; text-align:center;'>Ezen a héten még nincs bajnok!<br>Legyél te az első!</li>";
+                DOM_LOBBY.leaderboardList.innerHTML = html;
+            } catch (e) { 
+                console.log("Nem sikerült betölteni a ranglistát:", e); 
+                DOM_LOBBY.leaderboardList.innerHTML = "<li style='color: #888;'>Ranglista betöltése sikertelen.</li>";
+            }
+        }
 
-      // Részletek megjelenítése
-      explainBox.style.display = 'block';
-      explainBox.innerHTML = `
-        <strong>Számítás részletei</strong>
-        <div style="margin-top:8px">Bázis: <em>${formData.sex === 'female' ? 83 : 79} év</em></div>
-        <div>BMI: <em>${result.bmi}</em></div>
-        <div>Dohányzás: <em>${['Nem','Kissé','Rendszeres','Erős'][formData.smoke]}</em></div>
-        <div>Mozgás: <em>${formData.exercise} óra/hét</em></div>
-        <div>Alkohol: <em>${formData.alcohol} egység/hét</em></div>
-        <div>Családi tényezők: <em>${formData.family==0? 'nincs' : (formData.family==1? '1 közeli' : 'több közeli')}</em></div>
-        <div style="margin-top:8px;color:var(--muted);font-size:13px">Megjegyzés: ez egy egyszerűsített, transzparens modell; részletes orvosi vizsgálat más eredményt adhat.</div>
-      `;
+        async function awardWinMoney(amount, playerNameOverride = null) {
+            let pName = playerNameOverride || window.currentPlayerName;
+            if(!db || !pName || amount <= 0) return; 
+            const weekId = getWeekString(0);
+            const docId = `${pName}_${weekId}`; 
+            const playerRef = doc(db, "leaderboard", docId);
+            try {
+                const docSnap = await getDoc(playerRef);
+                if (docSnap.exists()) await updateDoc(playerRef, { money: increment(amount) });
+                else await setDoc(playerRef, { name: pName, money: amount, week: weekId });
+            } catch(e) { console.error("Hiba a pénz mentésekor: ", e); }
+        }
 
-      drawChart(age, result.est);
-    }
+        function generateRoomCode() { return Math.floor(1000 + Math.random() * 9000).toString(); }
 
-    /* ======= CANVAS GRAFIKON ======= */
-    const canvas = document.getElementById('lifeChart');
-    const ctx = canvas.getContext('2d');
+        async function cleanupRoom() {
+            if (window.gameRole === 'host' && window.currentRoomCode && db) {
+                try { await deleteDoc(doc(db, "rooms", window.currentRoomCode)); } catch(e) {}
+            }
+        }
+        window.cleanupRoom = cleanupRoom;
 
-    function drawChart(age, est){
-      const w = canvas.width = canvas.clientWidth * devicePixelRatio;
-      const h = canvas.height = 150 * devicePixelRatio;
-      ctx.clearRect(0,0,w,h);
-      ctx.scale(devicePixelRatio, devicePixelRatio);
+        window.addEventListener('beforeunload', async () => {
+            if(window.gameRole === 'host') await cleanupRoom();
+            if((window.gameRole === 'spectator' || window.gameRole === 'p2') && isOnlineMode && db && currentRoomCode) {
+                try { await updateDoc(doc(db, "rooms", currentRoomCode), { viewers: arrayRemove(currentPlayerName) }); } catch(e){}
+            }
+        });
 
-      // Vizualizáció: vízszintes sáv, bal = életben töltött évek, jobb = hátralévő
-      const displayW = canvas.clientWidth;
-      const pad = 18;
-      const barH = 36;
-      const max = Math.max(est, age + 10);
-      const ageW = Math.max(4, (age / max) * (displayW - pad*2));
-      const leftW = Math.max(4, ((est - age)/max)*(displayW - pad*2));
+        // --- GOMB ESEMÉNYEK LOBBY ---
+        DOM_LOBBY.soloBtn.addEventListener('click', () => {
+            const name = DOM_LOBBY.nameInput.value.trim();
+            if(!name) { alert("Kérlek írd be a neved a kezdéshez!"); return; }
+            currentPlayerName = name; window.gameRole = 'solo'; isOnlineMode = false; gameState = { taskaErtekek: {}, duel: {active: false} }; 
+            DOM_LOBBY.nameDisplay.textContent = name; DOM_LOBBY.roomDisplay.style.display = "none"; DOM_LOBBY.viewerDisplay.style.display = "none";
+            DOM_LOBBY.screen.style.display = "none"; DOM_LOBBY.game.style.display = "flex";
+            initGame();
+        });
 
-      // Háttér sáv
-      ctx.fillStyle = 'rgba(255,255,255,0.04)';
-      roundRect(ctx,pad,40,displayW - pad*2,barH,10,true,false);
+        DOM_LOBBY.hostBtn.addEventListener('click', async () => {
+            const name = DOM_LOBBY.nameInput.value.trim();
+            if(!name) { alert("Kérlek írd be a neved a kezdéshez!"); return; }
+            if(!db) { alert("A szerver jelenleg nem elérhető. Kérlek válaszd az Offline módot!"); return; }
+            currentPlayerName = name; window.gameRole = 'host'; isOnlineMode = true; gameState = { taskaErtekek: {}, duel: {active: false} };
+            DOM_LOBBY.nameDisplay.textContent = name;
+            currentRoomCode = generateRoomCode();
+            DOM_LOBBY.roomSpan.textContent = currentRoomCode; DOM_LOBBY.roomDisplay.style.display = "inline-block"; DOM_LOBBY.viewerDisplay.style.display = "inline-block";
+            
+            try {
+                await setDoc(doc(db, "rooms", currentRoomCode), { host: name, created: new Date().toISOString(), viewers:[], gameState: {} });
+                onSnapshot(doc(db, "rooms", currentRoomCode), (docSnap) => {
+                    if (docSnap.exists()) { const data = docSnap.data(); if (data.viewers) DOM_LOBBY.viewerCountSpan.textContent = data.viewers.length; }
+                });
+            } catch(e) { console.error(e); alert("Nem sikerült szobát létrehozni!"); return; }
 
-      // Életben töltött rész
-      ctx.fillStyle = 'rgba(124,58,237,0.95)';
-      roundRect(ctx,pad,40,ageW,barH,10,true,false);
+            DOM_LOBBY.screen.style.display = "none"; DOM_LOBBY.game.style.display = "flex"; initGame();
+        });
 
-      // Hátralévő rész
-      ctx.fillStyle = 'rgba(96,165,250,0.95)';
-      roundRect(ctx,pad + ageW,40,leftW,barH,0,true,false);
+        DOM_LOBBY.duelHostBtn.addEventListener('click', async () => {
+            const name = DOM_LOBBY.nameInput.value.trim();
+            if(!name) { alert("Kérlek írd be a neved a kezdéshez!"); return; }
+            if(!db) { alert("A szerver jelenleg nem elérhető."); return; }
+            
+            currentPlayerName = name; window.gameRole = 'host'; isOnlineMode = true; 
+            currentRoomCode = generateRoomCode();
+            
+            DOM_LOBBY.duelHostBtn.innerHTML = `VÁRAKOZÁS P2-RE... (KÓD: ${currentRoomCode})`;
+            DOM_LOBBY.duelHostBtn.disabled = true;
+            DOM_LOBBY.duelHostBtn.style.animation = "pulse-blue 1.5s infinite alternate";
 
-      // Jelölők és feliratok
-      ctx.fillStyle = '#cfe6ff';
-      ctx.font = '14px system-ui, Arial';
-      ctx.fillText('Életkor: ' + age + ' év', pad, 30);
-      ctx.fillText('Becsült élettartam: ' + Math.round(est) + ' év', displayW - pad - 180, 30);
+            try {
+                await setDoc(doc(db, "rooms", currentRoomCode), { 
+                    host: name, created: new Date().toISOString(), viewers:[], gameState: {}, player2: null 
+                });
+                
+                onSnapshot(doc(db, "rooms", currentRoomCode), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        if (data.viewers) DOM_LOBBY.viewerCountSpan.textContent = data.viewers.length;
+                        
+                        // JAVÍTVA: Csak akkor indítjuk a P2 játékot, ha P2 benne van és a játék még nem aktív
+                        if (data.player2 && (!gameState || !gameState.duel || !gameState.duel.active)) {
+                            startDuelHostGame(data.player2);
+                        }
+                        
+                        // Figyeljük a P2 akcióit Hostként
+                        if (window.gameRole === 'host' && data.p2_action && data.p2_action.ts > lastP2ActionTs) {
+                            lastP2ActionTs = data.p2_action.ts;
+                            const action = data.p2_action;
+                            if (action.type === 'click') {
+                                handleTaskaClick(action.caseId, true);
+                            } else if (action.type === 'decision') {
+                                gameState.duel.p2Decision = action.value;
+                                checkDuelDecisions();
+                            } else if (action.type === 'solo_decision') {
+                                alkuKezelese(gameState.currentOffer, action.value === 'accept' ? 'elfogad' : 'elutasit');
+                            } else if (action.type === 'powerup') {
+                                if (action.value === 'radar') DOM.radarGomb.click();
+                                if (action.value === 'panik') DOM.panikGomb.click();
+                                if (action.value === 'rontgen') DOM.powerupGomb.click();
+                                if (action.value === 'pajzs') DOM.pajzsGomb.click();
+                            }
+                        }
+                    }
+                });
+            } catch(e) { console.error(e); alert("Hiba a szoba létrehozásakor!"); }
+        });
 
-      // Skála évszámok
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
-      for(let i=0;i<=5;i++){
-        const t = Math.round((i/5)*max);
-        const x = pad + (i/5)*(displayW - pad*2);
-        ctx.fillText(t + ' év', x-8, 100 + barH);
-      }
+        function startDuelHostGame(p2Name) {
+            gameState = { 
+                taskaErtekek: {}, 
+                duel: {active: true, p1Name: currentPlayerName, p2Name: p2Name, p1Case: null, p2Case: null, p1Status: 'playing', p2Status: 'playing', turn: 'p1', p1Decision: null, p2Decision: null, p1Offer: 0, p2Offer: 0, p1Winnings: 0, p2Winnings: 0} 
+            };
+            DOM_LOBBY.nameDisplay.textContent = `${currentPlayerName} VS ${p2Name}`;
+            DOM_LOBBY.roomSpan.textContent = currentRoomCode; DOM_LOBBY.roomDisplay.style.display = "inline-block"; DOM_LOBBY.viewerDisplay.style.display = "inline-block";
+            DOM_LOBBY.screen.style.display = "none"; DOM_LOBBY.game.style.display = "flex"; 
+            initGame();
+        }
 
-      ctx.setTransform(1,0,0,1,0,0); // reset scale/transform
-    }
+        DOM_LOBBY.joinP2Btn.addEventListener('click', async () => {
+            const code = DOM_LOBBY.joinInput.value.trim();
+            const name = DOM_LOBBY.nameInput.value.trim();
+            if(!name) { alert("Írd be a neved a P2 csatlakozáshoz!"); return; }
+            if(code.length !== 4 || !db) { alert("Érvényes 4 jegyű szobakód kell!"); return; }
 
-    function roundRect(ctx,x,y,w,h,r,fill,stroke){
-      if(typeof r === 'undefined') r=5;
-      ctx.beginPath();
-      ctx.moveTo(x+r,y);
-      ctx.arcTo(x+w,y,x+w,y+h,r);
-      ctx.arcTo(x+w,y+h,x,y+h,r);
-      ctx.arcTo(x,y+h,x,y,r);
-      ctx.arcTo(x,y,x+w,y,r);
-      ctx.closePath();
-      if(fill) ctx.fill();
-      if(stroke) ctx.stroke();
-    }
+            try {
+                const roomRef = doc(db, "rooms", code);
+                const roomSnap = await getDoc(roomRef);
+                
+                if(roomSnap.exists()) {
+                    window.gameRole = 'p2'; isOnlineMode = true; currentRoomCode = code; currentPlayerName = name;
+                    
+                    await updateDoc(roomRef, { player2: name });
 
-    /* ======= Eseménykezelés ======= */
-    form.addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const data = readForm();
-      if(!data.dob){ alert('Kérlek add meg a születési dátumot!'); return; }
-      const age = calcAge(data.dob);
-      const res = estimateLifeExpectancy(data);
-      updateUI(res, age, data);
-    });
+                    DOM_LOBBY.nameDisplay.textContent = `${roomSnap.data().host} VS ${name}`;
+                    DOM_LOBBY.screen.style.display = "none"; DOM_LOBBY.game.style.display = "flex";
+                    
+                    DOM_LOBBY.roomDisplay.style.display = "inline-block"; DOM_LOBBY.viewerDisplay.style.display = "inline-block"; DOM_LOBBY.roomSpan.textContent = "PÁRBAJ: " + code;
+                    DOM.uzenetekSzoveg.innerHTML = "Csatlakoztál! A Host indítja a játékot...";
+                    
+                    document.getElementById('uj-jatek-gomb').style.display = 'none';
 
-    document.getElementById('resetBtn').addEventListener('click', ()=>{
-      document.getElementById('dob').value = '';
-      document.getElementById('height').value = 175;
-      document.getElementById('weight').value = 75;
-      document.getElementById('exercise').value = 2;
-      document.getElementById('alcohol').value = 3;
-      document.getElementById('sex').value = 'male';
-      document.getElementById('family').value = '0';
-      document.querySelectorAll('[name="smoke"]')[0].checked = true;
-      ageVal.textContent = '--'; lifeVal.textContent='--'; leftVal.textContent='--'; riskVal.textContent='--';
-      explainBox.style.display='none';
-      drawChart(30,80);
-    });
+                    onSnapshot(roomRef, (docSnap) => {
+                        if(!docSnap.exists()) { alert("A Host befejezte a játékot!"); window.location.reload(); return; }
+                        const docData = docSnap.data();
+                        if(docData.viewers) DOM_LOBBY.viewerCountSpan.textContent = docData.viewers.length;
+                        if(docData.boardLayout && document.querySelectorAll('.taska').length === 0) { renderBoard(docData.boardLayout, docData.casesLayout, docData.rejtelyesId); }
+                        if(docData.gameState) renderSpectatorState(docData.gameState);
+                    });
+                } else { alert("A szoba nem található!"); }
+            } catch(e) { console.error(e); }
+        });
 
-    // Mentés képként a vászonról
-    document.getElementById('saveImage').addEventListener('click', ()=>{
-      const link = document.createElement('a');
-      link.download = 'life_expectancy.png';
-      link.href = document.getElementById('lifeChart').toDataURL('image/png');
-      link.click();
-    });
+        DOM_LOBBY.joinBtn.addEventListener('click', async () => {
+            const code = DOM_LOBBY.joinInput.value.trim();
+            if(code.length !== 4 || !db) { alert("Kérlek adj meg egy érvényes 4 jegyű szobakódot!"); return; }
 
-    // Részletek gomb
-    document.getElementById('explainBtn').addEventListener('click', ()=>{
-      explainBox.style.display = (explainBox.style.display === 'block') ? 'none' : 'block';
-    });
+            try {
+                const roomRef = doc(db, "rooms", code);
+                const roomSnap = await getDoc(roomRef);
+                
+                if(roomSnap.exists()) {
+                    window.gameRole = 'spectator'; isOnlineMode = true; currentRoomCode = code;
+                    const joinName = DOM_LOBBY.nameInput.value.trim() || "Néző_" + Math.floor(Math.random()*1000);
+                    currentPlayerName = joinName;
+                    DOM_LOBBY.nameDisplay.textContent = `${joinName} (Nézed: ${roomSnap.data().host})`;
+                    DOM_LOBBY.screen.style.display = "none"; DOM_LOBBY.game.style.display = "flex";
+                    
+                    document.getElementById('taska-racs').style.pointerEvents = 'none'; document.getElementById('info-flipper').style.pointerEvents = 'none';
+                    document.querySelectorAll('.header-btn').forEach(btn => { btn.style.display = 'none'; });
+                    
+                    DOM_LOBBY.roomDisplay.style.display = "inline-block"; DOM_LOBBY.viewerDisplay.style.display = "inline-block"; DOM_LOBBY.roomSpan.textContent = "NÉZED: " + code;
+                    DOM.uzenetekSzoveg.innerHTML = "Várakozás a Játékmesterre...";
 
-    // Kezdeti grafikon
-    window.addEventListener('load', ()=>{
-      drawChart(30,80);
-    });
+                    await updateDoc(roomRef, { viewers: arrayUnion(currentPlayerName) });
 
-    // canvas resize fix
-    window.addEventListener('resize', ()=>{ // újradraw a méretekhez
-      // ha vannak már eredmények, próbáljuk meg újrarajzolni reális értékekkel
-      const ageText = ageVal.textContent.replace(' év','');
-      const lifeText = lifeVal.textContent.replace(' év','');
-      const age = Number(ageText) || 30;
-      const est = Number(lifeText) || 80;
-      drawChart(age, est);
-    });
+                    const data = roomSnap.data();
+                    if(data.boardLayout && data.casesLayout) { renderBoard(data.boardLayout, data.casesLayout, data.rejtelyesId); }
 
-  </script>
+                    onSnapshot(roomRef, (docSnap) => {
+                        if(!docSnap.exists()) { alert("A Host befejezte a játékot vagy kilépett."); window.location.reload(); return; }
+                        const docData = docSnap.data();
+                        if(docData.viewers) DOM_LOBBY.viewerCountSpan.textContent = docData.viewers.length;
+                        if(docData.boardLayout && document.querySelectorAll('.taska').length === 0) { renderBoard(docData.boardLayout, docData.casesLayout, docData.rejtelyesId); }
+                        if(docData.gameState) renderSpectatorState(docData.gameState);
+                    });
+                } else { alert("A szoba nem található!"); }
+            } catch(e) { console.error(e); }
+        });
+
+        // ==========================================
+        // 3. A JÁTÉK LOGIKÁJA 
+        // ==========================================
+
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        const MASTER_PRIZES = {
+            penz:[ 100, 1000, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 750000, 1000000, 1500000, 2500000, 3000000, 5000000, 7500000, 10000000, 15000000, 20000000, 25000000, 50000000, 100000000 ].map(v => ({display: formatValuta(v), value: v, type: 'penz'})),
+            targy:[ 
+                { display: 'Páros Mozijegy', value: 8000, type: 'targy' }, { display: 'Kávéfőző', value: 20000, type: 'targy' },
+                { display: 'Robotporszívó', value: 90000, type: 'targy' }, { display: 'Hőlégballonozás', value: 120000, type: 'targy' },
+                { display: 'Kondibérlet', value: 150000, type: 'targy' }, { display: 'Túró Rudi (Életre)', value: 200000, type: 'targy' },
+                { display: 'Roller', value: 250000, type: 'targy' }, { display: 'Wellness hétvége', value: 400000, type: 'targy' },
+                { display: 'Gamer PC', value: 800000, type: 'targy' }, { display: 'Karibi Utazás', value: 3500000, type: 'targy' },
+                { display: 'Traktor', value: 5000000, type: 'targy' }, { display: 'Sportkocsi', value: 10000000, type: 'targy' },
+                { display: 'Repülőgép', value: 15000000, type: 'targy' }, { display: 'Új Autó', value: 20000000, type: 'targy' }, 
+                { display: 'Gyémánt Fogpiszkáló', value: 22000000, type: 'targy' }, { display: 'Saját Műhold', value: 23000000, type: 'targy' },
+                { display: 'Platina Kuka', value: 24000000, type: 'targy' }, { display: 'Arany WC', value: 25000000, type: 'targy' }
+            ],
+            vicc:[ 
+                { display: 'Lejárt lottószelvény', value: 0, type: 'vicc' }, { display: 'Használt rágó', value: 1, type: 'vicc' }, 
+                { display: 'Kilyukadt lufi', value: 1, type: 'vicc' }, { display: 'Két balos kesztyű', value: 2, type: 'vicc' },
+                { display: 'Lyukas zokni', value: 2, type: 'vicc' }, { display: 'Labubu figura', value: 3, type: 'vicc' }, 
+                { display: 'Zsebszösz gyűjtemény', value: 3, type: 'vicc' }, { display: 'Fél pár papucs', value: 4, type: 'vicc' }, 
+                { display: 'Laci bácsi fakanala', value: 5, type: 'vicc' }, { display: 'Egymillió... pengő', value: 5, type: 'vicc' },
+                { display: 'Szakadt gumiabroncs', value: 5, type: 'vicc' }, { display: 'Leeresztett úszógumi', value: 10, type: 'vicc' }, 
+                { display: 'Gumicsirke', value: 10, type: 'vicc' }, { display: 'Műfogsor', value: 10, type: 'vicc' }, 
+                { display: 'Plüss patkány', value: 50, type: 'vicc' }, { display: 'Műanyag Dínó', value: 100, type: 'vicc' }, 
+                { display: 'Láthatatlan köpeny', value: 100, type: 'vicc' }
+            ]
+        };
+
+        const BANKER_SURPRISE_JOKES =["Használt buszjegy", "Kilyukadt esernyő", "Egy üveg csapvíz", "Fél csomag rágó"];
+
+        const SPECIFIC_TAUNTS = {
+            'Páros Mozijegy': "Na, megúsztad a sorban állást a popcornért! Oda a mozi!",
+            'Kávéfőző': "A Bankár most nagyon bealszik, a kávéfőző elrepült!",
+            'Sportkocsi': "Brumm brumm... Ez a luxusverda kigördült a stúdióból!",
+            'Használt rágó': "Fúj! De legalább már nem ragad a cipődhöz!"
+        };
+
+        const BANKER_NEUTRAL_GOOD_TAUNTS =["A Bankár most tépett szét egy szerződést dühében.", "A Bankár homlokán gyöngyözik a veríték!"];
+        const BANKER_NEUTRAL_BAD_TAUNTS =["A Bankár hátradőlt, kényelmesen kortyolgat.", "Ne is erőlködj, a Bankár már nevet."];
+        const BANKER_STREAK_BAD =["Egy újabb gigantikus összeg a kukában! Brutális...", "Úgy esnek ki a milliók, mint az őszi falevelek."];
+        const BANKER_STREAK_GOOD =["Zsinórban tisztul a tábla apróktól! A Bankár dühöng!", "Valaki állítsa meg ezt az embert!"];
+        const BLUFF_TAUNTS =["Én belelátok a táskákba... Csak szólok, a tiédben egy kacat lapul!"];
+        const EPIC_WIN_MESSAGES =["TÖRTÉNELMI GYŐZELEM! A stúdió felrobban!", "MILLIOMOS LETTÉL! A Bankár felmondott!"];
+        const HAPPY_ENDINGS =["Irány a Maldív-szigetek!", "A NAV már dörzsöli a tenyerét!"];
+        const SAD_ENDINGS =["Legalább az élmény megmarad... meg a buszjegy haza.", "Ebből pont kijön egy sajtburger menü."];
+
+        const DOM = {
+            taskaRacs: document.getElementById('taska-racs'), penzfaBal: document.getElementById('penzfa-bal'), penzfaJobb: document.getElementById('penzfa-jobb'),
+            uzenetekKonteer: document.getElementById('info-front-lap'), uzenetekSzoveg: document.getElementById('uzenetek-szoveg'), 
+            kiegeszitoUzenet: document.getElementById('kiegeszito-uzenet'), bekiabalas: document.getElementById('bekiabalas'),
+            infoFlipper: document.getElementById('info-flipper'),
+            backCim: document.getElementById('back-cim'), backOsszeg: document.getElementById('back-osszeg'),
+            backLeiras: document.getElementById('back-leiras'), backGombokTarolo: document.getElementById('back-gombok-tarolo'),
+            ajanlatTortenet: document.getElementById('ajanlat-tortenet'), ajanlatLista: document.getElementById('ajanlat-lista'),
+            ujJatekGomb: document.getElementById('uj-jatek-gomb'), powerupGomb: document.getElementById('powerup-gomb'),
+            panikGomb: document.getElementById('panik-gomb'), pajzsGomb: document.getElementById('pajzs-gomb'), radarGomb: document.getElementById('radar-gomb'),
+            turnIndicator: document.getElementById('turn-indicator')
+        };
+        
+        let gameState = { taskaErtekek: {}, duel: {active: false} };
+        const NYITASI_SZAMLALO =[6, 5, 4, 3, 2, 1, 1, 1]; 
+        const TOTAL_CASES = 24;
+        let timeBombInterval = null;
+
+        function formatValuta(ertek) { return new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0 }).format(ertek); }
+        function formatNyeremeny(ertek) { return typeof ertek === 'number' ? formatValuta(ertek) : ertek; }
+        function kever(tomb) { let m = tomb.length, t, i; while(m){i=Math.floor(Math.random()*m--);t=tomb[m];tomb[m]=tomb[i];tomb[i]=t;} return tomb; }
+        function getRandomElem(tomb) { return tomb[Math.floor(Math.random() * tomb.length)]; }
+        function wait(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+        // --- P2 AKCIÓ KÜLDÉS ---
+        window.sendP2Action = async function(actionObj) {
+            if (window.gameRole === 'p2' && db && currentRoomCode) {
+                actionObj.ts = Date.now();
+                await updateDoc(doc(db, "rooms", currentRoomCode), { p2_action: actionObj });
+            }
+        };
+
+        async function syncGameState() {
+            if(!db || !currentRoomCode || window.gameRole !== 'host' || !isOnlineMode) return;
+            try {
+                const kiesettPenzfaIds = Array.from(document.querySelectorAll('.penzfa-elem.kiesett')).map(el => el.dataset.uid);
+                
+                const minimalState = {
+                    duel: gameState.duel,
+                    currentOffer: gameState.currentOffer || 0,
+                    sajatTaska: gameState.sajatTaska, uzenetFo: DOM.uzenetekSzoveg.innerHTML, uzenetKieg: DOM.kiegeszitoUzenet.innerHTML,
+                    bekiabalas: DOM.bekiabalas.innerHTML, aktualisKor: gameState.aktualisKor, megNyitando: gameState.megNyitando,
+                    isFlipped: DOM.infoFlipper.classList.contains('flipped'), backCim: DOM.backCim.innerHTML, backOsszeg: DOM.backOsszeg.innerHTML,
+                    backLeiras: DOM.backLeiras.innerHTML, kiesettPenzfaIds: kiesettPenzfaIds, ajanlatListaHtml: DOM.ajanlatLista.innerHTML,
+                    ajanlatTortenetRejtett: DOM.ajanlatTortenet.classList.contains('rejtett'), boardClass: document.body.className,
+                    isEpicWin: document.getElementById('fireworks-container') !== null,
+                    powerups: {
+                        rontgen: { text: DOM.powerupGomb.innerHTML, disabled: DOM.powerupGomb.disabled },
+                        panik: { text: DOM.panikGomb.innerHTML, disabled: DOM.panikGomb.disabled },
+                        pajzs: { text: DOM.pajzsGomb.innerHTML, disabled: DOM.pajzsGomb.disabled },
+                        radar: { text: DOM.radarGomb.innerHTML, disabled: DOM.radarGomb.disabled }
+                    },
+                    caseStates: Array.from(document.querySelectorAll('.taska')).map(el => ({
+                        id: el.dataset.taskaId,
+                        isOpen: el.classList.contains('nyitott'), isAnimating: el.classList.contains('animacio-nyitas'),
+                        isPeek: el.classList.contains('animacio-rontgen'), isMine: el.classList.contains('sajat-taskam'),
+                        isBlinking: el.classList.contains('villogo-vegsokattintas'), isRadar: el.classList.contains('radar-celpont'),
+                        isTusz: el.classList.contains('tusz-celpont'), isShuffle: el.classList.contains('animacio-keveres')
+                    }))
+                };
+                
+                await updateDoc(doc(db, "rooms", currentRoomCode), { gameState: minimalState, lastUpdated: new Date().toISOString() });
+            } catch(e) { console.log(e); }
+        }
+
+        function renderSpectatorState(data) {
+            if (data.duel && data.duel.active) {
+                gameState.duel = data.duel;
+                DOM.turnIndicator.style.display = "block";
+                
+                if (data.duel.turn === 'p1') {
+                    DOM.turnIndicator.innerHTML = `Most te jössz: ${data.duel.p1Name} (P1)`;
+                    DOM.turnIndicator.style.borderColor = "var(--p1-color)"; DOM.turnIndicator.style.color = "var(--p1-color)";
+                } else if (data.duel.turn === 'p2') {
+                    DOM.turnIndicator.innerHTML = `Most te jössz: ${data.duel.p2Name} (P2)`;
+                    DOM.turnIndicator.style.borderColor = "var(--p2-color)"; DOM.turnIndicator.style.color = "var(--p2-color)";
+                }
+
+                if (data.duel.p1Status === 'accepted' && data.duel.p2Status === 'accepted') DOM.turnIndicator.style.display = "none";
+            } else {
+                DOM.turnIndicator.style.display = "none";
+            }
+
+            if (data.caseStates) {
+                data.caseStates.forEach(cs => {
+                    const el = document.querySelector(`.taska[data-taska-id='${cs.id}']`);
+                    if (el) {
+                        if(cs.isOpen) el.classList.add('nyitott'); else el.classList.remove('nyitott');
+                        if(cs.isAnimating) el.classList.add('animacio-nyitas'); else el.classList.remove('animacio-nyitas');
+                        if(cs.isPeek) el.classList.add('animacio-rontgen'); else el.classList.remove('animacio-rontgen');
+                        if(cs.isBlinking) el.classList.add('villogo-vegsokattintas'); else el.classList.remove('villogo-vegsokattintas');
+                        if(cs.isRadar) el.classList.add('radar-celpont'); else el.classList.remove('radar-celpont');
+                        if(cs.isTusz) el.classList.add('tusz-celpont'); else el.classList.remove('tusz-celpont');
+                        if(cs.isShuffle) el.classList.add('animacio-keveres'); else el.classList.remove('animacio-keveres');
+                        
+                        el.classList.remove('sajat-taskam', 'sajat-p1', 'sajat-p2');
+                        if (data.duel && data.duel.active) {
+                            if (cs.id == data.duel.p1Case) el.classList.add('sajat-p1');
+                            if (cs.id == data.duel.p2Case) el.classList.add('sajat-p2');
+                        } else {
+                            if(cs.isMine) el.classList.add('sajat-taskam');
+                        }
+                    }
+                });
+            }
+
+            if(data.kiesettPenzfaIds) {
+                document.querySelectorAll('.penzfa-elem').forEach(el => {
+                    if(data.kiesettPenzfaIds.includes(el.dataset.uid)) { el.classList.remove('aktiv'); el.classList.add('kiesett'); } 
+                    else { el.classList.remove('kiesett'); el.classList.add('aktiv'); }
+                });
+            }
+
+            if(data.boardClass !== undefined) { document.body.className = data.boardClass; }
+            if(data.isEpicWin && !document.getElementById('fireworks-container')) { startCelebration(); }
+
+            if(data.powerups) {
+                let isP2 = (window.gameRole === 'p2');
+                
+                DOM.powerupGomb.innerHTML = data.powerups.rontgen.text; 
+                DOM.powerupGomb.disabled = isP2 ? data.powerups.rontgen.disabled : true;
+                DOM.powerupGomb.style.background = data.powerups.rontgen.disabled ? "linear-gradient(to bottom, #444, #222)" : "";
+                
+                DOM.panikGomb.innerHTML = data.powerups.panik.text; 
+                DOM.panikGomb.disabled = isP2 ? data.powerups.panik.disabled : true;
+                DOM.panikGomb.style.background = data.powerups.panik.disabled ? "linear-gradient(to bottom, #444, #222)" : "";
+                
+                DOM.pajzsGomb.innerHTML = data.powerups.pajzs.text; 
+                DOM.pajzsGomb.disabled = isP2 ? data.powerups.pajzs.disabled : true;
+                DOM.pajzsGomb.style.background = data.powerups.pajzs.disabled ? "linear-gradient(to bottom, #444, #222)" : "";
+
+                DOM.radarGomb.innerHTML = data.powerups.radar.text; 
+                DOM.radarGomb.disabled = isP2 ? data.powerups.radar.disabled : true;
+                DOM.radarGomb.style.background = data.powerups.radar.disabled ? "linear-gradient(to bottom, #444, #222)" : "";
+            }
+
+            if(data.ajanlatTortenetRejtett === false) {
+                DOM.ajanlatTortenet.classList.remove('rejtett'); DOM.ajanlatLista.innerHTML = data.ajanlatListaHtml || '';
+            } else { DOM.ajanlatTortenet.classList.add('rejtett'); }
+
+            if(!data.isFlipped) {
+                DOM.infoFlipper.classList.remove('flipped'); DOM.uzenetekSzoveg.innerHTML = data.uzenetFo; DOM.kiegeszitoUzenet.innerHTML = data.uzenetKieg;
+                DOM.kiegeszitoUzenet.style.display = data.uzenetKieg ? 'block' : 'none'; DOM.bekiabalas.innerHTML = data.bekiabalas; DOM.bekiabalas.style.display = data.bekiabalas ? 'block' : 'none';
+            } else {
+                DOM.infoFlipper.classList.add('flipped'); DOM.backCim.innerHTML = data.backCim; DOM.backOsszeg.innerHTML = data.backOsszeg;
+                DOM.backLeiras.innerHTML = data.backLeiras;
+                
+                // JAVÍTÁS: P2 DÖNTÉSEK MEGJELENÍTÉSE
+                if (window.gameRole === 'p2') {
+                    if (data.backGombokTarolo.includes("hostDuelDecision") && data.duel && data.duel.p2Decision === null && data.duel.p2Status === 'playing') {
+                        DOM.backGombokTarolo.innerHTML = `
+                            <button class="back-gomb btn-elfogad" onclick="this.innerText='Küldés...'; sendP2Action({type:'decision', value:'accept'})">ELFOGADOM a sajátom!</button>
+                            <button class="back-gomb btn-elutasit" onclick="this.innerText='Küldés...'; sendP2Action({type:'decision', value:'reject'})">NINCS ALKU!</button>
+                        `;
+                    } else if (data.backGombokTarolo.includes("alkuKezelese") && data.duel && data.duel.p2Status === 'playing' && data.duel.p1Status === 'accepted') {
+                        DOM.backGombokTarolo.innerHTML = `
+                            <button class="back-gomb btn-elfogad" onclick="this.innerText='Küldés...'; sendP2Action({type:'solo_decision', value:'accept'})">ÁLL AZ ALKU!</button>
+                            <button class="back-gomb btn-elutasit" onclick="this.innerText='Küldés...'; sendP2Action({type:'solo_decision', value:'reject'})">NINCS ALKU!</button>
+                        `;
+                    } else {
+                        DOM.backGombokTarolo.innerHTML = '<span style="color:var(--gold); font-weight:bold;">Várakozás a Hostra (P1)...</span>';
+                    }
+                }
+            }
+        }
+
+        // =====================================
+        // FÜGGVÉNYEK 
+        // =====================================
+        function mutassUzenetet(fő, kiegeszito = "", bekiabalas = "", isPhoneCall = false) {
+            DOM.uzenetekSzoveg.innerHTML = fő; DOM.kiegeszitoUzenet.innerHTML = kiegeszito; DOM.kiegeszitoUzenet.style.display = kiegeszito ? 'block' : 'none';
+            DOM.bekiabalas.innerHTML = bekiabalas; DOM.bekiabalas.style.display = bekiabalas ? 'block' : 'none';
+            if (isPhoneCall) DOM.uzenetekKonteer.classList.add('telefon-hivas-aktiv'); else DOM.uzenetekKonteer.classList.remove('telefon-hivas-aktiv');
+            syncGameState();
+        }
+
+        function mutassFlipAjanlat(cim, osszegHTML, leiras, gombok) {
+            DOM.backCim.innerHTML = cim; DOM.backOsszeg.innerHTML = osszegHTML; DOM.backLeiras.innerHTML = leiras; DOM.backGombokTarolo.innerHTML = '';
+            gombok.forEach(g => {
+                const btn = document.createElement('button'); btn.className = `back-gomb ${g.osztaly}`; btn.innerHTML = g.szoveg;
+                btn.onclick = () => { g.akcio(); }; DOM.backGombokTarolo.appendChild(btn);
+            });
+            DOM.infoFlipper.classList.add('flipped'); syncGameState();
+        }
+
+        function rejtFlipAjanlat() {
+            DOM.infoFlipper.classList.remove('flipped'); DOM.uzenetekKonteer.classList.remove('telefon-hivas-aktiv');
+            if(timeBombInterval) { clearInterval(timeBombInterval); timeBombInterval = null; }
+            syncGameState();
+        }
+
+        function startCelebration() {
+            if(document.getElementById('fireworks-container')) return;
+            const container = document.createElement('div'); container.id = 'fireworks-container'; document.querySelector('.container').appendChild(container);
+            const colors =['#f8b500', '#10b981', '#ef4444', '#3b82f6', '#ec4899', '#fff'];
+            for (let i = 0; i < 300; i++) {
+                const conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = -10 - Math.random() * 20 + 'vh';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDuration = (Math.random() * 4 + 4) + 's'; conf.style.animationDelay = (Math.random() * 8) + 's'; 
+                if (Math.random() > 0.5) conf.style.borderRadius = '50%'; container.appendChild(conf);
+            }
+            setTimeout(() => { if(container.parentNode) container.remove(); }, 16000);
+        }
+
+        function getTierClass(value) {
+            if (value < 1000) return 'prize-tier-joke'; if (value < 100000) return 'prize-tier-small';
+            if (value < 1000000) return 'prize-tier-medium'; if (value < 10000000) return 'prize-tier-large'; return 'prize-tier-huge';
+        }
+
+        function frissitStudioHangulat(boardHealth) {
+            if(gameState.isBlackout) return; 
+            if (boardHealth > 1.3) { document.body.classList.add('bg-winning'); document.body.classList.remove('bg-losing'); } 
+            else if (boardHealth < 0.7) { document.body.classList.add('bg-losing'); document.body.classList.remove('bg-winning'); } 
+            else { document.body.classList.remove('bg-winning', 'bg-losing'); }
+        }
+
+        function ujraFlipAjanlat(cim, osszegHTML, leiras, gombok) {
+            DOM.infoFlipper.classList.remove('flipped'); setTimeout(() => { mutassFlipAjanlat(cim, osszegHTML, leiras, gombok); }, 500);
+        }
+
+        function generatePrizes() {
+            const selected =[];
+            const takeFrom = (source, count) => { const shuffled = kever([...source]); for(let i=0; i<count; i++) selected.push(shuffled[i]); };
+            selected.push(MASTER_PRIZES.penz[MASTER_PRIZES.penz.length - 1]); selected.push(MASTER_PRIZES.penz[MASTER_PRIZES.penz.length - 2]);
+            takeFrom(MASTER_PRIZES.vicc, 2); takeFrom(MASTER_PRIZES.penz.slice(0, 5), 4);
+            takeFrom(MASTER_PRIZES.targy.filter(t => t.value < 400000), 2); takeFrom(MASTER_PRIZES.penz.slice(5, 12), 7);
+            takeFrom(MASTER_PRIZES.targy.filter(t => t.value >= 400000), 2); takeFrom(MASTER_PRIZES.penz.slice(12, MASTER_PRIZES.penz.length-2), 5);
+            return selected.map((p, index) => ({ ...p, uId: index + 1 })).sort((a, b) => a.value - b.value);
+        }
+
+        function renderBoard(nyeremenyek, kevertNyeremenyek, rejtelyesId) {
+            if (!gameState) gameState = {}; if (!gameState.taskaErtekek) gameState.taskaErtekek = {};
+            const getIcon = (ny) => ny.type === 'targy' ? '🎁' : (ny.type === 'vicc' ? '🤡' : '💰');
+            
+            DOM.penzfaBal.innerHTML = nyeremenyek.slice(0, 12).map(ny => `<li data-uid="${ny.uId}" class="penzfa-elem aktiv bal-oldal ${getTierClass(ny.value)}"><span class="tipus-icon">${getIcon(ny)}</span> <span class="prize-text">${ny.display}</span></li>`).join('');
+            DOM.penzfaJobb.innerHTML = nyeremenyek.slice(12).map(ny => `<li data-uid="${ny.uId}" class="penzfa-elem aktiv jobb-oldal ${getTierClass(ny.value)}"><span class="prize-text">${ny.display}</span> <span class="tipus-icon">${getIcon(ny)}</span></li>`).join('');
+            
+            DOM.taskaRacs.innerHTML = ''; 
+            for (let i = 1; i <= TOTAL_CASES; i++) {
+                gameState.taskaErtekek[i] = kevertNyeremenyek[i - 1]; 
+                const taskaElem = document.createElement('div'); taskaElem.className = 'taska' + (i === rejtelyesId ? ' rejtelyes' : ''); 
+                taskaElem.dataset.taskaId = i;
+                taskaElem.innerHTML = `<div class="taska-front"><div class="taska-szam">${i}</div></div><div class="taska-hatlap"><div class="taska-osszeg">${kevertNyeremenyek[i-1].display}</div></div>`;
+                
+                taskaElem.addEventListener('click', () => {
+                    if (window.gameRole === 'p2') window.sendP2Action({ type: 'click', caseId: i });
+                    else if (window.gameRole === 'host' || window.gameRole === 'solo') handleTaskaClick(i);
+                });
+                DOM.taskaRacs.appendChild(taskaElem);
+            }
+        }
+
+        function frissitPajzsGomb() {
+            if (gameState.shieldCount > 0) { DOM.pajzsGomb.disabled = false; DOM.pajzsGomb.innerHTML = `🛡️ Pajzs (x${gameState.shieldCount})`; } 
+            else { DOM.pajzsGomb.disabled = true; DOM.pajzsGomb.innerHTML = "🛡️ Használva"; }
+        }
+
+        function initGame() {
+            const existingFireworks = document.getElementById('fireworks-container'); if(existingFireworks) existingFireworks.remove();
+            if(timeBombInterval) { clearInterval(timeBombInterval); timeBombInterval = null; }
+            document.body.className = '';
+
+            const nyeremenyek = generatePrizes(); const initialAverage = nyeremenyek.reduce((a, b) => a + b.value, 0) / nyeremenyek.length;
+            const kevertNyeremenyek = kever([...nyeremenyek]); const rejtelyesId = Math.floor(Math.random() * TOTAL_CASES) + 1;
+
+            let isDuel = gameState.duel && gameState.duel.active;
+
+            gameState = { 
+                duel: isDuel ? gameState.duel : {active: false},
+                currentOffer: 0,
+                isPanicOffer: false, bloodPactActive: false, nextOfferMultiplier: null, duelPenalty: null,
+                allapot: isDuel ? 'p1_valasztas' : 'sajat_valasztas', sajatTaska: null, taskaErtekek: {}, maradekNyeremenyek:[...nyeremenyek], 
+                aktualisKor: 0, megNyitando: NYITASI_SZAMLALO[0], offerHistory:[], nyertOsszeg: 0, bonuszPenz: 0,
+                marEladta: false, lilaSajat: false, isProcessingClick: false, initialAverage: initialAverage, badStreak: 0, goodStreak: 0, elvesztettNagyok:[], 
+                hasznaltRontgen: false, isRontgenAktiv: false, rontgenLejart: false, hasznaltPanikgomb: false, hasznaltVisszaajanlas: false,
+                shieldCount: 1, isPajzsAktiv: false, shieldCaseId: Math.floor(Math.random() * TOTAL_CASES) + 1, kihivasBuntetes: false, kihivasEredetiAjanlat: 0,
+                hasznaltRadar: false, isRadarAktiv: false, timeMachinePenalty: 0, isBlackout: false, blackoutKinyitott:[]
+            };
+            
+            rejtFlipAjanlat(); DOM.ajanlatTortenet.classList.add('rejtett'); DOM.ajanlatLista.innerHTML = ''; 
+            
+            DOM.powerupGomb.disabled = false; DOM.powerupGomb.innerHTML = "👁️ Röntgen";
+            DOM.panikGomb.disabled = true; DOM.panikGomb.innerHTML = "🚨 Pánik";
+            DOM.radarGomb.disabled = true; DOM.radarGomb.innerHTML = "📡 Radar";
+            frissitPajzsGomb();
+            DOM.turnIndicator.style.display = "none";
+            
+            if (isDuel) {
+                mutassUzenetet("Kezdődik a PÁRBAJ!", `${gameState.duel.p1Name} (P1), válaszd ki a saját táskád!`);
+                updateTurnIndicator();
+            } else {
+                mutassUzenetet("Kezdődik a játék!", "Kattints arra a táskára, amit hazavinnél!");
+            }
+            
+            renderBoard(nyeremenyek, kevertNyeremenyek, rejtelyesId);
+
+            if(window.gameRole === 'host') {
+                updateDoc(doc(db, "rooms", currentRoomCode), { boardLayout: nyeremenyek, casesLayout: kevertNyeremenyek, rejtelyesId: rejtelyesId }).then(() => syncGameState());
+            }
+        }
+
+        function updateTurnIndicator() {
+            if (!gameState.duel.active) return;
+            DOM.turnIndicator.style.display = "block";
+            if (gameState.duel.turn === 'p1') {
+                DOM.turnIndicator.innerHTML = `Most te jössz: ${gameState.duel.p1Name} (P1)`;
+                DOM.turnIndicator.style.borderColor = "var(--p1-color)"; DOM.turnIndicator.style.color = "var(--p1-color)";
+            } else {
+                DOM.turnIndicator.innerHTML = `Most te jössz: ${gameState.duel.p2Name} (P2)`;
+                DOM.turnIndicator.style.borderColor = "var(--p2-color)"; DOM.turnIndicator.style.color = "var(--p2-color)";
+            }
+        }
+
+        function switchTurn() {
+            if (!gameState.duel.active) return;
+            if (gameState.duel.p1Status === 'playing' && gameState.duel.p2Status === 'playing') {
+                gameState.duel.turn = gameState.duel.turn === 'p1' ? 'p2' : 'p1';
+            } else if (gameState.duel.p1Status === 'playing') {
+                gameState.duel.turn = 'p1';
+            } else {
+                gameState.duel.turn = 'p2';
+            }
+            updateTurnIndicator();
+        }
+
+        DOM.radarGomb.addEventListener('click', async () => {
+            if (window.gameRole === 'p2') { window.sendP2Action({type: 'powerup', value: 'radar'}); return; }
+            if (gameState.hasznaltRadar || gameState.allapot !== 'nyitogatas' || gameState.isProcessingClick) return;
+            gameState.hasznaltRadar = true; DOM.radarGomb.disabled = true; DOM.radarGomb.innerHTML = "📡 Használva";
+            gameState.isProcessingClick = true;
+
+            mutassUzenetet("RADAR BEKAPCSOLVA!", "A gép keresi a legnagyobb összeget...", "", true); await wait(2500);
+
+            const closedCases = Array.from(document.querySelectorAll('.taska:not(.nyitott):not(.sajat-taskam):not(.sajat-p1):not(.sajat-p2)'));
+            if(closedCases.length >= 3) {
+                closedCases.sort((a,b) => gameState.taskaErtekek[b.dataset.taskaId].value - gameState.taskaErtekek[a.dataset.taskaId].value);
+                const maxCase = closedCases[0]; 
+                const rest = kever(closedCases.slice(1));
+                const targets = kever([maxCase, rest[0], rest[1]]);
+                
+                targets.forEach(t => t.classList.add('radar-celpont'));
+                mutassUzenetet("CÉLPONTOK MEGTALÁLVA!", "A 3 sárga táska egyike biztosan a bent lévő LEGNAGYOBB nyereményt rejti!");
+                syncGameState(); 
+                
+                await wait(4000);
+
+                targets.forEach(t => t.classList.remove('radar-celpont'));
+                DOM.uzenetekKonteer.classList.remove('telefon-hivas-aktiv');
+                mutassUzenetet("RADAR KIKAPCSOLVA!", "Remélem megjegyezted őket! Folytasd a nyitást.");
+                syncGameState();
+                
+                await wait(2000);
+            } else { DOM.uzenetekKonteer.classList.remove('telefon-hivas-aktiv'); }
+            
+            frissitNyitasiSzoveg(); gameState.isProcessingClick = false;
+        });
+
+        DOM.panikGomb.addEventListener('click', async () => {
+            if (window.gameRole === 'p2') { window.sendP2Action({type: 'powerup', value: 'panik'}); return; }
+            if (gameState.hasznaltPanikgomb || gameState.allapot !== 'nyitogatas' || gameState.marEladta || gameState.isProcessingClick) return;
+            gameState.hasznaltPanikgomb = true; DOM.panikGomb.disabled = true; DOM.panikGomb.innerHTML = "🚨 Használva";
+            gameState.isProcessingClick = true;
+            mutassUzenetet("PÁNIKGOMB AKTIVÁLVA!", "Megállítottad a játékot! A Bankár AZONNAL ad egy ajánlatot!", "Azonnali Hívás...", true);
+            await wait(3500); 
+            kiertekelKorVege(true); 
+        });
+
+        DOM.powerupGomb.addEventListener('click', () => {
+            if (window.gameRole === 'p2') { window.sendP2Action({type: 'powerup', value: 'rontgen'}); return; }
+            if (gameState.hasznaltRontgen || gameState.rontgenLejart || gameState.allapot.includes('valasztas') || gameState.allapot === 'vegsokattintas') return;
+            if (gameState.isProcessingClick || gameState.isPajzsAktiv) return; 
+            gameState.isRontgenAktiv = true; DOM.powerupGomb.disabled = true; DOM.powerupGomb.innerHTML = "👁️ Használva";
+            mutassUzenetet("RÖNTGEN SZEMÜVEG AKTÍV!", "Kattints egy zárt táskára, hogy meglásd mi van benne!", "De vigyázz, a táska utána VISSZAZÁRUL!");
+            document.querySelectorAll('.taska:not(.nyitott):not(.sajat-taskam):not(.sajat-p1):not(.sajat-p2)').forEach(t => t.classList.add('rontgen-celpont')); syncGameState();
+        });
+
+        DOM.pajzsGomb.addEventListener('click', () => {
+            if (window.gameRole === 'p2') { window.sendP2Action({type: 'powerup', value: 'pajzs'}); return; }
+            if (gameState.shieldCount <= 0 || gameState.allapot !== 'nyitogatas' || gameState.isProcessingClick) return;
+            if (gameState.isRontgenAktiv || gameState.isPajzsAktiv) return;
+            gameState.isPajzsAktiv = true; gameState.shieldCount--; frissitPajzsGomb();
+            mutassUzenetet("VÉDŐPAJZS AKTIVÁLVA!", "A következő kinyitott táskád védve van!", "Ha a nyeremény 1 Millió vagy afeletti, a táska VISSZAZÁRUL!");
+            document.querySelectorAll('.taska:not(.nyitott):not(.sajat-taskam):not(.sajat-p1):not(.sajat-p2)').forEach(t => t.classList.add('pajzs-celpont')); syncGameState();
+        });
+
+        async function handleTaskaClick(id, isFromP2 = false) {
+            if (gameState.isProcessingClick) return;
+
+            if (gameState.duel.active) {
+                if (!isFromP2 && gameState.duel.turn === 'p2') { mutassUzenetet("Várj!", `Most ${gameState.duel.p2Name} (P2) jön!`); return; }
+                if (isFromP2 && gameState.duel.turn === 'p1') return; 
+            }
+
+            const taskaElem = document.querySelector(`.taska[data-taska-id='${id}']`);
+            if (!taskaElem || taskaElem.classList.contains('nyitott')) return;
+
+            if (gameState.duel.active && (id == gameState.duel.p1Case || id == gameState.duel.p2Case)) return;
+            if (!gameState.duel.active && id == gameState.sajatTaska && gameState.allapot !== 'vegsokattintas') return;
+
+            if (gameState.allapot === 'vegsokattintas') {
+                gameState.isProcessingClick = true; await kinyitVegsoTaska(id);
+                return;
+            }
+
+            if (gameState.allapot === 'p1_valasztas') {
+                gameState.duel.p1Case = id; taskaElem.classList.add('sajat-p1');
+                gameState.allapot = 'p2_valasztas'; gameState.duel.turn = 'p2';
+                mutassUzenetet(`${gameState.duel.p2Name} jön!`, "P2, válaszd ki a te táskádat!");
+                updateTurnIndicator(); syncGameState(); return;
+            }
+
+            if (gameState.allapot === 'p2_valasztas') {
+                gameState.duel.p2Case = id; taskaElem.classList.add('sajat-p2');
+                gameState.allapot = 'nyitogatas'; gameState.duel.turn = 'p1';
+                DOM.panikGomb.disabled = false; DOM.radarGomb.disabled = false; frissitPajzsGomb();
+                mutassUzenetet("Táskák kiválasztva!", "Jöhet a nyitogatás! P1 kezd.");
+                updateTurnIndicator(); frissitNyitasiSzoveg(); syncGameState(); return;
+            }
+
+            if (gameState.allapot === 'sajat_valasztas') {
+                gameState.sajatTaska = id; taskaElem.classList.add('sajat-taskam'); 
+                DOM.panikGomb.disabled = false; DOM.radarGomb.disabled = false; frissitPajzsGomb();
+                
+                const valasztottSzoveg = `A(z) ${id}. táska a tiéd!`;
+                if (taskaElem.classList.contains('rejtelyes')) {
+                    gameState.lilaSajat = true; mutassUzenetet("A LILA TÁSKÁT VÁLASZTOTTAD!", valasztottSzoveg, "A Bankár retteg ettől!");
+                } else { mutassUzenetet("Kiváló! Jöhet a nyitogatás!", valasztottSzoveg); }
+                
+                if(isOnlineMode) syncGameState();
+                await wait(2500); gameState.allapot = 'nyitogatas'; frissitNyitasiSzoveg(); gameState.isProcessingClick = false; return;
+            } 
+            
+            if (gameState.allapot === 'kihivas_nyitas') { await kinyitKihivasTaska(id); return; }
+
+            gameState.isProcessingClick = true;
+            taskaElem.classList.remove('radar-celpont');
+
+            if (gameState.isRontgenAktiv) {
+                document.querySelectorAll('.taska').forEach(t => t.classList.remove('rontgen-celpont'));
+                gameState.isRontgenAktiv = false; gameState.hasznaltRontgen = true; taskaElem.classList.add('animacio-rontgen'); syncGameState();
+                mutassUzenetet("👁️ Röntgen bekapcsolva...", "Lássuk mi lapul bent!"); await wait(2500); taskaElem.classList.remove('animacio-rontgen');
+                mutassUzenetet("Röntgen kikapcsolva!", "Az infót megjegyezted. Jöhet a folytatás!", "A táska visszazárult."); await wait(2000);
+                frissitNyitasiSzoveg(); gameState.isProcessingClick = false; return;
+            }
+
+            if (gameState.isPajzsAktiv) {
+                document.querySelectorAll('.taska').forEach(t => t.classList.remove('pajzs-celpont'));
+                gameState.isPajzsAktiv = false; const nyeremeny = gameState.taskaErtekek[id];
+                if (nyeremeny.value >= 1000000) {
+                    mutassUzenetet("🛡️ A PAJZS MEGNYÍLT ÉS FELFOGTA A CSAPÁST!", `A(z) ${id}. táskában óriási összeg (${nyeremeny.display}) volt!`, "A táska visszazárult!");
+                    taskaElem.style.animation = "shake-and-flip 0.5s ease-in-out reverse"; await wait(1000); taskaElem.style.animation = "";
+                    await wait(2500); frissitNyitasiSzoveg(); gameState.isProcessingClick = false; return;
+                } else { mutassUzenetet("🛡️ A PAJZS AKTIVÁLÓDOTT...", "De a nyeremény nem volt veszélyes.", "A pajzs elveszett."); await wait(2000); }
+            }
+
+            if (gameState.allapot === 'szabad_csere') {
+                document.querySelector(`.taska[data-taska-id='${gameState.sajatTaska}']`).classList.remove('sajat-taskam');
+                gameState.sajatTaska = id; taskaElem.classList.add('sajat-taskam');
+                mutassUzenetet("Sikeres csere!", `Az új táskád a(z) ${id}. lett! A játék folytatódik.`);
+                rogzitAjanlat(`Szabad Csere (${id}. táskára)`, 'Elfogadva');
+                gameState.allapot = 'nyitogatas'; setTimeout(folytatNyitasUtan, 3000); return;
+            }
+
+            if (gameState.allapot === 'nyitogatas' || gameState.allapot === 'alku_elfogadva_kijatszas') {
+                await kinyitTaska(id); 
+            }
+        }
+
+        async function kinyitKihivasTaska(id) {
+            gameState.isProcessingClick = true; document.querySelectorAll('.kihivas-celpont').forEach(t => t.classList.remove('kihivas-celpont'));
+            const taskaElem = document.querySelector(`.taska[data-taska-id='${id}']`); const nyeremeny = gameState.taskaErtekek[id];
+
+            taskaElem.classList.add('animacio-nyitas'); syncGameState(); mutassUzenetet("KIHÍVÁS...", "Nyílik a táska...");
+            await wait(1200); taskaElem.classList.remove('animacio-nyitas'); taskaElem.classList.add('nyitott');
+            document.querySelector(`li[data-uid='${nyeremeny.uId}']`).classList.replace('aktiv', 'kiesett'); syncGameState();
+            
+            gameState.maradekNyeremenyek = gameState.maradekNyeremenyek.filter(n => n.uId !== nyeremeny.uId);
+            
+            let isLargeOut = nyeremeny.value >= 1000000;
+            if (!isLargeOut) { gameState.bonuszPenz += 500000; mutassUzenetet("A BANKÁR VESZÍTETT!", `Kicsi esett ki (${nyeremeny.display})!`, "+ 500.000 Ft a bónusz számládra!"); } 
+            else { gameState.kihivasBuntetes = true; mutassUzenetet("A BANKÁR NYERT!", `Óriási pénzt találtál (${nyeremeny.display})!`, "Az ajánlat 25%-kal csökken!"); }
+            await wait(4000);
+
+            let vegsAjanlat = gameState.kihivasEredetiAjanlat;
+            if (gameState.kihivasBuntetes) { vegsAjanlat = Math.round((vegsAjanlat * 0.75) / 100) * 100; gameState.kihivasBuntetes = false; }
+            
+            if (gameState.allapot !== 'alku_elfogadva_kijatszas') gameState.allapot = 'nyitogatas'; 
+            gameState.isProcessingClick = false; bankarAjanlatotTesz(vegsAjanlat);
+        }
+
+        async function kinyitTaska(id, bypassBlackoutCheck = false) {
+            const taskaElem = document.querySelector(`.taska[data-taska-id='${id}']`);
+            const nyeremeny = gameState.taskaErtekek[id];
+
+            taskaElem.classList.add('animacio-nyitas'); syncGameState(); mutassUzenetet("Feszültség...", "Nyílik a táska..."); await wait(1200); 
+            taskaElem.classList.remove('animacio-nyitas'); taskaElem.classList.add('nyitott'); 
+            syncGameState();
+
+            if (gameState.isBlackout && !bypassBlackoutCheck) {
+                gameState.blackoutKinyitott.push(nyeremeny);
+                mutassUzenetet("SÖTÉTSÉG...", "A táska kinyílt, de nem látni mi van benne!", "A Bankár nevet a sötétben...");
+                await wait(2500); folytatNyitasUtan(); return;
+            }
+
+            document.querySelector(`li[data-uid='${nyeremeny.uId}']`).classList.replace('aktiv', 'kiesett');
+            gameState.maradekNyeremenyek = gameState.maradekNyeremenyek.filter(n => n.uId !== nyeremeny.uId);
+            
+            const newAtlag = gameState.maradekNyeremenyek.reduce((a, b) => a + b.value, 0) / Math.max(1, gameState.maradekNyeremenyek.length);
+            const boardHealth = newAtlag / gameState.initialAverage;
+            frissitStudioHangulat(boardHealth);
+            
+            let isLargeOut = (nyeremeny.value >= 1000000 || nyeremeny.value > newAtlag * 1.5);
+            let főUzenet = ""; let bekiabalas = "";
+
+            if (!gameState.marEladta) {
+                if (isLargeOut) {
+                    gameState.badStreak++; gameState.goodStreak = 0; if (nyeremeny.value >= 10000000) gameState.elvesztettNagyok.push(nyeremeny.display);
+                    főUzenet = "Fájdalmas!"; if (nyeremeny.type === 'targy') főUzenet = "Oda a luxus!";
+                } else {
+                    gameState.goodStreak++; gameState.badStreak = 0; főUzenet = "Szuper!"; if (nyeremeny.type === 'vicc') főUzenet = "Szemét a kukában!";
+                }
+
+                if (gameState.badStreak >= 3) bekiabalas = getRandomElem(BANKER_STREAK_BAD);
+                else if (gameState.goodStreak >= 3) bekiabalas = getRandomElem(BANKER_STREAK_GOOD);
+                else {
+                    if (boardHealth > 1.2) bekiabalas = isLargeOut ? "Huh... Végre! A Bankár egy picit fellélegzett." : getRandomElem(BANKER_NEUTRAL_GOOD_TAUNTS);
+                    else if (boardHealth < 0.8) bekiabalas = isLargeOut ? getRandomElem(BANKER_NEUTRAL_BAD_TAUNTS) : "Na végre egy jó hír neked is...";
+                    else bekiabalas = isLargeOut ? getRandomElem(BANKER_NEUTRAL_BAD_TAUNTS) : getRandomElem(BANKER_NEUTRAL_GOOD_TAUNTS);
+                }
+            } else {
+                if (isLargeOut) { főUzenet = "Megkönnyebbülés!"; bekiabalas = "Zseniális alku volt! A milliók a süllyesztőben!"; } 
+                else { főUzenet = "Ajjaj..."; bekiabalas = "Lehet, hogy gombokért adtad el a fődíjat? A Bankár mosolyog!"; }
+            }
+
+            mutassUzenetet(főUzenet, `${nyeremeny.display} volt benne.`, bekiabalas);
+            await wait(2500);
+
+            folytatNyitasUtan();
+        }
+
+        async function folytatNyitasUtan() {
+            gameState.megNyitando--;
+            if (gameState.megNyitando > 0) { 
+                switchTurn(); 
+                frissitNyitasiSzoveg(); gameState.isProcessingClick = false; 
+            } else { 
+                await kiertekelKorVege(); 
+            }
+        }
+
+        function frissitNyitasiSzoveg() {
+            if (gameState.duel.active) {
+                let text = `Még ${gameState.megNyitando} táskát kell kinyitni.`;
+                mutassUzenetet(text, "Figyelj, mert felváltva nyitok!");
+            } else {
+                const prefix = gameState.marEladta ? "[KIJÁTSZÁS] " : "";
+                mutassUzenetet(`${prefix}Még ${gameState.megNyitando} táskát nyiss ki.`, `Saját táskád: ${gameState.sajatTaska}`);
+            }
+        }
+
+        async function triggerMaxCaseKill() {
+            let maxVal = Math.max(...gameState.maradekNyeremenyek.map(n => n.value));
+            mutassUzenetet("A BANKÁR LÉP...", `A legmagasabb összeg (${formatValuta(maxVal)}) megsemmisül!`, "", true);
+            await wait(2500);
+            const closedCases = Array.from(document.querySelectorAll('.taska:not(.nyitott)')).filter(t => {
+                if(gameState.duel.active) return t.dataset.taskaId != gameState.duel.p1Case && t.dataset.taskaId != gameState.duel.p2Case;
+                else return t.dataset.taskaId != gameState.sajatTaska;
+            });
+            let targetId = null;
+            for(let c of closedCases) { if(gameState.taskaErtekek[c.dataset.taskaId].value === maxVal) { targetId = c.dataset.taskaId; break; } }
+            
+            if (targetId) {
+                gameState.allapot = 'nyitogatas';
+                await kinyitTaska(targetId, true); 
+            } else {
+                setTimeout(kovetkezoKor, 1000);
+            }
+        }
+
+        function proceedWithOffer(bOff, offer1, offer2, isDuelContext, extraLeiras = "") {
+            if (isDuelContext) mutassParbajAjanlatot(offer1, offer2, extraLeiras);
+            else bankarAjanlatotTesz(bOff);
+        }
+
+        async function kiertekelKorVege(isPanicMode = false) {
+            gameState.isPanicOffer = isPanicMode;
+
+            if (gameState.isBlackout) {
+                document.body.classList.remove('bg-blackout'); syncGameState();
+                mutassUzenetet("LÁSZÚT! Visszajött az áram...", "Nézzük, miket dobtál el a sötétben!", "", true); await wait(2500);
+                for(let i=0; i<gameState.blackoutKinyitott.length; i++) {
+                    let lost = gameState.blackoutKinyitott[i];
+                    document.querySelector(`li[data-uid='${lost.uId}']`).classList.replace('aktiv', 'kiesett');
+                    gameState.maradekNyeremenyek = gameState.maradekNyeremenyek.filter(n => n.uId !== lost.uId);
+                }
+                const newAtlag = gameState.maradekNyeremenyek.reduce((a, b) => a + b.value, 0) / gameState.maradekNyeremenyek.length;
+                frissitStudioHangulat(newAtlag / gameState.initialAverage);
+                document.querySelectorAll('.taska.nyitott .taska-hatlap .taska-osszeg').forEach(el => el.style.display = 'block');
+                gameState.isBlackout = false; gameState.blackoutKinyitott =[];
+                mutassUzenetet("KATASTROFA VAGY MÁK?", "Az asztal frissítve. Most jön az ajánlat!", ""); await wait(3000);
+            }
+
+            if (gameState.duel.active && gameState.duel.p1Status === 'accepted' && gameState.duel.p2Status === 'accepted') return;
+
+            const maradekZartSzam = document.querySelectorAll('.taska:not(.nyitott)').length;
+            
+            if (gameState.duel.active && maradekZartSzam <= 2) {
+                gameState.allapot = 'vegsokattintas'; 
+                mutassUzenetet("A VÉGSŐ PILLANAT!", "Párbaj vége! A gép kinyitja az utolsó táskákat...");
+                document.querySelector(`.taska[data-taska-id='${gameState.duel.p1Case}']`).classList.add('villogo-vegsokattintas');
+                document.querySelector(`.taska[data-taska-id='${gameState.duel.p2Case}']`).classList.add('villogo-vegsokattintas');
+                syncGameState();
+                gameState.isProcessingClick = true; 
+                setTimeout(lezardParbaj, 2500);
+                return;
+            }
+
+            if (!gameState.duel.active && maradekZartSzam === 1) {
+                gameState.allapot = 'vegsokattintas'; 
+                document.querySelector(`.taska[data-taska-id='${gameState.sajatTaska}']`).classList.add('villogo-vegsokattintas');
+                syncGameState();
+                mutassUzenetet("A VÉGSŐ PILLANAT!", "Kattints rá, és derítsük ki végre, hogy mi volt nálad végig!");
+                gameState.isProcessingClick = false; return;
+            }
+
+            if (!gameState.duel.active && maradekZartSzam === 2) { finalShowdown(); return; }
+
+            if (!isPanicMode) {
+                mutassUzenetet("Csendet kérek! Csörög a telefon...", "Figyeld az ajánlatot...", "", true); await wait(3500);
+            }
+            
+            let baseOffer = calculateBankerOffer();
+            let o1 = 0, o2 = 0;
+            let isDuel = gameState.duel.active && gameState.duel.p1Status === 'playing' && gameState.duel.p2Status === 'playing';
+
+            if (isDuel) {
+                o1 = Math.round((baseOffer * (0.9 + Math.random()*0.2)) / 1000) * 1000;
+                o2 = Math.round((baseOffer * (0.9 + Math.random()*0.2)) / 1000) * 1000;
+                gameState.duel.p1Offer = o1; gameState.duel.p2Offer = o2;
+                gameState.duel.p1Decision = null; gameState.duel.p2Decision = null;
+            }
+
+            if (gameState.marEladta) {
+                let text = "Ezt az összeget ajánlotta volna most a Bankár.<br><span style='color: #10b981; font-size: 0.95rem; font-weight: bold; margin-top: 10px; display: block;'>Automatikus folytatás a következő körre...</span>";
+                mutassFlipAjanlat("MI LETT VOLNA HA...", formatValuta(baseOffer), text,[]);
+                setTimeout(() => { mutassUzenetet("Kijátszás folytatódik...", "Lássuk mi maradt!"); rejtFlipAjanlat(); setTimeout(kovetkezoKor, 400); }, 3000); return;
+            }
+
+            if (isPanicMode) { proceedWithOffer(baseOffer, o1, o2, isDuel); return; }
+
+            let valasztottTwist = null;
+            if (!gameState.marEladta && gameState.aktualisKor >= 2 && Math.random() < 0.6) {
+                let tw = [];
+                if (isDuel) tw =['blackout', 'shuffle', 'hostage', 'zsarolas', 'sugo', 'shell_game', 'orosz_rulett', 'szerencsekerek', 'felezo_duplazo', 'verszerzodes', 'tolvaj', 'csapda', 'idozitett_bomba', 'kihivas'];
+                else tw =['idozitett_bomba', 'kihivas', 'orosz_rulett', 'rejtett_bonusz', 'shell_game', 'sugo', 'zsarolas', 'kombo', 'felezo_duplazo', 'vak_csere_penzzel', 'szerencsekerek', 'szabad_csere', 'vak_alku', 'rulett', 'harom_doboz', 'targy_csomag', 'shuffle', 'blackout', 'hostage', 'verszerzodes', 'csapda', 'tolvaj'];
+                valasztottTwist = getRandomElem(tw);
+            }
+
+            switch(valasztottTwist) {
+                case 'sugo': bankarSugo(baseOffer, o1, o2, isDuel); break;
+                case 'zsarolas': bankarZsarolas(baseOffer, o1, o2, isDuel); break;
+                case 'rejtett_bonusz': bankarRejtettBonus(baseOffer); break;
+                case 'idozitett_bomba': bankarIdozitettBomba(baseOffer, o1, o2, isDuel); break;
+                case 'kihivas': bankarKihivasa(baseOffer, o1, o2, isDuel); break;
+                case 'orosz_rulett': bankarOroszRulett(baseOffer, o1, o2, isDuel); break;
+                case 'rulett': bankarRulettAjanlat(baseOffer, o1, o2, isDuel); break;
+                case 'vak_alku': proceedWithOffer(baseOffer*1.4, o1*1.4, o2*1.4, isDuel, "<br><span style='color:#facc15'>VAK ALKU (Nem látjátok, de +40%!)</span>"); break;
+                case 'felezo_duplazo': bankarFelezoDuplazo(baseOffer, o1, o2, isDuel); break;
+                case 'harom_doboz': bankarHaromDoboz(baseOffer, o1, o2, isDuel); break;
+                case 'targy_csomag': bankarTargyCsomag(baseOffer); break;
+                case 'vak_csere_penzzel': bankarVakCserePenzzel(baseOffer); break;
+                case 'szabad_csere': bankarSzabadCsere(baseOffer); break;
+                case 'szerencsekerek': bankarSzerencsekerek(baseOffer, o1, o2, isDuel); break;
+                case 'shell_game': bankarShellGame(baseOffer, o1, o2, isDuel); break;
+                case 'hostage': bankarTusz(baseOffer, o1, o2, isDuel); break;
+                case 'shuffle': bankarKeveres(baseOffer, o1, o2, isDuel); break;
+                case 'blackout': bankarBlackout(baseOffer, o1, o2, isDuel); break;
+                case 'verszerzodes': bankarVerszerzodes(baseOffer, o1, o2, isDuel); break;
+                case 'tolvaj': bankarTolvaj(baseOffer, o1, o2, isDuel); break;
+                case 'csapda': bankarCsapda(baseOffer, o1, o2, isDuel); break;
+                case 'kombo': 
+                    const poenok = gameState.maradekNyeremenyek.filter(n => n.type === 'vicc' || (n.type === 'targy' && n.value < 100000));
+                    if (poenok.length > 0) bankarAjanlatotTesz(baseOffer, getRandomElem(poenok).display); else bankarAjanlatotTesz(baseOffer); break;
+                default: proceedWithOffer(baseOffer, o1, o2, isDuel); break;
+            }
+        }
+
+        function calculateBankerOffer() {
+            const maradekDb = gameState.maradekNyeremenyek.length;
+            const atlag = gameState.maradekNyeremenyek.reduce((a, b) => a + b.value, 0) / Math.max(1, maradekDb);
+            const maxVal = Math.max(...gameState.maradekNyeremenyek.map(n => n.value));
+            const progress = gameState.aktualisKor / (NYITASI_SZAMLALO.length - 1); 
+            let percentage = 0.15 + (progress * 0.75); 
+            if (maxVal > atlag * 3 && maradekDb <= 5) percentage *= 0.85; 
+            percentage = percentage * (0.95 + (Math.random() * 0.1)); 
+            
+            if (gameState.lilaSajat) percentage *= 1.25;
+
+            let ajanlatAlap = atlag * percentage; let vegleges = 0;
+            if (ajanlatAlap > 1000000) vegleges = Math.round(ajanlatAlap / 10000) * 10000;
+            else if (ajanlatAlap > 10000) vegleges = Math.round(ajanlatAlap / 1000) * 1000;
+            else vegleges = Math.round(ajanlatAlap / 100) * 100;
+            if (vegleges < 100) vegleges = 100; 
+
+            if (gameState.nextOfferMultiplier) { vegleges *= gameState.nextOfferMultiplier; gameState.nextOfferMultiplier = null; }
+            if (gameState.duelPenalty) { vegleges *= gameState.duelPenalty; }
+
+            return vegleges;
+        }
+
+        function mutassParbajAjanlatot(ajanlatP1, ajanlatP2, extraLeiras = "") {
+            gameState.duel.p1Offer = ajanlatP1; gameState.duel.p2Offer = ajanlatP2;
+            let leirasHTML = `
+                ${extraLeiras}
+                <div class="duel-offers-container">
+                    <div class="duel-offer-box duel-o-p1">
+                        <h4>${gameState.duel.p1Name}</h4>
+                        <h2>${formatValuta(ajanlatP1)}</h2>
+                    </div>
+                    <div class="duel-offer-box duel-o-p2">
+                        <h4>${gameState.duel.p2Name}</h4>
+                        <h2>${formatValuta(ajanlatP2)}</h2>
+                    </div>
+                </div>
+                <p style="color:#fca5a5; font-size: 0.8rem; margin-top:10px;">Döntsetek a saját eszközötökön!</p>
+            `;
+
+            mutassFlipAjanlat("A BANKÁR DÖNTÉSE", "Megosztó Ajánlat!", leirasHTML,[
+                { szoveg: "ELFOGADOM a sajátom!", osztaly: "btn-elfogad", akcio: () => hostDuelDecision('accept') },
+                { szoveg: "NINCS ALKU!", osztaly: "btn-elutasit", akcio: () => hostDuelDecision('reject') }
+            ]);
+        }
+
+        function hostDuelDecision(decision) {
+            gameState.duel.p1Decision = decision;
+            DOM.backGombokTarolo.innerHTML = '<span style="color:gray;">Várakozás a másik játékosra (P2)...</span>';
+            checkDuelDecisions();
+        }
+
+        async function checkDuelDecisions() {
+            if (gameState.duel.p1Decision !== null && gameState.duel.p2Decision !== null) {
+                rejtFlipAjanlat();
+                let uzenet = "";
+                let bothAccepted = false;
+                let someoneRejected = (gameState.duel.p1Decision === 'reject' || gameState.duel.p2Decision === 'reject');
+                
+                if (gameState.duel.p1Decision === 'accept' && gameState.duel.p2Decision === 'accept') {
+                    uzenet = "MINDKETTEN ELFOGADTÁTOK! A JÁTÉK VÉGET ÉRT!";
+                    gameState.duel.p1Status = 'accepted'; gameState.duel.p2Status = 'accepted';
+                    gameState.duel.p1Winnings = gameState.duel.p1Offer; gameState.duel.p2Winnings = gameState.duel.p2Offer;
+                    awardWinMoney(gameState.duel.p1Offer, gameState.duel.p1Name); awardWinMoney(gameState.duel.p2Offer, gameState.duel.p2Name);
+                    bothAccepted = true;
+                } else if (gameState.duel.p1Decision === 'accept') {
+                    uzenet = `${gameState.duel.p1Name} ELFOGADTA, de ${gameState.duel.p2Name} ELUTASÍTOTTA!`;
+                    gameState.duel.p1Status = 'accepted'; gameState.duel.p1Winnings = gameState.duel.p1Offer;
+                    awardWinMoney(gameState.duel.p1Offer, gameState.duel.p1Name); gameState.duel.turn = 'p2'; 
+                } else if (gameState.duel.p2Decision === 'accept') {
+                    uzenet = `${gameState.duel.p2Name} ELFOGADTA, de ${gameState.duel.p1Name} ELUTASÍTOTTA!`;
+                    gameState.duel.p2Status = 'accepted'; gameState.duel.p2Winnings = gameState.duel.p2Offer;
+                    awardWinMoney(gameState.duel.p2Offer, gameState.duel.p2Name); gameState.duel.turn = 'p1';
+                } else {
+                    uzenet = "MINDKETTEN ELUTASÍTOTTÁTOK! A Bankár dühöng!";
+                }
+
+                mutassUzenetet("DÖNTÉS SZÜLETETT!", uzenet); await wait(3500);
+
+                if (bothAccepted) {
+                    lezardParbaj();
+                } else {
+                    gameState.allapot = 'nyitogatas';
+                    if (someoneRejected && gameState.bloodPactActive) {
+                        gameState.bloodPactActive = false; triggerMaxCaseKill();
+                    } else if (gameState.isPanicOffer) {
+                        gameState.isPanicOffer = false; frissitNyitasiSzoveg(); gameState.isProcessingClick = false;
+                    } else {
+                        kovetkezoKor();
+                    }
+                }
+            } else { syncGameState(); }
+        }
+
+        // --- ÚJ ÉS MÓDOSÍTOTT CSAVAROK ---
+
+        function bankarVerszerzodes(baseOffer, o1, o2, isDuel) {
+            let maxVal = Math.max(...gameState.maradekNyeremenyek.map(n => n.value));
+            let dispMax = formatValuta(maxVal);
+            let leiras = `A Bankár vért akar! <br>Felajánl egy brutális <span style="color:#10b981">+50% BÓNUSZT</span> az ajánlatra!<br><span style="color:#ef4444; font-weight:bold;">DE VIGYÁZZ! Ha ${isDuel?'valamelyikőtök ':''}elutasítja, a Bankár AZONNAL törli a tábláról a legmagasabb összeget (${dispMax})!</span>`;
+            
+            let bOff = Math.round(baseOffer * 1.5 / 1000) * 1000;
+            let do1 = Math.round(o1 * 1.5 / 1000) * 1000; let do2 = Math.round(o2 * 1.5 / 1000) * 1000;
+
+            gameState.bloodPactActive = true; 
+
+            if (isDuel) {
+                mutassParbajAjanlatot(do1, do2, leiras);
+            } else {
+                mutassFlipAjanlat("VÉRSZERZŐDÉS!", formatValuta(bOff), leiras,[
+                    { szoveg: "Megveszem!", osztaly: "btn-elfogad", akcio: () => { gameState.bloodPactActive = false; rejtFlipAjanlat(); alkuKezelese(bOff, 'elfogad'); } },
+                    { szoveg: "Nem félek!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); triggerMaxCaseKill(); } }
+                ]);
+            }
+        }
+
+        function bankarCsapda(baseOffer, o1, o2, isDuel) {
+            let leiras = `A Host (P1) húzzon egyet a 3 kártya közül! Lehet alatta <span style="color:#10b981">VÉDŐPAJZS</span>, <span style="color:#facc15">DUPLA AJÁNLAT</span>, vagy <span style="color:#ef4444">BOMBA (Legnagyobb táska felrobban)</span>!`;
+            let cards = kever(['pajzs', 'dupla', 'bomba']);
+            let gombok = cards.map((card, idx) => ({
+                szoveg: `${idx+1}. Kártya`, osztaly: "btn-extra", akcio: async () => {
+                    rejtFlipAjanlat(); mutassUzenetet("Kártya felfordítása...", "Vajon mi lesz rajta?"); await wait(2500);
+                    if (card === 'pajzs') {
+                        gameState.shieldCount++; frissitPajzsGomb();
+                        ujraFlipAjanlat("PAJZS!", "+1 Védőpajzs", "Szerencséd volt!",[{szoveg:"Tovább az Ajánlathoz", osztaly:"btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}]);
+                    } else if (card === 'dupla') {
+                        ujraFlipAjanlat("ARANYESŐ!", "Ajánlat x2!", "A következő ajánlat duplázódik!",[{szoveg:"Tovább az Ajánlathoz", osztaly:"btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*2, o1*2, o2*2, isDuel, "<span style='color:#facc15'>DUPLÁZVA!</span>"); }}]);
+                    } else {
+                        ujraFlipAjanlat("BOMBA!", "Robbanás!", "A legnagyobb táskád megsemmisül!",[{szoveg:"Tovább", osztaly:"btn-vegso", akcio: async () => { rejtFlipAjanlat(); await triggerMaxCaseKill(); }}]);
+                    }
+                }
+            }));
+            gombok.push({ szoveg: "Nem húzok!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); } });
+            mutassFlipAjanlat("A BANKÁR CSAPDÁJA", "Húzz egy lapot!", leiras, gombok);
+        }
+
+        function bankarTolvaj(baseOffer, o1, o2, isDuel) {
+            if (isDuel) {
+                let leiras = `A Bankár szembeállít titeket! <br><span style="color:#fca5a5; font-weight:bold;">Azonnal CSERÉLJÉTEK KI a saját táskáitokat egymással! Ha a Host (P1) ezt megtagadja, MINDKETTŐTÖK jövőbeli ajánlatai 30%-kal csökkennek!</span>`;
+                mutassFlipAjanlat("TOLVAJTEMPÓ - CSERE!", "Nincs ajánlat", leiras,[
+                    { szoveg: "Legyen Csere!", osztaly: "btn-elfogad", akcio: () => {
+                        let temp = gameState.duel.p1Case; gameState.duel.p1Case = gameState.duel.p2Case; gameState.duel.p2Case = temp;
+                        document.querySelector(`.taska.sajat-p1`).classList.replace('sajat-p1', 'temp-p1');
+                        document.querySelector(`.taska.sajat-p2`).classList.replace('sajat-p2', 'sajat-p1');
+                        document.querySelector(`.taska.temp-p1`).classList.replace('temp-p1', 'sajat-p2');
+                        mutassUzenetet("TÁSKÁK KICSERÉLVE!", "A játék folytatódik!"); rejtFlipAjanlat(); setTimeout(kovetkezoKor, 2500);
+                    }},
+                    { szoveg: "Nem cserélünk!", osztaly: "btn-elutasit", akcio: () => {
+                        gameState.duelPenalty = 0.7; mutassUzenetet("A BANKÁR BÜNTET!", "Minden jövőbeli ajánlat -30%!");
+                        rejtFlipAjanlat(); setTimeout(kovetkezoKor, 2500);
+                    }}
+                ]);
+            } else {
+                let leiras = `Cseréld el a saját táskád egy random zárt táskára, és <span style="color:#10b981">AZONNAL kapsz +1.000.000 Ft bónuszt</span>!`;
+                mutassFlipAjanlat("TOLVAJTEMPÓ", "+1.000.000 Ft", leiras,[
+                    { szoveg: "Cserélek és kérem a bónuszt!", osztaly: "btn-elfogad", akcio: () => {
+                        const zartElemek = Array.from(document.querySelectorAll('.taska:not(.nyitott)')).filter(t => t.dataset.taskaId != gameState.sajatTaska);
+                        const ujTaskaId = getRandomElem(zartElemek).dataset.taskaId;
+                        document.querySelector(`.taska[data-taska-id='${gameState.sajatTaska}']`).classList.remove('sajat-taskam');
+                        gameState.sajatTaska = ujTaskaId; document.querySelector(`.taska[data-taska-id='${ujTaskaId}']`).classList.add('sajat-taskam');
+                        gameState.bonuszPenz += 1000000;
+                        mutassUzenetet("TÁSKA KICSERÉLVE!", "Bónusz hozzáadva!"); rejtFlipAjanlat(); setTimeout(kovetkezoKor, 2500);
+                    }},
+                    { szoveg: "Megtartom a sajátomat!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); bankarAjanlatotTesz(baseOffer); } }
+                ]);
+            }
+        }
+
+        // --- Régi csavarok adoptálva Duelre ---
+        function bankarIdozitettBomba(baseOffer, o1, o2, isDuel) {
+            let bB = baseOffer * 1.35; let bR = baseOffer * 0.65;
+            let o1B = o1 * 1.35; let o2B = o2 * 1.35;
+            let timeLeft = 10;
+            let leirasHTML = `<div style="color:#ef4444; font-weight:bold; font-size:1.2rem; margin-bottom:5px;">CSAK 10 MÁSODPERCED VAN!</div><div id="timer-bar-container"><div id="timer-bar"></div></div>Azonnal dönts(etek), vagy az ajánlat megsemmisül!`;
+
+            if (isDuel) {
+                mutassParbajAjanlatot(o1B, o2B, leirasHTML);
+            } else {
+                mutassFlipAjanlat("IDŐZÍTETT BOMBA!", formatValuta(bB), leirasHTML,[
+                    { szoveg: "Gyorsan, Áll az Alku!", osztaly: "btn-elfogad", akcio: () => { clearInterval(timeBombInterval); rejtFlipAjanlat(); alkuKezelese(bB, 'elfogad'); }},
+                    { szoveg: "Nem kérem!", osztaly: "btn-elutasit", akcio: () => { clearInterval(timeBombInterval); rejtFlipAjanlat(); alkuKezelese(bB, 'elutasit'); }}
+                ]);
+            }
+
+            const timerBar = document.getElementById('timer-bar');
+            timeBombInterval = setInterval(() => {
+                timeLeft -= 0.1; if(timerBar) timerBar.style.width = (timeLeft / 10) * 100 + '%';
+                if (timeLeft <= 0) {
+                    clearInterval(timeBombInterval);
+                    if (isDuel) {
+                        gameState.duel.p1Decision = null; gameState.duel.p2Decision = null;
+                        ujraFlipAjanlat("AZ IDŐ LEJÁRT!", "BÜNTETÉS!", "Túl lassúak voltatok! A Bankár csökkentette az ajánlatot!",[
+                            { szoveg: "Tovább a büntetett ajánlathoz", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(bR, o1*0.65, o2*0.65, isDuel); }}
+                        ]);
+                    } else {
+                        ujraFlipAjanlat("AZ IDŐ LEJÁRT!", formatValuta(bR), "Túl lassú voltál! A Bankár csökkentette az ajánlatot!",[
+                            { szoveg: "Kénytelen vagyok elfogadni", osztaly: "btn-elfogad", akcio: () => { rejtFlipAjanlat(); alkuKezelese(bR, 'elfogad'); }},
+                            { szoveg: "Nincs alku", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); alkuKezelese(bR, 'elutasit'); }}
+                        ]);
+                    }
+                }
+            }, 100);
+        }
+
+        function bankarKihivasa(baseOffer, o1, o2, isDuel) {
+            let leirasHTML = `A Bankár párbajra hív! Állítsd meg a játékot és a Host nyisson ki <b>azonnal 1 táskát!</b><br>Ha kisebb mint 1 Millió: <span style="color:#10b981">+500.000 Ft Bónusz!</span><br>Ha 1 Millió vagy nagyobb: <span style="color:#ef4444">A következő ajánlat -25% kap!</span>`;
+            mutassFlipAjanlat("A BANKÁR KIHÍVÁSA!", "Elfogadod?", leirasHTML,[
+                { szoveg: "Kihívás elfogadva!", osztaly: "btn-extra", akcio: () => {
+                    rejtFlipAjanlat(); gameState.kihivasEredetiAjanlat = baseOffer; 
+                    if(isDuel) { gameState.duel.p1Offer=o1; gameState.duel.p2Offer=o2; }
+                    gameState.allapot = 'kihivas_nyitas'; gameState.isProcessingClick = false;
+                    mutassUzenetet("KIHÍVÁS INDUL!", "A Host nyisson ki egy táskát MOST AZONNAL!", "Vigyázz, nehogy a milliókat találd el!");
+                    document.querySelectorAll('.taska:not(.nyitott):not(.sajat-taskam):not(.sajat-p1):not(.sajat-p2)').forEach(t => t.classList.add('kihivas-celpont')); syncGameState();
+                }},
+                { szoveg: "Nem kockáztatok!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}
+            ]);
+        }
+
+        function bankarOroszRulett(baseOffer, o1, o2, isDuel) {
+            let leirasHTML = `A Host válasszon a 6 kamra közül! 5 gomb alatt <span style="color:#10b981">150%-OS SZORZÓ</span> lapul.<br>De 1 gomb alatt a <span style="color:#ef4444">CSŐD (Minden ajánlat 100 Ft)</span>!`;
+            const gombok =[{ szoveg: "Kérem a normál ajánlatot", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}];
+            gombok.push({ szoveg: "BEVÁLLALOM! HOZD A GOMBOKAT!", osztaly: "btn-fekete", akcio: () => {
+                const chambers =[1.5, 1.5, 1.5, 1.5, 1.5, 0]; const shuffledChambers = kever([...chambers]);
+                const kamraGombok = shuffledChambers.map((ertek, idx) => ({
+                    szoveg: `${idx + 1}`, osztaly: "btn-rulett-kamra", akcio: async () => {
+                        rejtFlipAjanlat(); mutassUzenetet("RAVASZ MEGHÚZVA...", "Vajon mi volt a kamrában?", "", true); await wait(3000);
+                        if(ertek === 0) {
+                            ujraFlipAjanlat("BUMM! CSŐD!", "100 Ft", "Eltaláltad az üres kamrát! Az ajánlatok lenullázódtak!",[
+                                { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(100, 100, 100, isDuel, "<span style='color:red'>CSŐD!</span>"); }}
+                            ]);
+                        } else {
+                            ujraFlipAjanlat("KLIKK! TÚLÉLTED!", "150% Ajánlat!", "Gratulálok! Megnyerted a megnövelt ajánlatot!",[
+                                { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*1.5, o1*1.5, o2*1.5, isDuel, "<span style='color:#10b981'>150% RULETT!</span>"); }}
+                            ]);
+                        }
+                    }
+                }));
+                ujraFlipAjanlat("OROSZ RULETT!", "Válassz Kamrát!", "Csak egyet kattinthatsz!", kamraGombok);
+            }});
+            mutassFlipAjanlat("OROSZ RULETT AJÁNLAT", "150% VAGY CSŐD!", leirasHTML, gombok);
+        }
+
+        function bankarSzerencsekerek(baseOffer, o1, o2, isDuel) {
+            let leiras = `Pörgetünk a Host gépén! Szorzók: 0.5x, 1x, 1.5x, 2x, 3x!<br><span style='color:#fca5a5; font-weight:bold;'>(A kipörgetett szorzó érvényesül az ajánlatokra!)</span>`;
+            mutassFlipAjanlat("SZERENCSEKERÉK", "???", leiras,[
+                { szoveg: "Pörgessük meg!", osztaly: "btn-elfogad", akcio: async () => {
+                    mutassUzenetet("Szerencsekerék pörgetése...", "Mi lesz a szorzó?"); rejtFlipAjanlat();
+                    const szorzok =[0.5, 1, 1.5, 2, 3]; let porgetesek = 15;
+                    while(porgetesek > 0) { let tempSzorzo = getRandomElem(szorzok); mutassUzenetet("Szerencsekerék pörög...", `${tempSzorzo}x ?`, ""); await wait(100 + (15 - porgetesek) * 20); porgetesek--; }
+                    const nyertSzorzo = getRandomElem(szorzok); 
+                    ujraFlipAjanlat(`A KERÉK MEGÁLLT: ${nyertSzorzo}x`, "Szorzó alkalmazva!", "Nézzük az új ajánlatot!",[
+                        { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*nyertSzorzo, o1*nyertSzorzo, o2*nyertSzorzo, isDuel, `<span style='color:#facc15'>KERÉK: ${nyertSzorzo}X</span>`); }}
+                    ]);
+                }},
+                { szoveg: "Nem kockáztatok!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}
+            ]);
+        }
+
+        function bankarRulettAjanlat(baseOffer, o1, o2, isDuel) {
+            let leiras = `Pörgetünk! FELE, NORMÁL, vagy DUPLÁJA!<br><span style='color:#fca5a5; font-weight:bold;'>(AMIN MEGÁLL, AZ LESZ A SZORZÓ!)</span>`;
+            mutassFlipAjanlat("BANKÁR RULETT", "Pörög a kerék", leiras,[
+                { szoveg: "Megpörgetem az alkut!", osztaly: "btn-elfogad", akcio: async () => {
+                    rejtFlipAjanlat();
+                    const opciok =[ { szorzo: 0.5, szoveg: "A FELE (50%)" }, { szorzo: 1, szoveg: "Normál (100%)" }, { szorzo: 2, szoveg: "A DUPLÁJA (200%)" } ];
+                    let spinning = true; let stopping = false; let duration = 0; let stopTime = 0; let delay = 30; let currentIndex = 0; let startTime = Date.now();
+                    mutassUzenetet("Készülj a megállításra!", `<button id="stop-rulett-btn" class="stop-btn" style="background:#f59e0b; padding:8px 15px; border-radius:5px; border:none; font-weight:bold; cursor:pointer;">STOP</button>`, "");
+                    const stopBtn = document.getElementById('stop-rulett-btn');
+
+                    stopBtn.addEventListener('click', () => {
+                        if (!stopping) { stopping = true; duration = Math.random() * 5000 + 5000; stopTime = Date.now() + duration; stopBtn.style.display = 'none'; DOM.kiegeszitoUzenet.innerHTML = "<span style='color: #facc15; font-weight:bold; font-size: 1.2rem;'>Lassulás...</span>"; DOM.kiegeszitoUzenet.style.display = 'block'; }
+                    });
+
+                    while (spinning) {
+                        currentIndex = (currentIndex + 1) % opciok.length;
+                        DOM.uzenetekSzoveg.innerHTML = `<span style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); color: #fff; text-shadow: 0 0 15px var(--gold);">${opciok[currentIndex].szoveg}</span>`;
+                        if (!stopping && Date.now() - startTime > 15000) stopBtn.click();
+                        if (stopping) {
+                            let remaining = stopTime - Date.now(); if (remaining <= 0) { spinning = false; break; }
+                            let progress = 1 - (remaining / duration); delay = 30 + Math.pow(progress, 2.5) * 800; 
+                        }
+                        await wait(delay);
+                    }
+
+                    const finalOpt = opciok[currentIndex];
+                    DOM.uzenetekSzoveg.innerHTML = `<span style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); color: #10b981; text-shadow: 0 0 15px #10b981;">${finalOpt.szoveg}</span>`;
+                    DOM.kiegeszitoUzenet.innerHTML = "A Rulett megállt!"; await wait(2000);
+                    
+                    ujraFlipAjanlat("KIPÖRGETVE: " + finalOpt.szoveg, "Szorzó kész", "Jöhet az ajánlat!",[
+                        { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*finalOpt.szorzo, o1*finalOpt.szorzo, o2*finalOpt.szorzo, isDuel, `<span style='color:#10b981'>RULETT: ${finalOpt.szorzo}X</span>`); }}
+                    ]);
+                }},
+                { szoveg: "Elutasít!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}
+            ]);
+        }
+
+        function bankarShellGame(baseOffer, o1, o2, isDuel) {
+            let leiras = `Itt a piros, hol a piros! Válaszd ki a nyertes poharat, és <span style="color:#10b981">AZONNAL DUPLÁZOM</span> az ajánlatot! De ha rosszat választasz, az ajánlat <span style="color:#ef4444">A NEGYEDÉRE ESIK VISSZA</span>!`;
+            mutassFlipAjanlat("DUPLA VAGY BUKÓ", "Választhatsz!", leiras,[
+                { szoveg: "Játszom! Kérem a poharakat!", osztaly: "btn-elfogad", akcio: () => {
+                    mutassUzenetet("Poharak keverése...", "Vajon hol a piros golyó?"); rejtFlipAjanlat();
+                    const szorzok =[2, 0.25, 0.25]; const kevert = kever([...szorzok]);
+                    const gombok = kevert.map((szorzo, idx) => ({
+                        szoveg: `${idx+1}. Pohár`, osztaly: "btn-extra", akcio: async () => {
+                            mutassUzenetet("Pohár felemelése...", "Nézzük mi volt alatta...", ""); rejtFlipAjanlat(); await wait(2000);
+                            let msg = szorzo === 2 ? "ZSENIÁLIS! ELTALÁLTAD! Az ajánlat duplázva!" : "BALSZERENCSE! Nincs golyó! Az ajánlat negyedelve!";
+                            ujraFlipAjanlat(szorzo === 2 ? "DUPLÁZTÁL!" : "BUKTÁL!", "Lássuk...", msg,[
+                                { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*szorzo, o1*szorzo, o2*szorzo, isDuel); }}
+                            ]);
+                        }
+                    }));
+                    ujraFlipAjanlat("VÁLASSZ EGY POHARAT!", "Hol a piros golyó?", "", gombok);
+                }},
+                { szoveg: "Túl kockázatos, nem kérem!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}
+            ]);
+        }
+
+        function bankarFelezoDuplazo(baseOffer, o1, o2, isDuel) {
+            let leiras = `Feldobunk egy érmét? Fej: duplája, Írás: a fele!<br><span style='color:#fca5a5; font-weight:bold;'>(A dobás eredménye lesz a szorzó!)</span>`;
+            mutassFlipAjanlat("FELEZŐ VAGY DUPLÁZÓ", "Érme", leiras,[
+                { szoveg: "Feldobom az érmét!", osztaly: "btn-elfogad", akcio: async () => {
+                    mutassUzenetet("Érme feldobása...", "Feszültség!"); rejtFlipAjanlat();
+                    let dobasok = 10; while(dobasok > 0) { mutassUzenetet("Érme a levegőben...", dobasok % 2 === 0 ? "Fej..." : "Írás...", ""); await wait(150 + (10 - dobasok) * 30); dobasok--; }
+                    const nyertE = Math.random() > 0.5; const szorzo = nyertE ? 2 : 0.5;
+                    ujraFlipAjanlat(nyertE ? "FEJ! DUPLÁZÁS!" : "ÍRÁS! FELEZÉS!", "Eredmény", nyertE ? "Zseniális döntés!" : "Sajnos csak ennyi maradt.",[
+                        { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*szorzo, o1*szorzo, o2*szorzo, isDuel); }}
+                    ]);
+                }},
+                { szoveg: "Nem kockáztatok!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}
+            ]);
+        }
+
+        function bankarHaromDoboz(baseOffer, o1, o2, isDuel) {
+            let leiras = `3 doboz: 150%, 100%, vagy 10%-a a szorzó!<br><span style='color:#fca5a5; font-weight:bold;'>(A doboz tartalma módosítja az ajánlatot!)</span>`;
+            mutassFlipAjanlat("BŰVÖS DOBOZOK", "???", leiras,[
+                { szoveg: "Kérem a dobozokat!", osztaly: "btn-elfogad", akcio: () => {
+                    mutassUzenetet("Dobozok előkészítése...", "Melyiket választja a Host?"); rejtFlipAjanlat();
+                    const opciok = kever([1.5, 1.0, 0.1]);
+                    const gombok = opciok.map((szorzo, idx) => ({
+                        szoveg: `Doboz ${idx+1}`, osztaly: "btn-extra", akcio: async () => {
+                            mutassUzenetet(`Doboz ${idx+1} kinyitása...`, "Feszültség a tetőfokon...", ""); rejtFlipAjanlat(); await wait(2000);
+                            ujraFlipAjanlat("DOBOZ KINYITVA!", `${(szorzo*100).toFixed(0)}%`, `A dobozban ekkora szorzó volt!`,[
+                                { szoveg: "Tovább", osztaly: "btn-vegso", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer*szorzo, o1*szorzo, o2*szorzo, isDuel); }}
+                            ]);
+                        }
+                    }));
+                    ujraFlipAjanlat("VÁLASSZ EGY DOBOZT!", "Melyik legyen?", "", gombok);
+                }},
+                { szoveg: "Nem kérem!", osztaly: "btn-elutasit", akcio: () => { rejtFlipAjanlat(); proceedWithOffer(baseOffer, o1, o2, isDuel); }}
+            ]);
+        }
+
+        function bankarTusz(baseOffer, o1, o2, isDuel) {
+            const closedCases = Array.from(document.querySelectorAll('.taska:not(.nyitott):not(.sajat-taskam):not(.sajat-p1):not(.sajat-p2)'));
+            if(closedCases.length < 2) { proceedWithOffer(baseOffer, o1, o2, isDuel); return; }
+            
+            closedCases.sort((a,b) => gameState.taskaErtekek[b.dataset.taskaId].value - gameState.taskaErtekek[a.dataset.taskaId].value);
+            const target1 = closedCases[0]; const target2 = kever(closedCases.slice(1))[0];
+            target1.classList.add('tusz-celpont'); target2.classList.add('tusz-celpont'); syncGameState();
+            
+            let leirasHTML = `A Bankár TÚSZUL EJTETT két táskát (pirosan villognak)! <br><span style='color:#fca5a5; font-weight:bold;'>Ha elutasítod ezt az ajánlatot, A BANKÁR AZONNAL KINYITJA EZT A KETTŐT! Lehet, hogy köztük van a fődíj!</span>`;
+            
+            if (isDuel) {
+                mutassParbajAjanlatot(o1, o2, leirasHTML);
+            } else {
+                mutassFlipAjanlat("TÚSZDRÁMA!", formatValuta(baseOffer), leirasHTML,[
+                    { szoveg: "Engedek... Áll az Alku!", osztaly: "btn-elfogad", akcio: () => {
+                        document.querySelectorAll('.tusz-celpont').forEach(t => t.classList.remove('tusz-celpont')); syncGameState();
+                        rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elfogad');
+                    }},
+                    { szoveg: "Blöffölsz! Nem fogadom el!", osztaly: "btn-elutasit", akcio: async () => {
+                        rejtFlipAjanlat(); rogzitAjanlat(formatValuta(baseOffer), 'Elutasítva (Túszdráma)');
+                        gameState.isProcessingClick = true;
+                        mutassUzenetet("A BANKÁR LÉP!", "Kinyitja a túszul ejtett táskákat!", "", true); await wait(2500);
+                        document.querySelectorAll('.tusz-celpont').forEach(t => t.classList.remove('tusz-celpont'));
+                        gameState.allapot = 'nyitogatas';
+                        await kinyitTaska(target1.dataset.taskaId); await wait(2000);
+                        await kinyitTaska(target2.dataset.taskaId); await wait(2000);
+                        mutassUzenetet("A túszdráma véget ért.", "A játék normálisan folytatódik."); await wait(2000);
+                        kovetkezoKor();
+                    }}
+                ]);
+            }
+        }
+
+        function bankarKeveres(baseOffer, o1, o2, isDuel) {
+            let leirasHTML = `A Bankár felajánl egy korrekt összeget... DE fenyegetőzik!<br><span style='color:#fca5a5; font-weight:bold;'>Ha nem fogadjátok el, a Bankár AZONNAL ÖSSZEKEVERI az összes asztalon lévő zárt táska (és a sajátod) tartalmát!</span>`;
+            if (isDuel) {
+                // For duel, we need a special host decision or we just let it trigger if both reject.
+                // It's cleaner if it triggers on any rejection. We use a flag.
+                gameState.shuffleThreatActive = true;
+                mutassParbajAjanlatot(o1, o2, leirasHTML);
+            } else {
+                mutassFlipAjanlat("AJÁNLAT VAGY KEVERÉS!", formatValuta(baseOffer), leirasHTML,[
+                    { szoveg: "Áll az Alku! Kérem a pénzt!", osztaly: "btn-elfogad", akcio: () => { rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elfogad'); }},
+                    { szoveg: "Nem félek! Keverd csak meg!", osztaly: "btn-elutasit", akcio: async () => {
+                        rejtFlipAjanlat(); rogzitAjanlat(formatValuta(baseOffer), 'Elutasítva (Keverés jön)');
+                        await executeShuffle();
+                    }}
+                ]);
+            }
+        }
+
+        async function executeShuffle() {
+            gameState.isProcessingClick = true;
+            mutassUzenetet("A BANKÁR DÜHÖNG!", "Teljes káosz a stúdióban! A táskák tartalma összekeveredik!", "", true); await wait(2500);
+            document.querySelectorAll('.taska').forEach(t => t.classList.remove('radar-celpont', 'pajzs-celpont', 'rontgen-celpont', 'tusz-celpont'));
+            const closedCases = Array.from(document.querySelectorAll('.taska:not(.nyitott)'));
+            closedCases.forEach(c => c.classList.add('animacio-keveres')); syncGameState();
+            
+            const closedIds = closedCases.map(t => t.dataset.taskaId);
+            const values = closedIds.map(id => gameState.taskaErtekek[id]);
+            const shuffledValues = kever(values);
+            
+            await wait(750); 
+            closedIds.forEach((id, index) => {
+                gameState.taskaErtekek[id] = shuffledValues[index];
+                document.querySelector(`.taska[data-taska-id='${id}'] .taska-osszeg`).innerHTML = shuffledValues[index].display;
+            });
+            await wait(1000);
+            closedCases.forEach(c => c.classList.remove('animacio-keveres')); syncGameState();
+            mutassUzenetet("MINDEN MEGVÁLTOZOTT!", "A memóriád cserben hagy, újra tiszta lappal (és vakon) indulsz!"); await wait(3000);
+            kovetkezoKor();
+        }
+
+        async function bankarSugo(baseOffer, o1, o2, isDuel) {
+            const zartElemek = Array.from(document.querySelectorAll('.taska:not(.nyitott):not(.sajat-taskam):not(.sajat-p1):not(.sajat-p2)'));
+            const kisTaskak = zartElemek.filter(t => gameState.taskaErtekek[t.dataset.taskaId].value <= 100000 || gameState.taskaErtekek[t.dataset.taskaId].type === 'vicc');
+            if (kisTaskak.length > 0) {
+                const id = getRandomElem(kisTaskak).dataset.taskaId;
+                mutassUzenetet("Bankári Súgó:", `A Bankár megsúgta: a(z) ${id}. táskában biztosan aprópénz vagy kacat van!`, "Kiváló célpont a következő nyitáshoz!", true);
+                await wait(5000); DOM.uzenetekKonteer.classList.remove('telefon-hivas-aktiv');
+                proceedWithOffer(baseOffer, o1, o2, isDuel);
+            } else { proceedWithOffer(baseOffer, o1, o2, isDuel); }
+        }
+
+        function bankarZsarolas(baseOffer, o1, o2, isDuel) {
+            let leirasHTML = `A Bankár megzsarolt! Ha elutasítod ezt az ajánlatot, <b>AZONNAL KINYITJA A LEGNAGYOBB MEGMARADT TÁSKÁT!</b>`;
+            if (isDuel) {
+                gameState.bloodPactActive = true; // Use the same killer logic
+                mutassParbajAjanlatot(o1, o2, leirasHTML);
+            } else {
+                mutassFlipAjanlat("BANKÁRI ZSAROLÁS!", formatValuta(baseOffer), leirasHTML,[
+                    { szoveg: "Engedek... Áll az Alku!", osztaly: "btn-elfogad", akcio: () => { rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elfogad'); }},
+                    { szoveg: "Nem félek! Nincs alku!", osztaly: "btn-elutasit", akcio: async () => {
+                        rejtFlipAjanlat(); gameState.isProcessingClick = true;
+                        if (Math.random() < 0.4) {
+                            mutassUzenetet("A BANKÁR BLÖFFÖLT!", "Megremegett a keze, nem meri kinyitni a táskát!", "A játék normálisan folytatódik.");
+                            await wait(3000); gameState.isProcessingClick = false; kovetkezoKor();
+                        } else {
+                            await triggerMaxCaseKill();
+                        }
+                    }}
+                ]);
+            }
+        }
+
+        function bankarRejtettBonus(baseOffer) {
+            let osszegHTML = formatValuta(baseOffer);
+            let leiras = `Ha elfogadod, garantáltan a tiéd ez az összeg.<br><span style='color:#fca5a5; font-weight:bold;'>(Ha elfogadod, ez lesz a végleges nyereményed!)</span>`;
+            mutassFlipAjanlat("A Bankár Ajánlata:", osszegHTML, leiras,[
+                { szoveg: "Áll az Alku!", osztaly: "btn-elfogad", akcio: () => { rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elfogad'); }},
+                { szoveg: "Nincs alku!", osztaly: "btn-elutasit", akcio: async () => {
+                    rejtFlipAjanlat(); gameState.isProcessingClick = true;
+                    mutassUzenetet("BÁTOR DÖNTÉS!", "A Bankárt lenyűgözte a bátorságod!", "+500.000 Ft jóváírva a bónusz számládon!");
+                    gameState.bonuszPenz += 500000; rogzitAjanlat(formatValuta(baseOffer), 'Elutasítva (Rejtett Bónusz +500k)');
+                    await wait(3500); gameState.isProcessingClick = false; kovetkezoKor();
+                }}
+            ]);
+        }
+
+        function bankarTargyCsomag(baseOffer) {
+            const targyak = gameState.maradekNyeremenyek.filter(n => n.type === 'targy' || n.type === 'vicc');
+            if (targyak.length < 3) { bankarAjanlatotTesz(baseOffer); return; }
+            const csomag = kever(targyak).slice(0, 3).map(t => t.display).join(" ÉS ");
+            let leiras = `A Bankár felajánl egy csomagot: <br><b>${csomag}</b>!<br><span style='color:#fca5a5; font-weight:bold;'>(Ha elfogadod, ez lesz a végleges nyereményed!)</span>`;
+            mutassFlipAjanlat("TÁRGYHALMOZÓ!", "Nincs pénz!", leiras,[
+                { szoveg: "Áll az Alku!", osztaly: "btn-elfogad", akcio: () => { mutassUzenetet("Döntés rögzítve!", "Adminisztráció..."); rejtFlipAjanlat(); alkuKezelese(csomag, 'elfogad'); }},
+                { szoveg: "Inkább a pénz kéne...", osztaly: "btn-elutasit", akcio: () => { mutassUzenetet("Döntés rögzítve!", "Megyünk tovább..."); rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elutasit'); }}
+            ]);
+        }
+
+        function bankarVakCserePenzzel(baseOffer) {
+            const zartElemek = Array.from(document.querySelectorAll('.taska:not(.nyitott)')).filter(t => t.dataset.taskaId != gameState.sajatTaska);
+            const ujTaskaId = getRandomElem(zartElemek).dataset.taskaId; const reszPenz = Math.round((baseOffer * 0.4)/1000)*1000;
+            let leiras = `Ad ennyi pénzt zsebbe, DE elcseréli a táskád a(z) ${ujTaskaId}. táskára!<br><span style='color:#fca5a5; font-weight:bold;'>(A játék utána folytatódik!)</span>`;
+            mutassFlipAjanlat("VAK CSERE PÉNZZE!", formatValuta(reszPenz), leiras,[
+                { szoveg: "Pénz zsebbe és Csere!", osztaly: "btn-elfogad", akcio: () => {
+                    mutassUzenetet(`BÓNUSZ MEGSZEREZVE: ${formatValuta(reszPenz)}`, `Táskák kicserélve! A játék folytatódik.`); rejtFlipAjanlat();
+                    document.querySelector(`.taska[data-taska-id='${gameState.sajatTaska}']`).classList.remove('sajat-taskam');
+                    gameState.sajatTaska = ujTaskaId; document.querySelector(`.taska[data-taska-id='${ujTaskaId}']`).classList.add('sajat-taskam');
+                    gameState.bonuszPenz += reszPenz; rogzitAjanlat(`Vak Csere + ${formatValuta(reszPenz)}`, 'Elfogadva'); setTimeout(kovetkezoKor, 3000);
+                }},
+                { szoveg: "Ezt nem vállalom!", osztaly: "btn-elutasit", akcio: () => { mutassUzenetet("Döntés rögzítve!", "Megyünk tovább..."); rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elutasit'); }}
+            ]);
+        }
+
+        function bankarSzabadCsere(baseOffer) {
+            let leiras = `A Bankár ajánlata VAGY elcserélheted a táskád BÁRMELYIK zártra!<br><span style='color:#fca5a5; font-weight:bold;'>(A csere után a játék folytatódik!)</span>`;
+            mutassFlipAjanlat("PÉNZ VAGY CSERE!", formatValuta(baseOffer), leiras,[
+                { szoveg: "Kérem a pénzt!", osztaly: "btn-elfogad", akcio: () => { mutassUzenetet("Döntés rögzítve!", "Adminisztráció..."); rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elfogad'); }},
+                { szoveg: "Cserélni akarok!", osztaly: "btn-extra", akcio: () => { mutassUzenetet("SZABAD CSERE!", "Kattints arra a zárt táskára, amelyikre el akarod cserélni a sajátodat!"); rejtFlipAjanlat(); gameState.allapot = 'szabad_csere'; gameState.isProcessingClick = false; }},
+                { szoveg: "Nincs alku!", osztaly: "btn-elutasit", akcio: () => { mutassUzenetet("Döntés rögzítve!", "Megyünk tovább..."); rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elutasit'); }}
+            ]);
+        }
+
+        function bankarBlackout(baseOffer, o1, o2, isDuel) {
+            let leiras = `A Bankár zseniális alkut ajánl, de fenyegetőzik: <br><span style='color:#fca5a5; font-weight:bold;'>Ha elutasítod, lekapcsolja a villanyt, összekeveri a táskákat, és a következő nyitásokat a SÖTÉTBEN kell megtenned!</span>`;
+            
+            if (isDuel) {
+                gameState.blackoutThreatActive = true;
+                mutassParbajAjanlatot(o1, o2, leiras);
+            } else {
+                mutassFlipAjanlat("FENYEGETÉS: ÁRAMSZÜNET!", formatValuta(baseOffer), leiras,[
+                    { szoveg: "Megveszem, nincs sötét!", osztaly: "btn-elfogad", akcio: () => { rejtFlipAjanlat(); alkuKezelese(baseOffer, 'elfogad'); }},
+                    { szoveg: "Nem érdekel, lekapcsolhatod!", osztaly: "btn-elutasit", akcio: async () => {
+                        rejtFlipAjanlat(); rogzitAjanlat(formatValuta(baseOffer), 'Elutasítva (Áramszünet jön)');
+                        await executeBlackout();
+                    }}
+                ]);
+            }
+        }
+
+        async function executeBlackout() {
+            gameState.isProcessingClick = true;
+            mutassUzenetet("A BANKÁR BEVÁLTOTTA ÍGÉRETÉT!", "Áramszünet a stúdióban...", "", true); await wait(2000);
+            document.querySelectorAll('.taska').forEach(t => t.classList.remove('radar-celpont', 'pajzs-celpont', 'rontgen-celpont', 'tusz-celpont'));
+            document.body.classList.add('bg-blackout'); gameState.isBlackout = true; 
+            const closedCases = Array.from(document.querySelectorAll('.taska:not(.nyitott)'));
+            const closedIds = closedCases.map(t => t.dataset.taskaId);
+            const values = closedIds.map(id => gameState.taskaErtekek[id]);
+            const shuffledValues = kever(values);
+            closedIds.forEach((id, index) => {
+                gameState.taskaErtekek[id] = shuffledValues[index];
+                document.querySelector(`.taska[data-taska-id='${id}'] .taska-osszeg`).innerHTML = shuffledValues[index].display;
+            });
+            syncGameState();
+            mutassUzenetet("VAKREPÜLÉS!", "A gép csendben összekeverte a táskákat! Csak a kör végén fogod megtudni, miket nyitottál ki!"); await wait(2500);
+            kovetkezoKor();
+        }
+
+        async function bankarSoronKivuli(kiesoNyeremeny, tipus) {
+            mutassUzenetet("A BANKÁR KÖZBESZÓL!", "Megcsörrent a telefon soron kívül!", "", true); await wait(3500);
+
+            let alapAjanlat = calculateBankerOffer();
+            
+            if (tipus === "cinikus") {
+                let cinikusAjanlat = Math.round((alapAjanlat * (Math.random() * 0.05 + 0.01)) / 100) * 100; if (cinikusAjanlat < 100) cinikusAjanlat = 100;
+                let leiras = `Látom, kiment a(z) <b>${kiesoNyeremeny.display}</b>! A Bankár jót nevet rajtad, és felajánl egy kis aprót vigaszdíjnak buszjegyre...<br><span style='color:#fca5a5; font-weight:bold;'>(Ha elfogadod, ez lesz a végleges nyereményed!)</span>`;
+                mutassFlipAjanlat("CINIKUS AJÁNLAT", formatValuta(cinikusAjanlat), leiras,[
+                    { szoveg: "Ezt komolyan gondolja?! Elfogadom...", osztaly: "btn-elfogad", akcio: () => elfogadSoronKivuli(cinikusAjanlat, "Cinikus Bankár") },
+                    { szoveg: "Kinevetem és megyek tovább!", osztaly: "btn-elutasit", akcio: () => elutasitSoronKivuli(cinikusAjanlat, "Cinikus Bankár") }
+                ]);
+            } else if (tipus === "vicces") {
+                let viccesTargy = getRandomElem(BANKER_SURPRISE_JOKES);
+                let leiras = `Kiment a(z) <b>${kiesoNyeremeny.display}</b>! A Bankár kárörvendve felajánlja neked ezt a "nagyszerű" vigaszdíjat!<br><span style='color:#fca5a5; font-weight:bold;'>(Ha elfogadod, a játék véget ér!)</span>`;
+                mutassFlipAjanlat("VIGASZDÍJ?", viccesTargy, leiras,[
+                    { szoveg: "Jobb, mint a semmi...", osztaly: "btn-elfogad", akcio: () => elfogadSoronKivuli(viccesTargy, "Vigaszdíj") },
+                    { szoveg: "Nem kérem a szemetét!", osztaly: "btn-elutasit", akcio: () => elutasitSoronKivuli(viccesTargy, "Vigaszdíj") }
+                ]);
+            } else if (tipus === "rendkivuli") {
+                let premiumAjanlat = Math.round((alapAjanlat * (Math.random() * 0.4 + 1.2)) / 1000) * 1000;
+                let maxVal = Math.max(...gameState.maradekNyeremenyek.map(n => n.value));
+                if (premiumAjanlat >= maxVal) premiumAjanlat = Math.round(maxVal * 0.85 / 1000) * 1000;
+                if (premiumAjanlat < 1000) premiumAjanlat = 1000;
+                let leiras = `A Bankár bepánikolt, mert túl jól állsz! AZONNAL le akarja zárni a játékot egy rendkívüli ajánlattal!<br><span style='color:#fca5a5; font-weight:bold;'>(Ha elfogadod, ez lesz a végleges nyereményed!)</span>`;
+                mutassFlipAjanlat("PÁNIK AJÁNLAT!", formatValuta(premiumAjanlat), leiras,[
+                    { szoveg: "Megveszem!", osztaly: "btn-elfogad", akcio: () => elfogadSoronKivuli(premiumAjanlat, "Pánikoló Bankár") },
+                    { szoveg: "Nem adom fel!", osztaly: "btn-elutasit", akcio: () => elutasitSoronKivuli(premiumAjanlat, "Pánikoló Bankár") }
+                ]);
+            }
+        }
+
+        function elfogadSoronKivuli(ajanlatErtek, tipus) {
+            mutassUzenetet("Döntés rögzítve!", "Adminisztráció..."); rejtFlipAjanlat(); 
+            gameState.nyertOsszeg = ajanlatErtek; gameState.marEladta = true; DOM.panikGomb.disabled = true; DOM.pajzsGomb.disabled = true; DOM.radarGomb.disabled = true;
+            let kiiras = typeof ajanlatErtek === 'number' ? formatValuta(ajanlatErtek) : ajanlatErtek;
+            rogzitAjanlat(`${tipus}: ${kiiras}`, 'Elfogadva'); gameState.allapot = 'alku_elfogadva_kijatszas';
+            mutassUzenetet(`ÁLL AZ ALKU SORON KÍVÜL! Megnyerted ezt: ${kiiras}!`, `De a játék megy tovább. Lássuk a kijátszást!`);
+            setTimeout(folytatNyitasUtan, 4500); 
+        }
+
+        function elutasitSoronKivuli(ajanlatErtek, tipus) {
+            mutassUzenetet("Döntés rögzítve!", "Megyünk tovább..."); rejtFlipAjanlat();
+            let kiiras = typeof ajanlatErtek === 'number' ? formatValuta(ajanlatErtek) : ajanlatErtek;
+            rogzitAjanlat(`Soron kívüli (${tipus}): ${kiiras}`, 'Elutasítva'); setTimeout(folytatNyitasUtan, 1500);
+        }
+
+        // Duel decisions that trigger global board effects
+        async function lezardParbaj() {
+            gameState.isProcessingClick = true;
+            syncGameState();
+            mutassUzenetet("PÁRBAJ VÉGE!", "Lássuk, mi volt a táskátokban!");
+            await wait(2000);
+
+            const t1 = document.querySelector(`.taska[data-taska-id='${gameState.duel.p1Case}']`);
+            if (t1 && !t1.classList.contains('nyitott')) {
+                t1.classList.add('animacio-nyitas'); syncGameState(); await wait(1500);
+                t1.classList.remove('animacio-nyitas'); t1.classList.add('nyitott'); syncGameState();
+                let v1 = gameState.taskaErtekek[gameState.duel.p1Case];
+                let msg1 = "";
+                if (gameState.duel.p1Status === 'accepted') {
+                    msg1 = `${v1.display}! (De kiszállt: ${formatValuta(gameState.duel.p1Winnings)})`;
+                } else {
+                    msg1 = `${v1.display}! (Megnyerte)`;
+                    gameState.duel.p1Winnings = v1.value;
+                    awardWinMoney(v1.value, gameState.duel.p1Name);
+                }
+                mutassUzenetet(`${gameState.duel.p1Name} (P1) TÁSKÁJA:`, msg1);
+                await wait(4000);
+            }
+
+            const t2 = document.querySelector(`.taska[data-taska-id='${gameState.duel.p2Case}']`);
+            if (t2 && !t2.classList.contains('nyitott')) {
+                t2.classList.add('animacio-nyitas'); syncGameState(); await wait(1500);
+                t2.classList.remove('animacio-nyitas'); t2.classList.add('nyitott'); syncGameState();
+                let v2 = gameState.taskaErtekek[gameState.duel.p2Case];
+                let msg2 = "";
+                if (gameState.duel.p2Status === 'accepted') {
+                    msg2 = `${v2.display}! (De kiszállt: ${formatValuta(gameState.duel.p2Winnings)})`;
+                } else {
+                    msg2 = `${v2.display}! (Megnyerte)`;
+                    gameState.duel.p2Winnings = v2.value;
+                    awardWinMoney(v2.value, gameState.duel.p2Name);
+                }
+                mutassUzenetet(`${gameState.duel.p2Name} (P2) TÁSKÁJA:`, msg2);
+                await wait(4000);
+            }
+
+            let w1 = gameState.duel.p1Winnings || 0;
+            let w2 = gameState.duel.p2Winnings || 0;
+            let finalMsg = `${gameState.duel.p1Name}: ${formatValuta(w1)}<br>${gameState.duel.p2Name}: ${formatValuta(w2)}`;
+            let winnerTxt = "";
+            if (w1 > w2) winnerTxt = `🏆 GYŐZTES: ${gameState.duel.p1Name}!`;
+            else if (w2 > w1) winnerTxt = `🏆 GYŐZTES: ${gameState.duel.p2Name}!`;
+            else winnerTxt = `🤝 DÖNTETLEN!`;
+
+            let ctaHtml = `<br><br><button id="final-lobby-btn" style="background:#f8b500; color:#000; padding:10px 20px; font-weight:bold; border-radius:5px; cursor:pointer; font-family:'Orbitron'; border:2px solid #fff; margin-top:10px;">Vissza a Lobbyba</button>`;
+
+            mutassUzenetet(winnerTxt, finalMsg + ctaHtml);
+            startCelebration();
+            document.body.classList.add('bg-winning');
+            syncGameState();
+
+            setTimeout(() => {
+                const btn = document.getElementById('final-lobby-btn');
+                if(btn) {
+                    btn.addEventListener('click', async () => {
+                        btn.innerText = "Kilépés folyamatban..."; btn.disabled = true;
+                        if(window.cleanupRoom) await window.cleanupRoom(); window.location.reload();
+                    });
+                }
+            }, 100);
+        }
+
+    </script>
 </body>
 </html>
